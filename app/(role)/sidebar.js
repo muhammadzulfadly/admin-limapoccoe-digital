@@ -3,24 +3,29 @@
 import { useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
-import { Home, FileText, FileEdit, ChevronDown, LayoutDashboard, CalendarCheck, Users, Menu, X } from "lucide-react";
+import {
+  Home,
+  FileText,
+  FileEdit,
+  ChevronDown,
+  LayoutDashboard,
+  CalendarCheck,
+  Users,
+  Menu,
+  X,
+} from "lucide-react";
 
 export default function AdminLayout({ children }) {
   const pathname = usePathname();
   const router = useRouter();
 
-  const isPengajuanSuratActive = useMemo(() => pathname.startsWith("/pengajuan-surat"), [pathname]);
-
-  const [isOpen, setIsOpen] = useState(isPengajuanSuratActive);
+  const [isOpen, setIsOpen] = useState(false);
   const [jenisSurat, setJenisSurat] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showSessionExpired, setShowSessionExpired] = useState(false);
   const [role, setRole] = useState(null);
+  const [roleLabel, setRoleLabel] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
-
-  useEffect(() => {
-    setIsOpen(isPengajuanSuratActive);
-  }, [isPengajuanSuratActive]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -33,7 +38,11 @@ export default function AdminLayout({ children }) {
       setShowSessionExpired(true);
     } else {
       const user = JSON.parse(localStorage.getItem("user") || "{}");
-      setRole(user.role || null);
+      const roleName = user?.roles?.[0] || null;
+
+      setRole(roleName);
+      if (roleName === "staff-desa") setRoleLabel("Admin");
+      else if (roleName === "kepala-desa") setRoleLabel("Kepala Desa");
     }
   }, []);
 
@@ -58,18 +67,31 @@ export default function AdminLayout({ children }) {
       });
   }, [router]);
 
-  const isActive = (path) => pathname === path || pathname.startsWith(`${path}/`);
-  const linkClass = (path) => `${isActive(path) ? "text-green-500 font-medium" : "text-black"} hover:text-green-600 flex items-center gap-2`;
+  // 🔁 Fungsi untuk prefix path berdasarkan role
+  const getPath = (route) => {
+    if (!role) return "#";
+    const prefix = role === "staff-desa" ? "/admin" : role === "kepala-desa" ? "/kepdes" : "";
+    return `${prefix}${route}`;
+  };
+
+  // 🔁 Penyesuaian isActive untuk prefix role
+  const isActive = (path) => {
+    const fullPath = getPath(path);
+    return pathname === fullPath || pathname.startsWith(fullPath + "/");
+  };
+
+  const linkClass = (path) =>
+    `${isActive(path) ? "text-green-500 font-medium" : "text-black"} hover:text-green-600 flex items-center gap-2`;
 
   const renderSidebar = () => (
     <aside className="w-64 p-6 border-r border-gray-200 h-screen sticky top-0 bg-white overflow-y-auto">
-      {role && <p className="text-xs text-gray-500 font-medium uppercase mb-1">{role === "staff-desa" ? "Admin" : role === "kepala-desa" ? "Kepala Desa" : "Pengguna"}</p>}
-      <h2 className="font-semibold text-base mb-4">PELAYANAN DESA</h2>
+      {roleLabel && <h2 className="text-2xl font-semibold mb-3">{roleLabel}</h2>}
+      <h2 className="text-base font-semibold mb-4">Pelayanan Desa</h2>
 
       <ul className="space-y-3 text-sm pl-3">
         {/* Dashboard */}
         <li>
-          <Link href="/dashboard" className={linkClass("/dashboard")}>
+          <Link href={getPath("/dashboard")} className={linkClass("/dashboard")}>
             <LayoutDashboard size={18} />
             Dashboard
           </Link>
@@ -77,7 +99,12 @@ export default function AdminLayout({ children }) {
 
         {/* Beranda eksternal */}
         <li>
-          <a href="https://staging.limapoccoedigital.id" target="_blank" rel="noopener noreferrer" className="hover:text-green-600 flex items-center gap-2 text-black">
+          <a
+            href="https://limapoccoedigital.id"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-green-600 flex items-center gap-2 text-black"
+          >
             <Home size={18} />
             Beranda
           </a>
@@ -87,13 +114,13 @@ export default function AdminLayout({ children }) {
         {role === "staff-desa" && (
           <>
             <li>
-              <Link href="/informasi" className={linkClass("/informasi")}>
+              <Link href={getPath("/informasi-desa")} className={linkClass("/informasi-desa")}>
                 <CalendarCheck size={18} />
                 Informasi desa
               </Link>
             </li>
             <li>
-              <Link href="/penduduk" className={linkClass("/penduduk")}>
+              <Link href={getPath("/data-penduduk")} className={linkClass("/data-penduduk")}>
                 <Users size={18} />
                 Data penduduk
               </Link>
@@ -103,7 +130,7 @@ export default function AdminLayout({ children }) {
 
         {/* Pengaduan */}
         <li>
-          <Link href="/pengaduan" className={linkClass("/pengaduan")}>
+          <Link href={getPath("/pengaduan")} className={linkClass("/pengaduan")}>
             <FileText size={18} />
             Pengaduan
           </Link>
@@ -112,12 +139,22 @@ export default function AdminLayout({ children }) {
         {/* Pengajuan Surat */}
         <li>
           <div className="flex items-center gap-5">
-            <Link href="/pengajuan-surat" className={`flex items-center gap-2 font-medium hover:text-green-600 ${isPengajuanSuratActive ? "text-green-500" : "text-black"}`}>
+            <Link
+              href={getPath("/pengajuan-surat")}
+              className={`flex items-center gap-2 font-medium hover:text-green-600 ${
+                isActive("/pengajuan-surat") ? "text-green-500" : "text-black"
+              }`}
+            >
               <FileEdit size={18} />
               Pengajuan Surat
             </Link>
             <button onClick={() => setIsOpen(!isOpen)} className="ml-1 focus:outline-none">
-              <ChevronDown size={16} className={`transition-transform duration-300 ${isOpen ? "rotate-180 text-green-500" : "text-black"}`} />
+              <ChevronDown
+                size={16}
+                className={`transition-transform duration-300 ${
+                  isOpen ? "rotate-180 text-green-500" : "text-black"
+                }`}
+              />
             </button>
           </div>
 
@@ -128,7 +165,12 @@ export default function AdminLayout({ children }) {
               ) : (
                 jenisSurat.map((item) => (
                   <li key={item.id}>
-                    <Link href={`/pengajuan-surat/${item.id}`} className={`${isActive(`/pengajuan-surat/${item.id}`) ? "text-green-500 font-medium" : "text-black"} hover:text-green-600 block max-w-[120px] break-words`}>
+                    <Link
+                      href={getPath(`/pengajuan-surat/${item.id}`)}
+                      className={`${
+                        isActive(`/pengajuan-surat/${item.id}`) ? "text-green-500 font-medium" : "text-black"
+                      } hover:text-green-600 block max-w-[120px] break-words`}
+                    >
                       {item.nama_surat}
                     </Link>
                   </li>
@@ -147,12 +189,15 @@ export default function AdminLayout({ children }) {
       <div className="hidden md:block">{renderSidebar()}</div>
 
       {/* Toggle Button for Mobile */}
-      <button onClick={() => setSidebarOpen(!sidebarOpen)} className="absolute top-4 left-4 md:hidden z-50 bg-white p-2 rounded shadow">
+      <button
+        onClick={() => setSidebarOpen(!sidebarOpen)}
+        className="absolute top-4 left-4 md:hidden z-50 bg-white p-2 rounded shadow"
+      >
         {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
       </button>
 
       {/* Sidebar for Mobile */}
-      {sidebarOpen && ( 
+      {sidebarOpen && (
         <div className="fixed z-40 inset-0 bg-black/40 flex">
           <div className="bg-white w-64 h-full shadow-lg">{renderSidebar()}</div>
           <div className="flex-1" onClick={() => setSidebarOpen(false)} />
@@ -167,7 +212,9 @@ export default function AdminLayout({ children }) {
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-lg px-6 py-8 w-[280px] text-center animate-fade-in">
             <h3 className="text-[#EB5757] text-2xl font-bold mb-4">Sesi Berakhir</h3>
-            <p className="text-sm text-[#141414] leading-relaxed mb-6">Sesi Anda telah berakhir. Silakan masuk kembali untuk melanjutkan.</p>
+            <p className="text-sm text-[#141414] leading-relaxed mb-6">
+              Sesi Anda telah berakhir. Silakan masuk kembali untuk melanjutkan.
+            </p>
             <button
               onClick={() => {
                 setShowSessionExpired(false);

@@ -12,7 +12,6 @@ export default function LoginPage() {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [showLoginError, setShowLoginError] = useState(false);
-  const [showForgotPassword, setShowForgotPassword] = useState(false);
 
   const handleChange = ({ name, value }) => {
     setForm((prev) => ({ ...prev, [name]: value }));
@@ -62,9 +61,10 @@ export default function LoginPage() {
         localStorage.setItem("user", JSON.stringify(result.user));
         localStorage.setItem("expiresAt", expiresAt.toString());
 
-        if (result.role === "kepala-desa") {
+        const roleName = result.user?.roles?.[0];
+        if (roleName === "kepala-desa") {
           router.push("/kepdes/dashboard");
-        } else if (result.role === "staff-desa") {
+        } else if (roleName === "staff-desa") {
           router.push("/admin/dashboard");
         }
       } else {

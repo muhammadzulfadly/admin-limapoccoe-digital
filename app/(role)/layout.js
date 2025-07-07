@@ -55,18 +55,11 @@ export default function BerandaLayout({ children }) {
             <Link href="/profil" className="text-white text-sm hover:underline">
               {userName}
             </Link>
-            <Link href="/dashboard" className="bg-white text-black text-sm font-medium px-4 py-1.5 rounded hover:bg-gray-200 transition">
-              Dashboard
-            </Link>
           </div>
         ) : (
           <div className="flex items-center gap-4">
-            <Link href="/auth/masuk" className="text-white text-sm hover:underline">
-              Masuk
-            </Link>
-            <Link href="/auth/daftar" className="bg-white text-black text-sm font-medium px-4 py-1.5 rounded hover:bg-gray-200 transition">
-              Daftar
-            </Link>
+            <User size={18} className="text-white" />
+            <div className="text-white text-sm">Pengguna</div>
           </div>
         )}
       </header>

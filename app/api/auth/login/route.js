@@ -2,7 +2,7 @@ export async function POST(req) {
   try {
     const body = await req.json();
 
-    const res = await fetch(`${process.env.API_SECRET_URL}/api/auth/login`, {
+    const res = await fetch(`${process.env.API_SECRET_URL}/api/auth/login/admin`, {
       method: "POST",
       headers: {
         Accept: "application/json",

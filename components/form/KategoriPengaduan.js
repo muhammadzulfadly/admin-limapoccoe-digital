@@ -26,7 +26,7 @@ export default function KategoriPengaduan({ value, onChange, error, disabled = f
         value={value}
         disabled={disabled}
         onChange={(e) => onChange({ name: "category", value: e.target.value })}
-        className={`mt-1 appearance-none w-full rounded-lg border bg-white px-4 py-2 text-sm outline-none ${
+        className={`mt-1 appearance-none w-full rounded-lg border bg-gray-100 px-4 py-2 text-sm outline-none ${
           error ? "border-red-500" : "border-gray-300"
         }`}
       >
