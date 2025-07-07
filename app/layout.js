@@ -1,5 +1,5 @@
 export const metadata = {
-  title: 'AdminLimapoccoeDigital',
+  title: 'Admin LimapoccoeDigital',
   description: 'Website Resmi Desa Limmapocoe',
 }
 
