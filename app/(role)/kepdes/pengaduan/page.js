@@ -3,12 +3,10 @@
 import { useEffect, useState } from "react";
 import { Search, SlidersHorizontal } from "lucide-react";
 import Link from "next/link";
-import MenungguCard from "@/components/card/Menunggu";
 import DiterimaCard from "@/components/card/DiTerima";
 import SelesaiCard from "@/components/card/Selesai";
 
 const statusMap = {
-  waiting: "Menunggu",
   processed: "Diterima",
   approved: "Selesai",
 };
@@ -16,7 +14,6 @@ const statusMap = {
 const statusColor = {
   Selesai: "text-green-600 font-semibold",
   Diterima: "text-teal-800 font-semibold",
-  Menunggu: "text-orange-600 font-semibold",
 };
 
 export default function PengaduanPage() {
@@ -31,7 +28,8 @@ export default function PengaduanPage() {
         },
       });
       const result = await res.json();
-      setData(result.aduan || []);
+      const filteredData = (result.aduan || []).filter((item) => item.status === "processed" || item.status === "approved");
+      setData(filteredData);
     };
 
     fetchAduan();
@@ -45,7 +43,7 @@ export default function PengaduanPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             {Object.values(statusMap).map((status) => {
               const jumlah = data.filter((item) => statusMap[item.status] === status).length;
-              const Icon = status === "Menunggu" ? MenungguCard : status === "Diterima" ? DiterimaCard : SelesaiCard;
+              const Icon = status === "Diterima" ? DiterimaCard : SelesaiCard;
               return (
                 <div key={status}>
                   <Icon count={jumlah} />
@@ -54,17 +52,12 @@ export default function PengaduanPage() {
             })}
           </div>
 
-        <hr className="border-gray-300 border-y mb-6" />
+          <hr className="border-gray-300 border-y mb-6" />
 
           <div className="flex justify-end items-center mb-6">
-
             <div className="flex items-center border border-gray-500 rounded-md px-4 py-2 bg-white text-gray-500 transition-colors w-72">
               <Search className="w-5 h-5 mr-2" />
-              <input
-                type="text"
-                placeholder="Masukkan Jenis Pengaduan"
-                className="flex-1 outline-none text-sm bg-white placeholder-gray-500"
-              />
+              <input type="text" placeholder="Masukkan Jenis Pengaduan" className="flex-1 outline-none text-sm bg-white placeholder-gray-500" />
               <SlidersHorizontal className="w-4 h-4 ml-2" />
             </div>
           </div>
