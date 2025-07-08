@@ -116,13 +116,13 @@ export default function AdminLayout({ children }) {
             <li>
               <Link href={getPath("/informasi-desa")} className={linkClass("/informasi-desa")}>
                 <CalendarCheck size={18} />
-                Informasi desa
+                Informasi Desa
               </Link>
             </li>
             <li>
               <Link href={getPath("/data-penduduk")} className={linkClass("/data-penduduk")}>
                 <Users size={18} />
-                Data penduduk
+                Data Kependudukan
               </Link>
             </li>
           </>

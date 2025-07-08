@@ -12,7 +12,7 @@ export default function InputField({ label, name, value, onChange, error, requir
         value={value}
         onChange={onChange}
         disabled={disabled}
-        placeholder={`Masukkan ${label} Anda`}
+        placeholder={`Masukkan ${label}`}
         className={`w-full border ${error ? "border-red-500" : "border-gray-300"} rounded px-4 py-2 mt-1 text-sm`}
         {...props}
       />

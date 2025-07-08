@@ -1,117 +1,122 @@
-import { Plus, Search, SlidersHorizontal, Pencil, Trash2, Eye } from "lucide-react";
-import Link from "next/link";
+'use client'
 
-export const metadata = {
-  title: "Dashboard Data Penduduk",
-};
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 
-export default async function Page() {
-  const data = [
-    {
-      nik: "7371XXXXXXX",
-      nama: "Andi Saputra",
-      ttl: "Makassar, 12-03-1987",
-      jk: "L",
-      alamat: "Jl. Poros ...",
-      status: "Kawin",
-      pekerjaan: "petani",
-      hidup: "Hidup",
-    },
-    {
-      nik: "7371XXXXXXX",
-      nama: "Siti Aminah",
-      ttl: "Bone, 20-06-1991",
-      jk: "P",
-      alamat: "Dusun Tua...",
-      status: "Belum Kawin",
-      pekerjaan: "petani",
-      hidup: "Meninggal",
-    },
-    {
-      nik: "7371XXXXXXX",
-      nama: "Burhanuddin",
-      ttl: "Barru, 05-05-1999",
-      jk: "L",
-      alamat: "Jl. Trans ...",
-      status: "Kawin",
-      pekerjaan: "petani",
-      hidup: "Hidup",
-    },
-  ];
+// Import semua komponen form
+import Nik from '@/components/form/Nik'
+import StatusHubungan from '@/components/form/StatusHubungan'
+import NamaLengkap from '@/components/form/NamaLengkap'
+import JenisKelamin from '@/components/form/JenisKelamin'
+import TempatLahir from '@/components/form/TempatLahir'
+import TanggalLahir from '@/components/form/TanggalLahir'
+import Agama from '@/components/form/Agama'
+import Pekerjaan from '@/components/form/Pekerjaan'
+import Pendidikan from '@/components/form/Pendidikan'
+import StatusPerkawinan from '@/components/form/StatusPerkawinan'
+import NamaAyah from '@/components/form/NamaAyah'
+import NamaIbu from '@/components/form/NamaIbu'
+import Bpjs from '@/components/form/Bpjs'
+
+export default function TambahKeluargaPage() {
+  const router = useRouter()
+
+  const [form, setForm] = useState({
+    nik: '',
+    statusHubungan: '',
+    namaLengkap: '',
+    jenisKelamin: '',
+    tempatLahir: '',
+    tanggalLahir: '',
+    agama: '',
+    pekerjaan: '',
+    pendidikan: '',
+    statusPerkawinan: '',
+    namaAyah: '',
+    namaIbu: '',
+    bpjs: '',
+  })
+
+  const [errors, setErrors] = useState({})
+  const [loading, setLoading] = useState(false)
+
+  const handleChange = ({ name, value }) => {
+    setForm((prev) => ({ ...prev, [name]: value }))
+  }
+
+  const handleBatal = () => {
+    router.back()
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setLoading(true)
+
+    try {
+      const res = await fetch('/api/keluarga', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(form),
+      })
+
+      if (!res.ok) {
+        const errorData = await res.json()
+        setErrors(errorData.errors || {})
+        setLoading(false)
+        return
+      }
+
+      router.push('/admin/data-penduduk/tambah')
+    } catch (error) {
+      console.error('Gagal menyimpan:', error)
+      setLoading(false)
+    }
+  }
 
   return (
-    <div className="flex h-full">
-      <div className="flex-1 bg-gray-100 p-8">
-        <header>
-          <h1 className="text-xl font-bold mb-3">Dashboard Data Penduduk</h1>
-        </header>
+    <div className="min-h-screen bg-white p-6 md:p-10">
+      <h1 className="text-lg font-semibold text-black mb-6">Tambah Anggota Keluarga</h1>
 
-        <div className="flex justify-between items-center mb-3">
-          <Link href={`/admin/data-penduduk/buat-baru`}>
-            <button className="flex items-center gap-1 px-4 py-2 bg-green-600 text-white rounded-md text-sm hover:bg-green-700 transition">
-              <Plus className="w-5 h-5" strokeWidth={3} />
-              Tambah Baru
-            </button>
-          </Link>
-          <div className="flex justify-end mb-6">
-            <div className="flex items-center border border-gray-500 rounded-md px-4 py-2 bg-white text-gray-500 transition-colors w-72">
-              <Search className="w-5 h-5 mr-2" />
-              <input type="text" placeholder="Masukkan NIK Penduduk" className="flex-1 outline-none text-sm bg-white placeholder-gray-500" />
-              <SlidersHorizontal className="w-4 h-4 ml-2" />
-            </div>
-          </div>
-        </div>
+      <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm mb-10">
+        <Nik value={form.nik} onChange={handleChange} error={errors.nik} />
+        <StatusHubungan value={form.statusHubungan} onChange={handleChange} error={errors.statusHubungan} />
 
-        <div className="overflow-x-auto">
-          <table className="table-auto w-full border border-black text-sm">
-            <thead>
-              <tr className="bg-green-600 text-white">
-                <th className="border border-black px-2 py-2">No.</th>
-                <th className="border border-black px-2 py-2 ">NIK</th>
-                <th className="border border-black px-2 py-2 ">Nama</th>
-                <th className="border border-black px-2 py-2 ">TTL</th>
-                <th className="border border-black px-2 py-2">JK</th>
-                <th className="border border-black px-2 py-2 ">Alamat</th>
-                <th className="border border-black px-2 py-2 ">Status Perkawinan</th>
-                <th className="border border-black px-2 py-2 ">Pekerjaan</th>
-                <th className="border border-black px-2 py-2 ">Hidup</th>
-                <th className="border border-black px-2 py-2 ">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.map((item, index) => (
-                <tr key={index} className="bg-white text-center">
-                  <td className="border border-black px-2 py-1">{index + 1}</td>
-                  <td className="border border-black px-2 py-1">{item.nik}</td>
-                  <td className="border border-black px-2 py-1">{item.nama}</td>
-                  <td className="border border-black px-2 py-1">{item.ttl}</td>
-                  <td className="border border-black px-2 py-1">{item.jk}</td>
-                  <td className="border border-black px-2 py-1">{item.alamat}</td>
-                  <td className="border border-black px-2 py-1">{item.status}</td>
-                  <td className="border border-black px-2 py-1">{item.pekerjaan}</td>
-                  <td className="border border-black px-2 py-1">{item.hidup}</td>
-                  <td className="border border-black px-2 py-1">
-                    <div className="flex justify-center items-center gap-4 text-green-600 text-xs">
-                      <Link href="#" className="flex flex-col items-center hover:underline" title="Lihat">
-                        <Eye className="w-5 h-5" />
-                        <span className="text-black">Lihat</span>
-                      </Link>
-                      <Link href="#" className="flex flex-col items-center hover:underline" title="Edit">
-                        <Pencil className="w-5 h-5" />
-                        <span className="text-black">Edit</span>
-                      </Link>
-                      <Link href="#" className="flex flex-col items-center hover:underline" title="Hapus">
-                        <Trash2 className="w-5 h-5" />
-                        <span className="text-black">Hapus</span>
-                      </Link>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <NamaLengkap value={form.namaLengkap} onChange={handleChange} error={errors.namaLengkap} />
+        <JenisKelamin value={form.jenisKelamin} onChange={handleChange} error={errors.jenisKelamin} />
+
+        <TempatLahir value={form.tempatLahir} onChange={handleChange} error={errors.tempatLahir} />
+        <TanggalLahir value={form.tanggalLahir} onChange={handleChange} error={errors.tanggalLahir} />
+
+        <Agama value={form.agama} onChange={handleChange} error={errors.agama} />
+        <Pekerjaan value={form.pekerjaan} onChange={handleChange} error={errors.pekerjaan} />
+
+        <Pendidikan value={form.pendidikan} onChange={handleChange} error={errors.pendidikan} />
+        <StatusPerkawinan value={form.statusPerkawinan} onChange={handleChange} error={errors.statusPerkawinan} />
+
+        <NamaAyah value={form.namaAyah} onChange={handleChange} error={errors.namaAyah} />
+        <NamaIbu value={form.namaIbu} onChange={handleChange} error={errors.namaIbu} />
+
+        <Bpjs value={form.bpjs} onChange={handleChange} error={errors.bpjs} />
+      </form>
+
+      <div className="flex justify-between">
+        <button
+          type="button"
+          onClick={handleBatal}
+          className="bg-red-600 text-white text-sm font-semibold px-6 py-2 rounded-md hover:bg-red-700 transition"
+        >
+          Batal
+        </button>
+        <button
+          type="submit"
+          disabled={loading}
+          className="bg-green-600 text-white text-sm font-semibold px-6 py-2 rounded-md hover:bg-green-700 transition"
+        >
+          {loading ? 'Menyimpan...' : 'Simpan'}
+        </button>
       </div>
     </div>
-  );
+  )
 }
