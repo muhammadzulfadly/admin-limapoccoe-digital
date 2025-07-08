@@ -19,7 +19,7 @@ export default function ResponPengaduanPage() {
     const fetchNamaPengadu = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch(`/api/admin/complaint/${id}`, {
+        const res = await fetch(`/api/complaint/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -48,7 +48,7 @@ export default function ResponPengaduanPage() {
 
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`/api/admin/complaint/${id}/processed`, {
+      const res = await fetch(`/api/complaint/${id}/processed`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

@@ -32,7 +32,7 @@ export default function DetailPengaduanPage() {
     const fetchPengaduan = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch(`/api/admin/complaint/${id}`, {
+        const res = await fetch(`/api/complaint/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -58,7 +58,7 @@ export default function DetailPengaduanPage() {
     setSubmitting(true);
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`/api/admin/pengaduan-masyarakat/${pengaduan.id}/approved`, {
+      const res = await fetch(`/api/complaint/${id}/approved`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
