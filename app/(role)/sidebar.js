@@ -158,26 +158,21 @@ export default function AdminLayout({ children }) {
             </button>
           </div>
 
-          {isOpen && (
-            <ul className="pl-9 mt-4 space-y-3 text-sm">
-              {loading ? (
-                <li className="italic text-gray-500">Memuat...</li>
-              ) : (
-                jenisSurat.map((item) => (
-                  <li key={item.id}>
-                    <Link
-                      href={getPath(`/pengajuan-surat/${item.id}`)}
-                      className={`${
-                        isActive(`/pengajuan-surat/${item.id}`) ? "text-green-500 font-medium" : "text-black"
-                      } hover:text-green-600 block max-w-[120px] break-words`}
-                    >
-                      {item.nama_surat}
-                    </Link>
-                  </li>
-                ))
-              )}
-            </ul>
-          )}
+                      {isOpen && (
+              <ul className="pl-7 mt-4 space-y-3 text-sm">
+                {loading ? (
+                  <li className="italic text-gray-500">Memuat...</li>
+                ) : (
+                  jenisSurat.map((item) => (
+                    <li key={item.slug}>
+                      <Link href={getPath(`/pengajuan-surat/${item.slug}`)} className={`${isActive(`/pengajuan-surat/${item.slug}`) ? "text-green-500" : "text-black"} hover:text-green-600 block max-w-[120px] break-words`}>
+                        {item.nama_surat}
+                      </Link>
+                    </li>
+                  ))
+                )}
+              </ul>
+            )}
         </li>
       </ul>
     </aside>
