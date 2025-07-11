@@ -85,7 +85,9 @@ export default function ResponPengaduanPage() {
           <div className="px-36">
             <form onSubmit={handleSubmit}>
               <div className="text-center mb-4">
-                <h3 className="text-xl font-bold text-gray-700 mb-4">Tanggapan Staff Desa</h3>
+                <h3 className="text-xl font-bold text-gray-700 mb-4">
+                  Tanggapan Staff Desa<span className="text-red-500 ml-0.5">*</span>
+                </h3>
                 <ResponPengaduan hideLabel value={response} onChange={(e) => setRespon(e.value)} error={errorMsg} />
               </div>
 

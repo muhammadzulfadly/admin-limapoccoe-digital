@@ -71,7 +71,7 @@ export default function DetailPengaduanPage() {
         throw new Error("Gagal menyelesaikan pengaduan.");
       }
 
-      router.push("/admin/pengaduan-masyarakat");
+      router.push("/admin/pengaduan");
     } catch (err) {
       alert(err.message || "Terjadi kesalahan saat menyelesaikan pengaduan.");
     } finally {

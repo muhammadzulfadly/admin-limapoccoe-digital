@@ -30,7 +30,7 @@ export default function Dusun({ value, onChange, error, disabled = false }) {
   );
 }
 
-export function validateDusun(value) {
+export function validatePendidikan(value) {
   if (!value) return "Pendidikan wajib dipilih.";
   return "";
 }

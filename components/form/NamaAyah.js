@@ -14,7 +14,7 @@ export default function NamaAyah({ value, onChange, error, disabled = false }) {
   );
 }
 
-export function validateNama(value) {
+export function validateNamaAyah(value) {
   if (!/^[a-zA-Z\s]{3,}$/.test(value)) {
     return "Nama Ayah harus terdiri dari minimal 3 huruf dan hanya huruf/spasi.";
   }

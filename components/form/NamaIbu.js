@@ -14,7 +14,7 @@ export default function NamaIbu({ value, onChange, error, disabled = false }) {
   );
 }
 
-export function validateNama(value) {
+export function validateNamaIbu(value) {
   if (!/^[a-zA-Z\s]{3,}$/.test(value)) {
     return "Nama Ibu harus terdiri dari minimal 3 huruf dan hanya huruf/spasi.";
   }

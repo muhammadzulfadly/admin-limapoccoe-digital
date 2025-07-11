@@ -15,7 +15,7 @@ export default function NomorKk({ value, onChange, error, disabled = false}) {
   );
 }
 
-export function validateNik(value) {
+export function validateNoRumah(value) {
   if (!value || value.length < 1) {
     return "No. Rumah tidak boleh kosong.";
   }

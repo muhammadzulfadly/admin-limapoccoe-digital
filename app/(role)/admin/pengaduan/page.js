@@ -31,7 +31,8 @@ export default function PengaduanPage() {
         },
       });
       const result = await res.json();
-      setData(result.aduan || []);
+      const sorted = (result.aduan || []).sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      setData(sorted);
     };
 
     fetchAduan();
@@ -54,17 +55,12 @@ export default function PengaduanPage() {
             })}
           </div>
 
-        <hr className="border-gray-300 border-y mb-6" />
+          <hr className="border-gray-300 border-y mb-6" />
 
           <div className="flex justify-end items-center mb-6">
-
             <div className="flex items-center border border-gray-500 rounded-md px-4 py-2 bg-white text-gray-500 transition-colors w-72">
               <Search className="w-5 h-5 mr-2" />
-              <input
-                type="text"
-                placeholder="Masukkan Jenis Pengaduan"
-                className="flex-1 outline-none text-sm bg-white placeholder-gray-500"
-              />
+              <input type="text" placeholder="Masukkan Jenis Pengaduan" className="flex-1 outline-none text-sm bg-white placeholder-gray-500" />
               <SlidersHorizontal className="w-4 h-4 ml-2" />
             </div>
           </div>

@@ -13,7 +13,7 @@ export async function GET(request, { params }) {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
-          Accept: "application/pdf",
+          Accept: "text/html",
         },
       }
     );
@@ -24,13 +24,12 @@ export async function GET(request, { params }) {
       });
     }
 
-    const pdfBuffer = await backendResponse.arrayBuffer();
+    const html = await backendResponse.text();
 
-    return new Response(pdfBuffer, {
+    return new Response(html, {
       status: 200,
       headers: {
-        "Content-Type": "application/pdf",
-        "Content-Disposition": "inline; filename=preview-surat.pdf",
+        "Content-Type": "text/html",
       },
     });
   } catch (error) {

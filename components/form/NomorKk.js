@@ -15,7 +15,7 @@ export default function NomorKk({ value, onChange, error, disabled = false}) {
   );
 }
 
-export function validateNik(value) {
+export function validateNomorKK(value) {
   if (!/^\d{16}$/.test(value)) {
     return "No. KK harus terdiri dari 16 digit angka.";
   }

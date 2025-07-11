@@ -18,8 +18,8 @@ export default function Pekerjaan({ value, onChange, error, disabled = false }) 
   );
 }
 
-export function validatePekerjaan(value) {
-  if (!/^\d{13}$/.test(value)) {
+export function validateBpjs(value) {
+  if (value && !/^\d{13}$/.test(value)) {
     return "BPJS harus terdiri dari 13 digit angka.";
   }
   return "";

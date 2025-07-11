@@ -131,7 +131,7 @@ export default function DetailAjuanSuratPage() {
           <div className="mb-6">
             <h3 className="font-semibold text-lg mb-2">📋 Data Formulir Pengajuan:</h3>
             <ul className="list-disc list-inside text-sm text-gray-800">
-              {Object.entries(JSON.parse(ajuan.data_surat || "{}")).map(([key, value]) => (
+              {Object.entries(ajuan.data_surat || {}).map(([key, value]) => (
                 <li key={key}>
                   <strong>{key.replaceAll("_", " ")}:</strong> {value}
                 </li>
