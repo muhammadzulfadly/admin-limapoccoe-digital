@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Upload } from "lucide-react";
+import { FileUp, ChevronLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function ImportPendudukPage() {
@@ -10,7 +10,16 @@ export default function ImportPendudukPage() {
   const router = useRouter();
 
   const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
+    const selectedFile = e.target.files[0];
+
+    if (selectedFile && !selectedFile.name.endsWith(".xlsx") && !selectedFile.name.endsWith(".xls")) {
+      alert("Hanya file Excel (.xlsx / .xls) yang diperbolehkan.");
+      e.target.value = null;
+      setFile(null);
+      return;
+    }
+
+    setFile(selectedFile);
   };
 
   const handleImport = async (e) => {
@@ -26,6 +35,7 @@ export default function ImportPendudukPage() {
     try {
       setLoading(true);
       const token = localStorage.getItem("token");
+
       const res = await fetch("/api/population/import", {
         method: "POST",
         headers: {
@@ -35,46 +45,46 @@ export default function ImportPendudukPage() {
       });
 
       const result = await res.json();
+      console.log(result);
 
       if (!res.ok) {
         throw new Error(result.error || "Gagal mengimpor file.");
       }
 
-      alert("Data berhasil diimpor.");
-      router.push("/admin/data-penduduk"); // kembali ke dashboard
+      alert("✅ Import berhasil!");
+      router.push("/admin/data-penduduk");
     } catch (err) {
-      alert(err.message);
+      alert(`❌ ${err.message}`);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="p-8 bg-gray-100 h-full">
-      <h1 className="text-xl font-bold mb-6">Import Data Kependudukan</h1>
+    <div className="flex h-full">
+      <div className="flex-1 bg-gray-100 p-8">
+        <header>
+          <h1 className="text-xl font-bold mb-3">Dashboard Data Kependudukan / Import Data</h1>
+        </header>
 
-      <form onSubmit={handleImport} className="bg-white p-6 rounded shadow-md max-w-xl">
-        <label className="block mb-4">
-          <span className="text-gray-700 font-medium">Pilih File Excel (.xlsx)</span>
-          <input
-            type="file"
-            accept=".xls,.xlsx"
-            onChange={handleFileChange}
-            className="mt-2 block w-full border border-gray-300 rounded px-3 py-2"
-          />
-        </label>
+        <form onSubmit={handleImport} className="bg-white rounded-lg p-6 mx-auto">
+          <button type="button" onClick={() => router.back()} className="flex items-center text-base text-gray-500 mb-6">
+            <ChevronLeft size={30} className="mr-1" />
+            Kembali
+          </button>
+          <label className="block mb-4">
+            <span className="text-gray-700 font-medium">Pilih File Excel (.xlsx atau .xls)</span>
+            <input type="file" accept=".xlsx,.xls" onChange={handleFileChange} className="mt-2 block w-full border border-gray-300 rounded px-3 py-2" />
+          </label>
 
-        <button
-          type="submit"
-          disabled={loading}
-          className={`flex items-center gap-2 px-4 py-2 text-white rounded-md ${
-            loading ? "bg-gray-400" : "bg-green-600 hover:bg-green-700"
-          }`}
-        >
-          <Upload className="w-4 h-4" />
-          {loading ? "Mengupload..." : "Import Sekarang"}
-        </button>
-      </form>
+          <div className="flex justify-end">
+            <button type="submit" disabled={loading} className={`flex items-center gap-2 px-4 py-2 text-white text-sm rounded-md ${loading ? "bg-gray-400" : "bg-green-600 hover:bg-green-700"}`}>
+              <FileUp className="w-4 h-4" />
+              {loading ? "Mengupload..." : "Import Sekarang"}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

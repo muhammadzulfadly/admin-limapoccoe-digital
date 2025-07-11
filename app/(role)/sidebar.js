@@ -27,6 +27,7 @@ export default function AdminLayout({ children }) {
   const [roleLabel, setRoleLabel] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  // ✅ Ambil token & user role
   useEffect(() => {
     const token = localStorage.getItem("token");
     const expiresAt = localStorage.getItem("expiresAt");
@@ -46,6 +47,18 @@ export default function AdminLayout({ children }) {
     }
   }, []);
 
+  // ✅ Buka dropdown otomatis jika berada di /pengajuan-surat atau turunannya
+  const isPengajuanSuratActive = useMemo(() => {
+    if (!role) return false;
+    const prefix = role === "staff-desa" ? "/admin" : role === "kepala-desa" ? "/kepdes" : "";
+    return pathname.startsWith(`${prefix}/pengajuan-surat`);
+  }, [pathname, role]);
+
+  useEffect(() => {
+    setIsOpen(isPengajuanSuratActive);
+  }, [isPengajuanSuratActive]);
+
+  // ✅ Ambil jenis surat
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) return;
@@ -67,14 +80,14 @@ export default function AdminLayout({ children }) {
       });
   }, [router]);
 
-  // 🔁 Fungsi untuk prefix path berdasarkan role
+  // 🔁 Prefix berdasarkan role
   const getPath = (route) => {
     if (!role) return "#";
     const prefix = role === "staff-desa" ? "/admin" : role === "kepala-desa" ? "/kepdes" : "";
     return `${prefix}${route}`;
   };
 
-  // 🔁 Penyesuaian isActive untuk prefix role
+  // 🔁 Cek active path
   const isActive = (path) => {
     const fullPath = getPath(path);
     return pathname === fullPath || pathname.startsWith(fullPath + "/");
@@ -158,21 +171,29 @@ export default function AdminLayout({ children }) {
             </button>
           </div>
 
-                      {isOpen && (
-              <ul className="pl-7 mt-4 space-y-3 text-sm">
-                {loading ? (
-                  <li className="italic text-gray-500">Memuat...</li>
-                ) : (
-                  jenisSurat.map((item) => (
+          {isOpen && (
+            <ul className="pl-7 mt-4 space-y-3 text-sm">
+              {loading ? (
+                <li className="italic text-gray-500">Memuat...</li>
+              ) : (
+                jenisSurat.map((item) => {
+                  const suratPath = `/pengajuan-surat/${item.slug}`;
+                  return (
                     <li key={item.slug}>
-                      <Link href={getPath(`/pengajuan-surat/${item.slug}`)} className={`${isActive(`/pengajuan-surat/${item.slug}`) ? "text-green-500" : "text-black"} hover:text-green-600 block max-w-[120px] break-words`}>
+                      <Link
+                        href={getPath(suratPath)}
+                        className={`${
+                          isActive(suratPath) ? "text-green-500" : "text-black"
+                        } hover:text-green-600 block max-w-[120px] break-words`}
+                      >
                         {item.nama_surat}
                       </Link>
                     </li>
-                  ))
-                )}
-              </ul>
-            )}
+                  );
+                })
+              )}
+            </ul>
+          )}
         </li>
       </ul>
     </aside>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus, Search, SlidersHorizontal, Pencil, Trash2, Eye, EyeOff, Upload } from "lucide-react";
+import { Plus, Search, SlidersHorizontal, Pencil, Trash2, Eye, EyeOff, FileUp } from "lucide-react";
 import Link from "next/link";
 
 const maskNIK = (nik) => nik.slice(0, 6) + "XXXXXX";
@@ -87,7 +87,7 @@ export default function DashboardPendudukPage() {
             </Link>
             <Link href="/admin/data-penduduk/import">
               <button className="flex items-center gap-1 px-4 py-2 bg-green-600 text-white rounded-md text-sm hover:bg-green-700 transition">
-                <Upload className="w-5 h-5" strokeWidth={2.5} />
+                <FileUp className="w-5 h-5" strokeWidth={2.5} />
                 Import
               </button>
             </Link>

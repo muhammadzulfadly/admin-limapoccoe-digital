@@ -178,7 +178,7 @@ export default function DetailKeluargaPage() {
       <h1 className="text-xl font-bold mb-3">Data Kependudukan / {isEditMode ? "Edit Data Penduduk" : "Detail Data Penduduk"}</h1>
 
       {/* Informasi Rumah */}
-      <div className="bg-white rounded-lg p-6 max-w-6xl mx-auto">
+      <div className="bg-white rounded-lg p-6 mx-auto">
         <button type="button" onClick={() => router.back()} className="flex items-center text-base text-gray-500 mb-6">
           <ChevronLeft size={30} className="mr-1" />
           Kembali

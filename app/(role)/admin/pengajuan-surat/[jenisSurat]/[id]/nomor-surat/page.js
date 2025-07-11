@@ -27,7 +27,7 @@ export default function InputNomorSuratPage() {
 
         const data = await res.json();
         const found = data.jenis_surat?.find(
-          (item) => item.id.toString() === jenisSurat
+          (item) => item.slug.toString() === jenisSurat
         );
         if (!found) throw new Error("Surat tidak ditemukan");
         setSlug(found.slug);

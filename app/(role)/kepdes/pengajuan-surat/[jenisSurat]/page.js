@@ -59,7 +59,7 @@ export default function Page() {
         });
 
         const result = await res.json();
-        const surat = result?.jenis_surat?.find((s) => String(s.id) === jenisSurat);
+        const surat = result?.jenis_surat?.find((s) => String(s.slug) === jenisSurat);
         if (surat) {
           setJudul(surat.nama_surat);
           setSlug(surat.slug);

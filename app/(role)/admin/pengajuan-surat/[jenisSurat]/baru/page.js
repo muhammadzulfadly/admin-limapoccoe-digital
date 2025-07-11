@@ -46,7 +46,7 @@ export default function BuatSuratBaru() {
         });
         const suratData = await suratRes.json();
         const selected = suratData.jenis_surat?.find(
-          (item) => item.id.toString() === jenisSurat
+          (item) => item.slug.toString() === jenisSurat
         );
 
         if (!selected) throw new Error("Surat tidak ditemukan.");

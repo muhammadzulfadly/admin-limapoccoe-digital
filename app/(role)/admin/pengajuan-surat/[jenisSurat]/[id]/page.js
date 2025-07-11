@@ -22,7 +22,7 @@ export default function DetailAjuanSuratPage() {
         });
 
         const data = await res.json();
-        const found = data.jenis_surat?.find((item) => item.id.toString() === jenisSurat);
+        const found = data.jenis_surat?.find((item) => item.slug.toString() === jenisSurat);
         if (found) setSlug(found.slug);
       } catch (err) {
         console.error("⚠️ Gagal mengambil slug:", err);

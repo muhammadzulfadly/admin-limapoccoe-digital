@@ -37,7 +37,7 @@ export default function PreviewSuratPage() {
     })
       .then((res) => res.json())
       .then((data) => {
-        const found = data.jenis_surat?.find((item) => item.id.toString() === jenisSurat);
+        const found = data.jenis_surat?.find((item) => item.slug.toString() === jenisSurat);
         if (found) {
           setSlug(found.slug);
           setNamaSurat(found.nama_surat);
