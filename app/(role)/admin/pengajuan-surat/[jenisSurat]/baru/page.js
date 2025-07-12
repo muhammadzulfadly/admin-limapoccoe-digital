@@ -191,7 +191,6 @@ export default function BuatSuratBaru() {
           </div>
         </form>
       )}
-      
     </div>
   );
 }
