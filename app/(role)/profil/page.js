@@ -5,26 +5,15 @@ import { useRouter } from "next/navigation";
 import { User } from "lucide-react";
 
 import NamaLengkap from "@/components/form/NamaLengkap";
-import TempatLahir from "@/components/form/TempatLahir";
-import TanggalLahir from "@/components/form/TanggalLahir";
-import JenisKelamin from "@/components/form/JenisKelamin";
-import Alamat from "@/components/form/Alamat";
-import Pekerjaan from "@/components/form/Pekerjaan";
-import Dusun from "@/components/form/Dusun";
-import RtRw from "@/components/form/RtRw";
 
 export default function ProfilePage() {
   const router = useRouter();
   const [isEditable, setIsEditable] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [showSuccessLogout, setShowSuccessLogout] = useState(false);
+
   const [form, setForm] = useState({
-    nama: "",
-    tempat_lahir: "",
-    tanggal_lahir: "",
-    jenis_kelamin: "",
-    alamat: "",
-    pekerjaan: "",
-    dusun: "",
-    rt_rw: "",
+    name: "",
   });
 
   const fetchNamaFromLocal = () => {
@@ -32,49 +21,19 @@ export default function ProfilePage() {
       const userStr = localStorage.getItem("user");
       if (userStr) {
         const user = JSON.parse(userStr);
-        setForm((prev) => ({ ...prev, nama: user?.user?.name || "" }));
+        setForm((prev) => ({
+          ...prev,
+          name: user?.name || "",
+        }));
       }
     } catch (err) {
       console.error("Gagal mengambil nama dari localStorage:", err);
     }
   };
 
-  const fetchUser = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) throw new Error("Token tidak ditemukan");
-
-      const res = await fetch("/api/auth/profile", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!res.ok) throw new Error("Gagal mengambil data user");
-
-      const data = await res.json();
-      setForm({
-        nama: data.user?.name || "",
-        tempat_lahir: data.profile?.tempat_lahir || "",
-        tanggal_lahir: data.profile?.tanggal_lahir || "",
-        jenis_kelamin: data.profile?.jenis_kelamin || "",
-        alamat: data.profile?.alamat || "",
-        pekerjaan: data.profile?.pekerjaan || "",
-        dusun: data.profile?.dusun || "",
-        rt_rw: data.profile?.rt_rw || "",
-      });
-
-      localStorage.setItem("user", JSON.stringify(data));
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
   useEffect(() => {
     fetchNamaFromLocal();
-    fetchUser();
   }, []);
 
   const handleChange = ({ name, value }) => {
@@ -104,11 +63,14 @@ export default function ProfilePage() {
       localStorage.removeItem("token");
       localStorage.removeItem("expiresAt");
       window.dispatchEvent(new Event("storage"));
-      //pop up berhasil
-      router.push("/");
+
+      setShowLogoutConfirm(false);
+      setShowSuccessLogout(true);
+      setTimeout(() => {
+        router.push("/");
+      }, 1800);
     } catch (err) {
       console.error("Logout error:", err);
-      //pop up gagal
     }
   };
 
@@ -128,32 +90,68 @@ export default function ProfilePage() {
             <div className="w-12 h-12 rounded-full bg-[#2DB567] flex items-center justify-center">
               <User className="text-white" size={24} />
             </div>
-            <p className="font-semibold text-black">{form.nama}</p>
+            <p className="font-semibold text-black">{form.name}</p>
           </div>
-          <button onClick={handleToggleEdit} className="bg-[#2DB567] hover:bg-[#239653] text-white text-sm font-medium px-4 py-1.5 rounded">
+          <button
+            onClick={handleToggleEdit}
+            className="bg-[#2DB567] hover:bg-[#239653] text-white text-sm font-medium px-4 py-1.5 rounded"
+          >
             {isEditable ? "Simpan" : "Ubah Profil"}
           </button>
         </div>
 
         <form className="grid grid-cols-1 md:grid-cols-2 gap-6 text-black">
-          <NamaLengkap value={form.nama} onChange={handleChange} error={""} disabled={!isEditable} />
-          <TempatLahir value={form.tempat_lahir} onChange={handleChange} disabled={!isEditable} />
-          <TanggalLahir value={form.tanggal_lahir} onChange={handleChange} disabled={!isEditable} />
-          <JenisKelamin value={form.jenis_kelamin} onChange={handleChange} disabled={!isEditable} />
-          <Alamat value={form.alamat} onChange={handleChange} disabled={!isEditable} />
-          <Pekerjaan value={form.pekerjaan} onChange={handleChange} disabled={!isEditable} />
-          <Dusun value={form.dusun} onChange={handleChange} disabled={!isEditable} />
-          <RtRw value={form.rt_rw} onChange={handleChange} disabled={!isEditable} />
+          <NamaLengkap value={form.name} onChange={handleChange} error={""} disabled={true} />
         </form>
 
         {!isEditable && (
           <div className="flex justify-end mt-8">
-            <button onClick={handleLogout} className="bg-[#E74C3C] hover:bg-[#c0392b] text-white text-sm font-medium px-5 py-2 rounded">
+            <button
+              onClick={() => setShowLogoutConfirm(true)}
+              className="bg-[#E74C3C] hover:bg-[#c0392b] text-white text-sm font-medium px-5 py-2 rounded"
+            >
               Logout
             </button>
           </div>
         )}
       </div>
+
+      {/* Konfirmasi Logout */}
+      {showLogoutConfirm && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-lg px-6 py-8 w-[300px] text-center space-y-4">
+            <div className="w-12 h-12 mx-auto flex items-center justify-center border-2 border-red-500 rounded-full">
+              <span className="text-red-500 text-2xl font-bold">i</span>
+            </div>
+            <h3 className="text-xl font-bold text-black">Logout akun</h3>
+            <p className="text-gray-700 text-sm">Apakah anda yakin ingin logout?</p>
+            <div className="flex justify-between gap-4 mt-4">
+              <button
+                onClick={() => setShowLogoutConfirm(false)}
+                className="w-1/2 border border-red-500 text-red-500 py-1.5 rounded hover:bg-red-50"
+              >
+                kembali
+              </button>
+              <button
+                onClick={handleLogout}
+                className="w-1/2 bg-red-500 text-white py-1.5 rounded hover:bg-red-600"
+              >
+                Ya logout
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Pop-up berhasil logout */}
+      {showSuccessLogout && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-lg px-6 py-9 w-[280px] text-center animate-fade-in">
+            <h3 className="text-green-600 text-2xl font-bold mb-2">Berhasil Logout</h3>
+            <p className="text-sm text-gray-800">Anda sudah berhasil logout.</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

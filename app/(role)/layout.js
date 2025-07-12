@@ -52,7 +52,7 @@ export default function BerandaLayout({ children }) {
         {userName ? (
           <div className="flex items-center gap-4">
             <User size={18} className="text-white" />
-            <Link href="/profil" className="text-white text-sm hover:underline">
+            <Link href="/profil" className="text-white text-sm">
               {userName}
             </Link>
           </div>

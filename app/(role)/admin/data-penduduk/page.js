@@ -6,10 +6,31 @@ import Link from "next/link";
 
 const maskNIK = (nik) => nik.slice(0, 6) + "XXXXXX";
 
+function ConfirmDeletePopup({ onConfirm, onCancel }) {
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg p-6 w-[270px] text-center shadow-lg">
+        <h2 className="text-red-600 text-2xl font-bold mb-3">Hapus Data Penduduk</h2>
+        <p className="font-semibold mb-1">Apakah Anda yakin ingin menghapus data warga ini?</p>
+        <p className="text-sm text-gray-700 mb-6">Tindakan ini tidak dapat dibatalkan dan data akan dihapus secara permanen dari sistem.</p>
+        <div className="flex flex-col items-center gap-y-3">
+          <button onClick={onConfirm} className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
+            Ya, hapus sekarang
+          </button>
+          <button onClick={onCancel} className="text-gray-600 hover:underline">
+            Kembali
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function DashboardPendudukPage() {
   const [data, setData] = useState([]);
   const [visible, setVisible] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
+  const [deleteId, setDeleteId] = useState(null);
   const itemsPerPage = 10;
 
   const paginatedData = data.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
@@ -61,13 +82,18 @@ export default function DashboardPendudukPage() {
     }));
   };
 
-  const handleDelete = async (id) => {
-    const confirmDelete = confirm("Yakin ingin menghapus seluruh data keluarga ini?");
-    if (!confirmDelete) return;
+  const confirmDelete = (id) => {
+    setDeleteId(id);
+  };
 
+  const cancelDelete = () => {
+    setDeleteId(null);
+  };
+
+  const handleConfirmedDelete = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`/api/population/${id}`, {
+      const res = await fetch(`/api/population/${deleteId}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -83,10 +109,11 @@ export default function DashboardPendudukPage() {
         throw new Error(errMsg);
       }
 
-      alert("Data berhasil dihapus.");
-      setData((prev) => prev.filter((item) => item.id !== id));
+      setData((prev) => prev.filter((item) => item.id !== deleteId));
     } catch (err) {
-      alert(err.message);
+      console.error("Gagal menghapus data:", err.message);
+    } finally {
+      setDeleteId(null);
     }
   };
 
@@ -161,7 +188,7 @@ export default function DashboardPendudukPage() {
                           <Pencil className="w-4 h-4" />
                           <span className="text-black">Edit</span>
                         </Link>
-                        <button onClick={() => handleDelete(item.id)} className="flex flex-col items-center text-red-600 hover:underline" title="Hapus">
+                        <button onClick={() => confirmDelete(item.id)} className="flex flex-col items-center text-red-600 hover:underline" title="Hapus">
                           <Trash2 className="w-4 h-4" />
                           <span className="text-black">Hapus</span>
                         </button>
@@ -199,6 +226,8 @@ export default function DashboardPendudukPage() {
           </div>
         )}
       </div>
+
+      {deleteId && <ConfirmDeletePopup onConfirm={handleConfirmedDelete} onCancel={cancelDelete} />}
     </div>
   );
 }
