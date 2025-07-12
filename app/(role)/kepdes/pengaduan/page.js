@@ -22,7 +22,7 @@ export default function PengaduanPage() {
   useEffect(() => {
     const fetchAduan = async () => {
       const token = localStorage.getItem("token");
-      const res = await fetch("/api/admin/complaint", {
+      const res = await fetch("/api/complaint", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
