@@ -1,21 +1,10 @@
 "use client";
 
-import {
-  Ban,
-  Cog,
-  FileText,
-  BadgeCheck,
-  UserCheck,
-  Search,
-  SlidersHorizontal,
-  FileDown,
-  Plus,
-} from "lucide-react";
+import { Ban, Cog, FileText, BadgeCheck, UserCheck, Search, SlidersHorizontal, FileDown, Plus, ChevronsLeft, ChevronsRight, MoreHorizontal } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-// Pemetaan status backend ke label
 const statusMap = {
   approved: "Selesai",
   confirmed: "Butuh Konfirmasi",
@@ -43,9 +32,10 @@ export default function Page() {
   const [slug, setSlug] = useState(null);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
   const router = useRouter();
 
-  // Ambil metadata surat
   useEffect(() => {
     const fetchMetadata = async () => {
       try {
@@ -74,7 +64,6 @@ export default function Page() {
     if (jenisSurat) fetchMetadata();
   }, [jenisSurat]);
 
-  // Ambil data pengajuan
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -88,7 +77,8 @@ export default function Page() {
         });
 
         const result = await res.json();
-        setData(result.pengajuan_surat || []);
+        const sorted = (result.pengajuan_surat || []).sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        setData(sorted);
       } catch (err) {
         console.error("Gagal ambil data pengajuan:", err);
       } finally {
@@ -98,6 +88,28 @@ export default function Page() {
 
     fetchData();
   }, [slug]);
+
+  const totalPages = Math.ceil(data.length / itemsPerPage);
+  const paginatedData = data.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+  const getPaginationRange = () => {
+    const delta = 2;
+    const range = [];
+    const left = Math.max(2, currentPage - delta);
+    const right = Math.min(totalPages - 1, currentPage + delta);
+
+    range.push(1);
+    if (left > 2) range.push("...");
+
+    for (let i = left; i <= right; i++) {
+      range.push(i);
+    }
+
+    if (right < totalPages - 1) range.push("...");
+    if (totalPages > 1) range.push(totalPages);
+
+    return range;
+  };
 
   const ringkasan = {
     sedangProses: data.filter((d) => mapStatus(d.status) === "Sedang Proses").length,
@@ -120,18 +132,15 @@ export default function Page() {
       <div className="flex-1 bg-gray-100 p-8">
         <h1 className="text-xl font-bold mb-6">Dashboard Pengajuan Surat / {judul}</h1>
 
-        {/* Ringkasan */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
           <Stat label="Sedang Proses" value={ringkasan.sedangProses} icon={<Cog size={50} className="text-gray-500" />} />
           <Stat label="Butuh Konfirmasi" value={ringkasan.butuhKonfirmasi} icon={<BadgeCheck size={50} className="text-teal-600" />} />
           <Stat label="Ditolak" value={ringkasan.ditolak} icon={<Ban size={50} className="text-red-500" />} />
           <Stat label="Selesai" value={ringkasan.selesai} icon={<UserCheck size={50} className="text-green-500" />} />
-          <Stat label="Lihat Panduan" value="User Guide" icon={<FileText size={50} className="text-gray-800" />} />
         </div>
 
         <div className="border-t border-gray-400 mb-6 mt-6" />
 
-        {/* Header Table */}
         <div className="flex justify-between items-center mb-6">
           <Link href={`/admin/pengajuan-surat/${jenisSurat}/baru`}>
             <button className="flex items-center gap-1 px-4 py-2 bg-green-600 text-white rounded-md text-sm hover:bg-green-700 transition">
@@ -147,11 +156,11 @@ export default function Page() {
           </div>
         </div>
 
-        {/* Tabel Data */}
         <div className="overflow-x-auto">
           <table className="table-auto w-full border border-black">
             <thead>
               <tr className="bg-green-600 text-white">
+                <th className="border border-black p-2 w-[5%]">No.</th>
                 <th className="px-4 py-2 w-1/5 border border-black">Tanggal</th>
                 <th className="px-4 py-2 w-1/5 border border-black">Nama</th>
                 <th className="px-4 py-2 w-1/5 border border-black">Status</th>
@@ -166,30 +175,28 @@ export default function Page() {
                     Memuat data...
                   </td>
                 </tr>
-              ) : data.length === 0 ? (
+              ) : paginatedData.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="bg-white text-center text-black py-4">
                     Belum ada proses pengajuan surat
                   </td>
                 </tr>
               ) : (
-                data.map((item) => {
+                paginatedData.map((item, index) => {
                   const statusRaw = item.status;
                   const statusLabel = mapStatus(statusRaw);
                   const actionLabel = statusLabel === "Selesai" ? "Unduh" : "Buka";
 
                   return (
                     <tr key={item.id} className="bg-white text-center">
+                      <td className="border border-black p-2">{(currentPage - 1) * itemsPerPage + index + 1}</td>
                       <td className="px-4 py-2 border border-black">{formatTanggal(item.created_at)}</td>
                       <td className="px-4 py-2 border border-black">{item.user?.name || "-"}</td>
                       <td className={`px-4 py-2 border border-black ${statusStyle[statusLabel] || ""}`}>{statusLabel}</td>
                       <td className="px-4 py-2 border border-black">{item.surat?.nama_surat || judul}</td>
                       <td className="px-4 py-2 border border-black">
                         <div className="flex justify-center items-center gap-1">
-                          <button
-                            onClick={() => router.push(`/admin/pengajuan-surat/${jenisSurat}/${item.id}`)}
-                            className="flex items-center gap-1 text-sm text-black hover:underline"
-                          >
+                          <button onClick={() => router.push(`/admin/pengajuan-surat/${jenisSurat}/${item.id}`)} className="flex items-center gap-1 text-sm text-black hover:underline">
                             {iconStyle[actionLabel]}
                             <span>{actionLabel}</span>
                           </button>
@@ -202,6 +209,26 @@ export default function Page() {
             </tbody>
           </table>
         </div>
+
+        {totalPages > 1 && (
+          <div className="flex justify-center mt-6">
+            <div className="flex border border-slate-800 divide-x divide-slate-800 text-slate-800 text-sm rounded overflow-hidden">
+              <button onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))} disabled={currentPage === 1} className="px-3 py-1 disabled:opacity-50">
+                <ChevronsLeft className="w-4 h-4" />
+              </button>
+
+              {getPaginationRange().map((page, i) => (
+                <button key={i} onClick={() => typeof page === "number" && setCurrentPage(page)} disabled={typeof page !== "number"} className={`px-3 py-1 ${page === currentPage ? "bg-green-700 text-white" : "hover:bg-slate-100"}`}>
+                  {page === "..." ? <MoreHorizontal className="w-4 h-4" /> : page}
+                </button>
+              ))}
+
+              <button onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))} disabled={currentPage === totalPages} className="px-3 py-1 disabled:opacity-50">
+                <ChevronsRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

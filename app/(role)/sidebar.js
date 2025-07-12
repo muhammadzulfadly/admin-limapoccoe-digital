@@ -113,7 +113,7 @@ export default function AdminLayout({ children }) {
         {/* Beranda eksternal */}
         <li>
           <a
-            href="https://limapoccoedigital.id"
+            href="https://staging.limapoccoedigital.id"
             target="_blank"
             rel="noopener noreferrer"
             className="hover:text-green-600 flex items-center gap-2 text-black"

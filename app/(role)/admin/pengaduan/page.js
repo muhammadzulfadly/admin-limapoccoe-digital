@@ -21,6 +21,8 @@ const statusColor = {
 
 export default function PengaduanPage() {
   const [data, setData] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   useEffect(() => {
     const fetchAduan = async () => {
@@ -37,6 +39,27 @@ export default function PengaduanPage() {
 
     fetchAduan();
   }, []);
+
+  const totalPages = Math.ceil(data.length / itemsPerPage);
+
+  const getPaginationRange = () => {
+    const delta = 2;
+    const range = [];
+    const left = Math.max(2, currentPage - delta);
+    const right = Math.min(totalPages - 1, currentPage + delta);
+
+    range.push(1);
+    if (left > 2) range.push("...");
+
+    for (let i = left; i <= right; i++) {
+      range.push(i);
+    }
+
+    if (right < totalPages - 1) range.push("...");
+    if (totalPages > 1) range.push(totalPages);
+
+    return range;
+  };
 
   return (
     <div className="flex h-full">
@@ -68,6 +91,7 @@ export default function PengaduanPage() {
           <table className="w-full table-fixed border border-black">
             <thead>
               <tr className="bg-green-600 text-white">
+                <th className="border border-black p-2 w-[5%]">No.</th>
                 <th className="border border-black p-2 w-1/6">Tanggal</th>
                 <th className="border border-black p-2 w-1/6">Judul Pengaduan</th>
                 <th className="border border-black p-2 w-1/6">Kategori</th>
@@ -76,10 +100,11 @@ export default function PengaduanPage() {
               </tr>
             </thead>
             <tbody>
-              {data.map((item, index) => {
+              {data.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((item, index) => {
                 const readableStatus = statusMap[item.status] || item.status;
                 return (
                   <tr key={index} className="bg-white text-center">
+                    <td className="border border-black p-2">{(currentPage - 1) * itemsPerPage + index + 1}</td>
                     <td className="border border-black p-2">{new Date(item.created_at).toLocaleDateString("id-ID")}</td>
                     <td className="border border-black p-2">{item.title}</td>
                     <td className="border border-black p-2">{item.category}</td>
@@ -102,6 +127,26 @@ export default function PengaduanPage() {
               )}
             </tbody>
           </table>
+
+          {totalPages > 1 && (
+            <div className="flex justify-center mt-6">
+              <div className="flex border border-slate-800 divide-x divide-slate-800 text-slate-800 text-sm rounded overflow-hidden">
+                <button onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))} disabled={currentPage === 1} className="px-3 py-1 disabled:opacity-50">
+                  &laquo;
+                </button>
+
+                {getPaginationRange().map((page, i) => (
+                  <button key={i} onClick={() => typeof page === "number" && setCurrentPage(page)} disabled={typeof page !== "number"} className={`px-3 py-1 ${page === currentPage ? "bg-green-700 text-white" : "hover:bg-slate-100"}`}>
+                    {page === "..." ? "..." : page}
+                  </button>
+                ))}
+
+                <button onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))} disabled={currentPage === totalPages} className="px-3 py-1 disabled:opacity-50">
+                  &raquo;
+                </button>
+              </div>
+            </div>
+          )}
         </section>
       </div>
     </div>

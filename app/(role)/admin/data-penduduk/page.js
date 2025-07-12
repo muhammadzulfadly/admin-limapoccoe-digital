@@ -8,7 +8,31 @@ const maskNIK = (nik) => nik.slice(0, 6) + "XXXXXX";
 
 export default function DashboardPendudukPage() {
   const [data, setData] = useState([]);
-  const [visible, setVisible] = useState({}); // state untuk visibilitas per id
+  const [visible, setVisible] = useState({});
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
+  const paginatedData = data.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+  const getPaginationRange = () => {
+    const totalPages = Math.ceil(data.length / itemsPerPage);
+    const delta = 2;
+    const range = [];
+    const left = Math.max(2, currentPage - delta);
+    const right = Math.min(totalPages - 1, currentPage + delta);
+
+    range.push(1);
+    if (left > 2) range.push("...");
+
+    for (let i = left; i <= right; i++) {
+      range.push(i);
+    }
+
+    if (right < totalPages - 1) range.push("...");
+    if (totalPages > 1) range.push(totalPages);
+
+    return range;
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -50,20 +74,17 @@ export default function DashboardPendudukPage() {
         },
       });
 
-      // ✅ Jika response tidak OK
       if (!res.ok) {
         let errMsg = "Gagal menghapus data.";
         try {
           const errData = await res.json();
           errMsg = errData?.error || errMsg;
-        } catch (_) {
-          // body kosong, gunakan pesan default
-        }
+        } catch (_) {}
         throw new Error(errMsg);
       }
 
       alert("Data berhasil dihapus.");
-      setData((prev) => prev.filter((item) => item.id !== id)); // hapus dari state
+      setData((prev) => prev.filter((item) => item.id !== id));
     } catch (err) {
       alert(err.message);
     }
@@ -77,7 +98,6 @@ export default function DashboardPendudukPage() {
         </header>
 
         <div className="flex justify-between items-center mb-6">
-          {/* Grup tombol kiri */}
           <div className="flex items-center gap-2">
             <Link href="/admin/data-penduduk/tambah">
               <button className="flex items-center gap-1 px-4 py-2 bg-green-600 text-white rounded-md text-sm hover:bg-green-700 transition">
@@ -93,7 +113,6 @@ export default function DashboardPendudukPage() {
             </Link>
           </div>
 
-          {/* Input search kanan */}
           <div className="flex justify-end">
             <div className="flex items-center border border-gray-500 rounded-md px-4 py-2 bg-white text-gray-500 transition-colors w-72">
               <Search className="w-5 h-5 mr-2" />
@@ -116,11 +135,11 @@ export default function DashboardPendudukPage() {
               </tr>
             </thead>
             <tbody className="bg-white text-center">
-              {data.map((item, index) => {
+              {paginatedData.map((item, index) => {
                 const kepalaKeluarga = item.anggota.find((a) => a.hubungan === "Kepala Keluarga");
                 return (
                   <tr key={item.id} className="hover:bg-gray-100">
-                    <td className="border border-black p-2">{index + 1}</td>
+                    <td className="border border-black p-2">{(currentPage - 1) * itemsPerPage + index + 1}</td>
                     <td className="border border-black p-2">
                       <div className="flex items-center justify-center gap-2">
                         <span>{visible[item.id] ? item.nomor_kk : maskNIK(item.nomor_kk)}</span>
@@ -161,6 +180,24 @@ export default function DashboardPendudukPage() {
             </tbody>
           </table>
         </div>
+
+        {Math.ceil(data.length / itemsPerPage) > 1 && (
+          <div className="flex justify-center mt-4">
+            <div className="flex border border-slate-800 divide-x divide-slate-800 text-slate-800 text-sm rounded overflow-hidden">
+              <button onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))} disabled={currentPage === 1} className="px-3 py-1 disabled:opacity-50">
+                &laquo;
+              </button>
+              {getPaginationRange().map((page, i) => (
+                <button key={i} onClick={() => typeof page === "number" && setCurrentPage(page)} disabled={typeof page !== "number"} className={`px-3 py-1 ${page === currentPage ? "bg-green-700 text-white" : "hover:bg-slate-100"}`}>
+                  {page === "..." ? "..." : page}
+                </button>
+              ))}
+              <button onClick={() => setCurrentPage((p) => Math.min(p + 1, Math.ceil(data.length / itemsPerPage)))} disabled={currentPage === Math.ceil(data.length / itemsPerPage)} className="px-3 py-1 disabled:opacity-50">
+                &raquo;
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
