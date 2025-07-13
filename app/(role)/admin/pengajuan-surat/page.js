@@ -26,6 +26,35 @@ export default function DashboardPage() {
   const itemsPerPage = 5;
   const router = useRouter();
 
+  const [isDownloading, setIsDownloading] = useState(false);
+
+  const handleDownload = async (slug, id, namaSurat, namaPemohon) => {
+    try {
+      setIsDownloading(true);
+      const token = localStorage.getItem("token");
+      const res = await fetch(`/api/letter/${slug}/${id}/download`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!res.ok) throw new Error("Gagal mengunduh file");
+
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${namaSurat} - ${namaPemohon}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Gagal mengunduh file:", err);
+      alert("Gagal mengunduh file");
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
   const statusMap = {
     approved: "Selesai",
     confirmed: "Butuh Konfirmasi",
@@ -160,108 +189,132 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="flex h-full">
-      <div className="flex-1 p-8 space-y-8 bg-[#EDF0F5]">
-        <section>
-          <h2 className="font-semibold text-2xl mb-4">Pengajuan Surat</h2>
-
-          {loading ? (
-            <p className="text-gray-500 italic">Memuat data...</p>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-              <SedangProsesCard count={pengajuan.filter((x) => x.status === "processed").length} />
-              <ButuhKonfirmasiCard count={pengajuan.filter((x) => x.status === "confirmed").length} />
-              <DitolakCard count={pengajuan.filter((x) => x.status === "rejected").length} />
-              <SelesaiCard count={pengajuan.filter((x) => x.status === "approved").length} />
-            </div>
-          )}
-
-          <hr className="border-gray-300 border-y mt-6 mb-6" />
-
-          <div className="flex justify-end items-center mb-4">
-            <div className="flex items-center border border-gray-500 rounded-md px-4 py-2 bg-white text-gray-500">
-              <Search className="w-5 h-5 mr-2" />
-              <input type="text" placeholder="Cari" className="flex-1 outline-none text-sm bg-white placeholder-gray-500" value={searchGlobal} onChange={(e) => setSearchGlobal(e.target.value)} />
-              <button onClick={() => setShowFilter(!showFilter)}>
-                <SlidersHorizontal className={`w-4 h-4 ml-2 cursor-pointer transition-colors ${showFilter ? "text-green-600" : "text-gray-500"}`} />
-              </button>
-            </div>
+    <>
+      {isDownloading && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="bg-white px-6 py-4 rounded shadow-md text-center">
+            <p className="text-lg font-semibold mb-2">Mengunduh file...</p>
+            <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-green-600 mx-auto" />
           </div>
+        </div>
+      )}
 
-          {showFilter && (
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-              <input type="text" placeholder="Filter Tanggal" className="px-4 py-2 border border-gray-400 rounded-md text-sm" value={searchFilters.date} onChange={(e) => setSearchFilters({ ...searchFilters, date: e.target.value })} />
-              <input type="text" placeholder="Filter Nama" className="px-4 py-2 border border-gray-400 rounded-md text-sm" value={searchFilters.name} onChange={(e) => setSearchFilters({ ...searchFilters, name: e.target.value })} />
-              <input type="text" placeholder="Filter Jenis Surat" className="px-4 py-2 border border-gray-400 rounded-md text-sm" value={searchFilters.jenis} onChange={(e) => setSearchFilters({ ...searchFilters, jenis: e.target.value })} />
-              <input type="text" placeholder="Filter Status" className="px-4 py-2 border border-gray-400 rounded-md text-sm" value={searchFilters.status} onChange={(e) => setSearchFilters({ ...searchFilters, status: e.target.value })} />
-            </div>
-          )}
+      <div className="flex h-full">
+        <div className="flex-1 p-8 space-y-8 bg-[#EDF0F5]">
+          <section>
+            <h2 className="font-semibold text-2xl mb-4">Pengajuan Surat</h2>
 
-          <div className="overflow-x-auto">
-            <table className="table-auto w-full border border-black">
-              <thead>
-                <tr className="bg-green-600 text-white">
-                  <th className="border border-black p-2 w-[5%]">No.</th>
-                  <th className="px-4 py-2 w-1/5 border border-black">Tanggal</th>
-                  <th className="px-4 py-2 w-1/5 border border-black">Nama</th>
-                  <th className="px-4 py-2 w-1/5 border border-black">Jenis Surat</th>
-                  <th className="px-4 py-2 w-1/5 border border-black">Status</th>
-                  <th className="px-4 py-2 w-1/5 border border-black">Aksi</th>
-                </tr>
-              </thead>
-              <tbody>
-                {loading ? (
-                  <tr>
-                    <td colSpan={6} className="bg-white text-center text-black py-4 italic">
-                      Memuat data...
-                    </td>
-                  </tr>
-                ) : paginatedData.length === 0 ? (
-                  <tr>
-                    <td colSpan={6} className="bg-white text-center text-black py-4">
-                      Belum ada proses pengajuan surat
-                    </td>
-                  </tr>
-                ) : (
-                  paginatedData.map((item, index) => {
-                    const statusLabel = mapStatus(item.status);
-                    const actionLabel = statusLabel === "Selesai" ? "Unduh" : "Buka";
-                    return (
-                      <tr key={item.id} className="bg-white text-center">
-                        <td className="border border-black p-2">{(currentPage - 1) * itemsPerPage + index + 1}</td>
-                        <td className="px-4 py-2 border border-black">{formatTanggal(item.created_at)}</td>
-                        <td className="px-4 py-2 border border-black">{item.user?.name || "-"}</td>
-                        <td className="px-4 py-2 border border-black">{item.suratNama || "-"}</td>
-                        <td className={`px-4 py-2 border border-black ${statusStyle[statusLabel] || ""}`}>{statusLabel}</td>
-                        <td className="px-4 py-2 border border-black">
-                          <div className="flex justify-center items-center gap-1">
-                            <button onClick={() => router.push(`/admin/pengajuan-surat/${item.suratSlug}/${item.id}`)} className="flex items-center gap-1 text-sm text-black hover:underline">
-                              {iconStyle[actionLabel]}
-                              <span>{actionLabel}</span>
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })
-                )}
-              </tbody>
-            </table>
+            {loading ? (
+              <p className="text-gray-500 italic">Memuat data...</p>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <SedangProsesCard count={pengajuan.filter((x) => x.status === "processed").length} />
+                <ButuhKonfirmasiCard count={pengajuan.filter((x) => x.status === "confirmed").length} />
+                <DitolakCard count={pengajuan.filter((x) => x.status === "rejected").length} />
+                <SelesaiCard count={pengajuan.filter((x) => x.status === "approved").length} />
+              </div>
+            )}
 
-            <div className="flex justify-center mt-6">
-              <div className="flex border border-slate-800 divide-x divide-slate-800 text-slate-800 text-sm rounded overflow-hidden">
-                <button onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))} disabled={currentPage === 1} className="px-3 py-1 disabled:opacity-50">
-                  <ChevronsLeft className="w-4 h-4" />
-                </button>
-                {renderPageButtons()}
-                <button onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))} disabled={currentPage === totalPages} className="px-3 py-1 disabled:opacity-50">
-                  <ChevronsRight className="w-4 h-4" />
+            <hr className="border-gray-300 border-y mt-6 mb-6" />
+
+            <div className="flex justify-end items-center mb-4">
+              <div className="flex items-center border border-gray-500 rounded-md px-4 py-2 bg-white text-gray-500">
+                <Search className="w-5 h-5 mr-2" />
+                <input type="text" placeholder="Cari" className="flex-1 outline-none text-sm bg-white placeholder-gray-500" value={searchGlobal} onChange={(e) => setSearchGlobal(e.target.value)} />
+                <button onClick={() => setShowFilter(!showFilter)}>
+                  <SlidersHorizontal className={`w-4 h-4 ml-2 cursor-pointer transition-colors ${showFilter ? "text-green-600" : "text-gray-500"}`} />
                 </button>
               </div>
             </div>
-          </div>
-        </section>
+
+            {showFilter && (
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                <input type="text" placeholder="Filter Tanggal" className="px-4 py-2 border border-gray-400 rounded-md text-sm" value={searchFilters.date} onChange={(e) => setSearchFilters({ ...searchFilters, date: e.target.value })} />
+                <input type="text" placeholder="Filter Nama" className="px-4 py-2 border border-gray-400 rounded-md text-sm" value={searchFilters.name} onChange={(e) => setSearchFilters({ ...searchFilters, name: e.target.value })} />
+                <input
+                  type="text"
+                  placeholder="Filter Jenis Surat"
+                  className="px-4 py-2 border border-gray-400 rounded-md text-sm"
+                  value={searchFilters.jenis}
+                  onChange={(e) => setSearchFilters({ ...searchFilters, jenis: e.target.value })}
+                />
+                <input type="text" placeholder="Filter Status" className="px-4 py-2 border border-gray-400 rounded-md text-sm" value={searchFilters.status} onChange={(e) => setSearchFilters({ ...searchFilters, status: e.target.value })} />
+              </div>
+            )}
+
+            <div className="overflow-x-auto">
+              <table className="table-auto w-full border border-black">
+                <thead>
+                  <tr className="bg-green-600 text-white">
+                    <th className="border border-black p-2 w-[5%]">No.</th>
+                    <th className="px-4 py-2 w-1/5 border border-black">Tanggal</th>
+                    <th className="px-4 py-2 w-1/5 border border-black">Nama</th>
+                    <th className="px-4 py-2 w-1/5 border border-black">Jenis Surat</th>
+                    <th className="px-4 py-2 w-1/5 border border-black">Status</th>
+                    <th className="px-4 py-2 w-1/5 border border-black">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {loading ? (
+                    <tr>
+                      <td colSpan={6} className="bg-white text-center text-black py-4 italic">
+                        Memuat data...
+                      </td>
+                    </tr>
+                  ) : paginatedData.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} className="bg-white text-center text-black py-4">
+                        Belum ada proses pengajuan surat
+                      </td>
+                    </tr>
+                  ) : (
+                    paginatedData.map((item, index) => {
+                      const statusLabel = mapStatus(item.status);
+                      const actionLabel = statusLabel === "Selesai" ? "Unduh" : "Buka";
+                      return (
+                        <tr key={item.id} className="bg-white text-center">
+                          <td className="border border-black p-2">{(currentPage - 1) * itemsPerPage + index + 1}</td>
+                          <td className="px-4 py-2 border border-black">{formatTanggal(item.created_at)}</td>
+                          <td className="px-4 py-2 border border-black">{item.user?.name || "-"}</td>
+                          <td className="px-4 py-2 border border-black">{item.suratNama || "-"}</td>
+                          <td className={`px-4 py-2 border border-black ${statusStyle[statusLabel] || ""}`}>{statusLabel}</td>
+                          <td className="px-4 py-2 border border-black">
+                            <div className="flex justify-center items-center gap-1">
+                              {statusLabel === "Selesai" ? (
+                                <button onClick={() => handleDownload(item.suratSlug, item.id, item.suratNama, item.data_surat?.nama || item.user?.name)} className="flex items-center gap-1 text-sm text-black hover:underline">
+                                  {iconStyle["Unduh"]}
+                                  <span>Unduh</span>
+                                </button>
+                              ) : (
+                                <button onClick={() => router.push(`/admin/pengajuan-surat/${item.suratSlug}/${item.id}`)} className="flex items-center gap-1 text-sm text-black hover:underline">
+                                  {iconStyle["Buka"]}
+                                  <span>Buka</span>
+                                </button>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+
+              <div className="flex justify-center mt-6">
+                <div className="flex border border-slate-800 divide-x divide-slate-800 text-slate-800 text-sm rounded overflow-hidden">
+                  <button onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))} disabled={currentPage === 1} className="px-3 py-1 disabled:opacity-50">
+                    <ChevronsLeft className="w-4 h-4" />
+                  </button>
+                  {renderPageButtons()}
+                  <button onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))} disabled={currentPage === totalPages} className="px-3 py-1 disabled:opacity-50">
+                    <ChevronsRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

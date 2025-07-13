@@ -1,6 +1,6 @@
 "use client";
 
-import { Search, SlidersHorizontal, FileDown, ChevronsLeft, ChevronsRight } from "lucide-react";
+import { Search, SlidersHorizontal, ChevronsLeft, ChevronsRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import ButuhKonfirmasiCard from "@/components/card/ButuhKonfirmasi";
@@ -37,7 +37,6 @@ export default function DashboardPage() {
   };
 
   const iconStyle = {
-    Unduh: <FileDown className="text-green-600" />,
     Buka: <Search className="text-blue-600" />,
   };
 
@@ -219,7 +218,7 @@ export default function DashboardPage() {
                 ) : (
                   paginatedData.map((item, index) => {
                     const statusLabel = mapStatus(item.status);
-                    const actionLabel = statusLabel === "Selesai" ? "Unduh" : "Buka";
+                    const actionLabel = "Buka";
                     return (
                       <tr key={item.id} className="bg-white text-center">
                         <td className="border border-black p-2">{(currentPage - 1) * itemsPerPage + index + 1}</td>
@@ -229,7 +228,7 @@ export default function DashboardPage() {
                         <td className={`px-4 py-2 border border-black ${statusStyle[statusLabel] || ""}`}>{statusLabel}</td>
                         <td className="px-4 py-2 border border-black">
                           <div className="flex justify-center items-center gap-1">
-                            <button onClick={() => router.push(`/admin/pengajuan-surat/${item.suratSlug}/${item.id}`)} className="flex items-center gap-1 text-sm text-black hover:underline">
+                            <button onClick={() => router.push(`/kepdes/pengajuan-surat/${item.suratSlug}/${item.id}?status=${item.status}`)} className="flex items-center gap-1 text-sm text-black hover:underline">
                               {iconStyle[actionLabel]}
                               <span>{actionLabel}</span>
                             </button>

@@ -18,6 +18,6 @@ export default function Alamat({ value, onChange, error, disabled = false }) {
 }
 
 export function validateAlamat(value) {
-  if (!value || value.length < 10) return "Alamat minimal 10 karakter.";
+  if (!value || value.length < 1) return "Alamat harus di isi.";
   return "";
 }

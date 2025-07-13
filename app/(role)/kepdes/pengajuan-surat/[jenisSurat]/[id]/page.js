@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+
 
 export default function PreviewSuratPage() {
   const { jenisSurat, id } = useParams();
@@ -16,6 +18,10 @@ export default function PreviewSuratPage() {
   const [errorMsg, setErrorMsg] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
   const [showFailure, setShowFailure] = useState(false);
+  const [isIframeLoading, setIsIframeLoading] = useState(true);
+  const searchParams = useSearchParams();
+  const statusFromQuery = searchParams.get("status");
+  const [statusSurat, setStatusSurat] = useState(statusFromQuery || "");
 
   // Ambil token dari localStorage
   useEffect(() => {
@@ -73,16 +79,11 @@ export default function PreviewSuratPage() {
         },
         body: JSON.stringify({ status: "approved" }),
       });
-
       // if (!res.ok) {
       //   const errData = await res.json();
       //   throw new Error(errData.message || "Gagal menandatangani surat.");
       // }
-
-      setShowSuccess(true);
-      setTimeout(() => {
-        router.push(`/kepdes/pengajuan-surat/${jenisSurat}`);
-      }, 2000);
+      router.push(`/kepdes/pengajuan-surat/${jenisSurat}`);
     } catch (err) {
       setErrorMsg(err.message || "Terjadi kesalahan saat menandatangani.");
       setShowFailure(true);
@@ -106,14 +107,21 @@ export default function PreviewSuratPage() {
           </button>
         </h2>
 
-        <div className="bg-white rounded-lg shadow-md p-6 mx-auto">
-          <iframe src={`/api/letter/${slug}/${id}/preview?token=${token}`} width="100%" height="700" className="w-full border" title="Preview Surat" />
+        <div className="bg-white rounded-lg shadow-md p-6 mx-auto relative">
+          {isIframeLoading && (
+            <div className="absolute inset-0 bg-white bg-opacity-70 flex items-center justify-center z-10">
+              <p className="text-gray-600 font-medium">Memuat...</p>
+            </div>
+          )}
+          <iframe src={`/api/letter/${slug}/${id}/preview?token=${token}`} width="100%" height="700" className="w-full border" title="Preview Surat" onLoad={() => setIsIframeLoading(false)} />
         </div>
 
         <div className="flex justify-end mt-4">
-          <button onClick={handleProsesTandaTangan} disabled={processing} className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 disabled:opacity-60">
-            {processing ? "Memproses..." : "Tanda Tangani Surat"}
-          </button>
+          {statusSurat != "approved" && (
+            <button onClick={() => setShowSuccess(true)} disabled={processing} className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 disabled:opacity-60">
+              {processing ? "Memproses..." : "Tanda Tangani Surat"}
+            </button>
+          )}
         </div>
       </div>
 
@@ -123,7 +131,7 @@ export default function PreviewSuratPage() {
           <div className="bg-white rounded-lg shadow-md px-6 py-8 text-center max-w-sm mx-auto border border-gray-300">
             <h3 className="text-green-600 font-bold text-lg mb-3">Siap untuk Ditandatangani?</h3>
             <p className="text-gray-700 text-sm mb-4">Pastikan surat sudah dicek dan valid sebelum ditandatangani.</p>
-            <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm" onClick={() => setShowSuccess(false)}>
+            <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm" onClick={handleProsesTandaTangan}>
               Tanda Tangan
             </button>
             <p className="mt-4 text-xs text-gray-500 underline cursor-pointer" onClick={() => setShowSuccess(false)}>

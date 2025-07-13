@@ -16,7 +16,10 @@ export default function PreviewSuratPage() {
   const [processing, setProcessing] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
-  // Ambil token dari localStorage
+  const [showConfirmPopup, setShowConfirmPopup] = useState(false);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [showErrorPopup, setShowErrorPopup] = useState(false);
+
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
     if (!storedToken) {
@@ -26,7 +29,6 @@ export default function PreviewSuratPage() {
     setToken(storedToken);
   }, []);
 
-  // Ambil metadata surat
   useEffect(() => {
     if (!token || !jenisSurat) return;
 
@@ -50,7 +52,6 @@ export default function PreviewSuratPage() {
       });
   }, [token, jenisSurat]);
 
-  // Ambil detail pengajuan
   useEffect(() => {
     if (!slug || !id || !token) return;
 
@@ -65,8 +66,7 @@ export default function PreviewSuratPage() {
         const data = await res.json();
         const pengajuan = data.pengajuan_surat;
 
-        setNamaUser(pengajuan?.user?.name || "Pengguna");
-        setStatus(pengajuan?.status || "Belum diketahui");
+        setNamaUser(pengajuan?.data_surat?.nama || pengajuan?.user?.name || "Pengguna");
       } catch (err) {
         console.error("Gagal mengambil detail pengajuan:", err);
       } finally {
@@ -80,6 +80,7 @@ export default function PreviewSuratPage() {
   const handleProsesTandaTangan = async () => {
     setProcessing(true);
     setErrorMsg("");
+    setShowConfirmPopup(false);
 
     try {
       const res = await fetch(`/api/letter/${slug}/${id}/confirmed`, {
@@ -93,9 +94,13 @@ export default function PreviewSuratPage() {
 
       if (!res.ok) throw new Error("Gagal mengubah status.");
 
-      router.push(`/admin/pengajuan-surat/${jenisSurat}`);
+      setShowSuccessPopup(true);
+      setTimeout(() => {
+        router.push(`/admin/pengajuan-surat/${jenisSurat}`);
+      }, 1800);
     } catch (err) {
       setErrorMsg(err.message || "Terjadi kesalahan saat mengubah status.");
+      setShowErrorPopup(true);
     } finally {
       setProcessing(false);
     }
@@ -123,11 +128,50 @@ export default function PreviewSuratPage() {
         {errorMsg && <p className="text-red-600 text-sm mt-4 text-right">{errorMsg}</p>}
 
         <div className="flex justify-end mt-4">
-          <button onClick={handleProsesTandaTangan} disabled={processing} className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 disabled:opacity-60">
+          <button onClick={() => setShowConfirmPopup(true)} disabled={processing} className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 disabled:opacity-60">
             {processing ? "Memproses..." : "Proses tanda tangan"}
           </button>
         </div>
       </div>
+
+      {/* ✅ Popup Konfirmasi */}
+      {showConfirmPopup && (
+        <div className="fixed inset-0 bg-black bg-opacity-30 z-50 flex items-center justify-center">
+          <div className="bg-white rounded-lg shadow-md px-6 py-8 text-center max-w-sm mx-auto border">
+            <h3 className="text-green-600 font-bold text-lg mb-3">Konfirmasi!</h3>
+            <p className="text-gray-700 text-sm mb-4">Apakah Anda sudah memastikan bahwa semua data dalam surat ini sudah benar? Periksa kembali sebelum melanjutkan.</p>
+            <button onClick={handleProsesTandaTangan} className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm">
+              Ya, Sudah Benar
+            </button>
+            <p onClick={() => setShowConfirmPopup(false)} className="mt-4 text-sm text-gray-600 underline cursor-pointer">
+              Periksa Lagi
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* ✅ Popup Sukses */}
+      {showSuccessPopup && (
+        <div className="fixed inset-0 bg-black bg-opacity-30 z-50 flex items-center justify-center">
+          <div className="bg-white rounded-lg shadow-md px-6 py-8 text-center max-w-sm mx-auto border">
+            <h3 className="text-green-600 font-bold text-lg mb-3">Menunggu Tanda Tangan Kepala Desa !</h3>
+            <p className="text-gray-700 text-sm">Surat telah dikirim dan sedang menunggu tanda tangan dari Kepala Desa.</p>
+          </div>
+        </div>
+      )}
+
+      {/* ❌ Popup Gagal */}
+      {showErrorPopup && (
+        <div className="fixed inset-0 bg-black bg-opacity-30 z-50 flex items-center justify-center">
+          <div className="bg-white rounded-lg shadow-md px-6 py-8 text-center max-w-sm mx-auto border border-red-300">
+            <h3 className="text-red-600 font-bold text-lg mb-3">Gagal Memproses</h3>
+            <p className="text-gray-700 text-sm mb-4">{errorMsg || "Terjadi kesalahan saat mengubah status."}</p>
+            <button onClick={() => setShowErrorPopup(false)} className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm">
+              Tutup
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

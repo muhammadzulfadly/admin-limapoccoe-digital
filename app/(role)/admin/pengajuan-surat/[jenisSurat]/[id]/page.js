@@ -27,6 +27,8 @@ export default function DetailAjuanSuratPage() {
   const [showVerifikasiModal, setShowVerifikasiModal] = useState(false);
   const [alasan_penolakan, setAlasanPenolakan] = useState("");
   const [errorCatatan, setErrorCatatan] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedDataSurat, setEditedDataSurat] = useState({});
 
   const statusMap = {
     processed: "Sedang Proses",
@@ -70,8 +72,8 @@ export default function DetailAjuanSuratPage() {
         });
 
         const json = await res.json();
-        console.log(json);
         setAjuan(json.pengajuan_surat);
+        setEditedDataSurat(json.pengajuan_surat?.data_surat || {});
       } catch (err) {
         console.error("⚠️ Gagal fetch detail ajuan:", err);
       }
@@ -81,7 +83,11 @@ export default function DetailAjuanSuratPage() {
   }, [slug, id]);
 
   const handleTerima = () => {
-    router.push(`/admin/pengajuan-surat/${jenisSurat}/${id}/nomor-surat`);
+    if (ajuan?.nomor_surat) {
+      router.push(`/admin/pengajuan-surat/${jenisSurat}/${id}/preview`);
+    } else {
+      router.push(`/admin/pengajuan-surat/${jenisSurat}/${id}/nomor-surat`);
+    }
   };
 
   const handleTolak = async () => {
@@ -111,6 +117,32 @@ export default function DetailAjuanSuratPage() {
     }
   };
 
+  const handleUbahData = async () => {
+    if (isEditing) {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await fetch(`/api/letter/${slug}/${id}/update-data`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ data_surat: editedDataSurat }),
+        });
+
+        if (!res.ok) throw new Error("Gagal menyimpan perubahan.");
+      } catch (err) {
+        alert("Terjadi kesalahan saat menyimpan perubahan.");
+        return;
+      }
+    }
+    setIsEditing(!isEditing);
+  };
+
+  const handleEditChange = (key, value) => {
+    setEditedDataSurat((prev) => ({ ...prev, [key]: value }));
+  };
+
   const user = ajuan?.user;
   const profile = user?.profile_masyarakat;
 
@@ -121,7 +153,7 @@ export default function DetailAjuanSuratPage() {
           Detail Pengajuan Surat / {surat?.nama_surat} / {statusMap[ajuan?.status]}
         </h1>
         <div className="bg-white rounded-md shadow-sm p-8">
-          <button type="button" onClick={() => router.back()} className="flex items-center text-base text-gray-500 mb-6">
+          <button type="button" onClick={() => router.push(`/admin/pengajuan-surat/${jenisSurat}`)} className="flex items-center text-base text-gray-500 mb-6">
             <ChevronLeft size={30} className="mr-1" />
             Kembali
           </button>
@@ -130,7 +162,6 @@ export default function DetailAjuanSuratPage() {
             <p className="text-gray-600">🔄 Memuat data ajuan...</p>
           ) : (
             <>
-              {/* Informasi Pengajuan */}
               <div className="pt-4 mb-6">
                 <p className="text-xl font-semibold text-gray-700 mb-4">Informasi Pengajuan Surat</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -139,7 +170,7 @@ export default function DetailAjuanSuratPage() {
                 </div>
               </div>
 
-              {profile && ajuan?.status === "processed" && (
+              {profile && (
                 <>
                   <legend className="pt-4 text-xl font-semibold text-gray-700">Informasi Pribadi</legend>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 mb-6">
@@ -156,21 +187,19 @@ export default function DetailAjuanSuratPage() {
                 </>
               )}
 
-              {/* Informasi Tambahan */}
               {ajuan.data_surat && Object.keys(ajuan.data_surat).length > 0 && (
                 <div className="pt-4 mt-6">
                   <p className="text-xl font-semibold text-gray-700 mb-4">Informasi Tambahan</p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {Object.entries(ajuan.data_surat).map(([key, value]) => (
+                    {Object.entries(editedDataSurat).map(([key, value]) => (
                       <div key={key} className="capitalize">
-                        <NamaLengkap value={value} disabled label={key.replaceAll("_", " ")} />
+                        <NamaLengkap value={value} disabled={!isEditing} label={key.replaceAll("_", " ")} onChange={({ value }) => handleEditChange(key, value)} />
                       </div>
                     ))}
                   </div>
                 </div>
               )}
 
-              {/* Tombol Aksi */}
               <div className="mt-8 flex justify-end gap-3">
                 {profile && ajuan?.status === "processed" ? (
                   <>
@@ -182,11 +211,18 @@ export default function DetailAjuanSuratPage() {
                     </button>
                   </>
                 ) : (
-                  ajuan?.status === "processed" && (
-                    <button onClick={() => setShowVerifikasiModal(true)} className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
-                      Selanjutnya
-                    </button>
-                  )
+                  <>
+                    {ajuan.data_surat && ajuan?.status === "processed" && (
+                      <button onClick={handleUbahData} className="bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700">
+                        {isEditing ? "Simpan Perubahan" : "Ubah Data"}
+                      </button>
+                    )}
+                    {ajuan?.status === "processed" && (
+                      <button onClick={() => setShowVerifikasiModal(true)} className={`bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 ${isEditing ? "opacity-50 cursor-not-allowed" : ""}`} disabled={isEditing}>
+                        Selanjutnya
+                      </button>
+                    )}
+                  </>
                 )}
               </div>
             </>
@@ -194,7 +230,6 @@ export default function DetailAjuanSuratPage() {
         </div>
       </div>
 
-      {/* Modal Tolak Surat */}
       {showTolakModal && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
           <div className="bg-white rounded-lg p-6 max-w-sm w-full border-2 border-red-500">
@@ -222,7 +257,6 @@ export default function DetailAjuanSuratPage() {
         </div>
       )}
 
-      {/* Modal Verifikasi Pengajuan */}
       {showVerifikasiModal && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
           <div className="bg-white rounded-lg p-6 max-w-sm w-full border-2 border-green-500">

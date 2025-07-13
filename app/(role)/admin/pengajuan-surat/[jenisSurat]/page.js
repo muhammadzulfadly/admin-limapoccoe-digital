@@ -48,7 +48,7 @@ export default function Page() {
   const ditolak = data.filter((d) => mapStatus(d.status) === "Ditolak");
   const selesai = data.filter((d) => mapStatus(d.status) === "Selesai");
 
-  const handleDownload = async (id) => {
+  const handleDownload = async (id, namaSurat, namaPemohon) => {
     try {
       setIsDownloading(true);
       const token = localStorage.getItem("token");
@@ -60,7 +60,7 @@ export default function Page() {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `Surat-${id}.pdf`;
+      a.download = `${namaSurat} - ${namaPemohon}.pdf`;
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -235,7 +235,7 @@ export default function Page() {
                         <td className="px-4 py-2 border border-black">
                           <div className="flex justify-center items-center gap-1">
                             {statusLabel === "Selesai" ? (
-                              <button onClick={() => handleDownload(item.id)} className="flex items-center gap-1 text-sm text-black hover:underline">
+                              <button onClick={() => handleDownload(item.id, `${judul}`, `${item.data_surat?.nama || item.user?.name}`)} className="flex items-center gap-1 text-sm text-black hover:underline">
                                 {iconStyle["Unduh"]}
                                 <span>Unduh</span>
                               </button>

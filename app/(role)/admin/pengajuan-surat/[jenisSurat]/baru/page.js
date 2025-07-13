@@ -7,13 +7,16 @@ import { ChevronLeft } from "lucide-react";
 import {
   Agama,
   Alamat,
+  validateAlamat,
   AnakKe,
   Bangsa,
   Bpjs,
   DeskripsiPengaduan,
   Dusun,
+  validateDusun,
   InputField,
   JenisKelamin,
+  validateGender,
   JudulPengaduan,
   JumlahTanggunganOrtu,
   validateTanggungan,
@@ -27,6 +30,7 @@ import {
   validateNama,
   NamaUsaha,
   Nik,
+  validateNik,
   NomorDokumen,
   NomorRumah,
   NomorTelepon,
@@ -38,32 +42,42 @@ import {
   PukulKelahiran,
   Respon,
   RtRw,
+  validateRtRw,
   Saksi,
   StatusHubungan,
   StatusPerkawinan,
   Tanggal,
   TanggalLahir,
+  validateTanggal,
   TempatLahir,
+  validateTempat,
   Username,
 } from "@/components/form";
 
+Nik.validate = validateNik;
 NamaLengkap.validate = validateNama;
+TempatLahir.validate = validateTempat;
+TanggalLahir.validate = validateTanggal;
+JenisKelamin.validate = validateGender;
+Alamat.validate = validateAlamat;
 Pekerjaan.validate = validatePekerjaan;
+Dusun.validate = validateDusun;
+RtRw.validate = validateRtRw;
 JumlahTanggunganOrtu.validate = validateTanggungan;
 
 const formatTanggalToSubmit = (val) => {
   if (!val) return "";
   const [y, m, d] = val.split("-");
-  return `${d}/${m}/${y}`;
+  return `${d}-${m}-${y}`;
 };
 
 const formSchemaBySuratKode = {
   SKTM: [
     { type: "separator", label: "Informasi Orang Tua" },
     { name: "nama_ayah", Component: NamaLengkap, props: { label: "Nama Ayah" } },
-    { name: "pekerjaan_ayah", Component: NamaLengkap, props: { label: "Pekerjaan Ayah" } },
+    { name: "pekerjaan_ayah", Component: Pekerjaan, props: { label: "Pekerjaan Ayah" } },
     { name: "nama_ibu", Component: NamaLengkap, props: { label: "Nama Ibu" } },
-    { name: "pekerjaan_ibu", Component: NamaLengkap, props: { label: "Pekerjaan Ibu" } },
+    { name: "pekerjaan_ibu", Component: Pekerjaan, props: { label: "Pekerjaan Ibu" } },
     { name: "jumlah_tanggungan", Component: JumlahTanggunganOrtu },
   ],
   SKU: [
@@ -79,7 +93,6 @@ export default function BuatSuratBaru() {
 
   const [formKey, setFormKey] = useState(null);
   const [formData, setFormData] = useState({});
-  const [lampiran, setLampiran] = useState(null);
   const [surat, setSurat] = useState(null);
   const [suratSlug, setSuratSlug] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -125,9 +138,21 @@ export default function BuatSuratBaru() {
   const handleChange = ({ name, value }) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
 
-    const field = fields.find((f) => f.name === name);
-    if (field?.Component?.validate) {
-      const error = field.Component.validate(value);
+    // Coba cari di semua komponen yang ada validatornya
+    const validators = {
+      nik: Nik.validate,
+      nama: NamaLengkap.validate,
+      tempat_lahir: TempatLahir.validate,
+      tanggal_lahir: TanggalLahir.validate,
+      jenis_kelamin: JenisKelamin.validate,
+      alamat: Alamat.validate,
+      pekerjaan: Pekerjaan.validate,
+      dusun: Dusun.validate,
+      rt_rw: RtRw.validate,
+    };
+
+    if (validators[name]) {
+      const error = validators[name](value);
       setErrors((prev) => ({ ...prev, [name]: error }));
     } else {
       setErrors((prev) => ({ ...prev, [name]: "" }));
@@ -137,6 +162,33 @@ export default function BuatSuratBaru() {
   const validate = () => {
     const newErrors = {};
 
+    // Validasi Informasi Pribadi (manual)
+    const personalFields = [
+      { name: "nik", required: true },
+      { name: "nama", required: true, validate: NamaLengkap.validate },
+      { name: "tempat_lahir", required: true, validate: TempatLahir.validate },
+      { name: "tanggal_lahir", required: true },
+      { name: "jenis_kelamin", required: true },
+      { name: "alamat", required: true },
+      { name: "pekerjaan", required: true, validate: Pekerjaan.validate },
+      { name: "dusun", required: true },
+    ];
+
+    personalFields.forEach(({ name, required, validate }) => {
+      const value = formData[name];
+
+      if (required && (!value || value.toString().trim() === "")) {
+        newErrors[name] = "Form tidak boleh kosong.";
+        return;
+      }
+
+      if (typeof validate === "function") {
+        const errorMsg = validate(value);
+        if (errorMsg) newErrors[name] = errorMsg;
+      }
+    });
+
+    // Validasi field tambahan (berdasarkan kode surat)
     dataFields.forEach(({ name, Component }) => {
       const value = formData[name];
       if (!value || value.toString().trim() === "") {
@@ -176,8 +228,6 @@ export default function BuatSuratBaru() {
       }
     });
 
-    if (lampiran) data.append("lampiran", lampiran);
-
     try {
       const res = await fetch(`/api/letter/${suratSlug}`, {
         method: "POST",
@@ -196,19 +246,20 @@ export default function BuatSuratBaru() {
         return;
       }
 
-      if (!res.ok) {
-        console.error("Respon Gagal:", result);
+      if (!res.ok || !result?.ajuan_surat?.id) {
+        console.error("❌ Gagal submit atau ID tidak ditemukan:", result);
         setShowConfirm(false);
         setShowFailed(true);
         return;
       }
 
+      const id = result.ajuan_surat.id;
       setShowConfirm(false);
-      setTimeout(() => {
-        router.push(`/admin/pengajuan-surat/${jenisSurat}`);
-      }, 1800);
+
+      // ✅ Redirect ke halaman nomor-surat
+      router.push(`/admin/pengajuan-surat/${jenisSurat}/${id}/nomor-surat`);
     } catch (err) {
-      console.error("Gagal submit:", err);
+      console.error("⚠️ Gagal submit:", err);
       setShowConfirm(false);
       setShowFailed(true);
     }
@@ -234,15 +285,15 @@ export default function BuatSuratBaru() {
             <form onSubmit={handleSubmit} className="space-y-6">
               <legend className="text-xl text-start font-semibold text-gray-700">Informasi Pribadi</legend>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
-                <Nik value={formData.nik ?? ""} onChange={handleChange} name="nik" />
-                <NamaLengkap value={formData.nama ?? ""} onChange={handleChange} name="nama" />
-                <TempatLahir value={formData.tempat_lahir ?? ""} onChange={handleChange} name="tempat_lahir" />
-                <TanggalLahir value={formData.tanggal_lahir ?? ""} onChange={handleChange} name="tanggal_lahir" />
-                <JenisKelamin value={formData.jenis_kelamin ?? ""} onChange={handleChange} name="jenis_kelamin" />
-                <Alamat value={formData.alamat ?? ""} onChange={handleChange} name="alamat" />
-                <Pekerjaan value={formData.pekerjaan ?? ""} onChange={handleChange} name="pekerjaan" />
-                <Dusun value={formData.dusun ?? ""} onChange={handleChange} name="dusun" />
-                <RtRw value={formData.rt_rw ?? ""} onChange={handleChange} name="rt_rw" />
+                <Nik value={formData.nik ?? ""} onChange={handleChange} name="nik" error={errors.nik} />
+                <NamaLengkap value={formData.nama ?? ""} onChange={handleChange} name="nama" error={errors.nama} />
+                <TempatLahir value={formData.tempat_lahir ?? ""} onChange={handleChange} name="tempat_lahir" error={errors.tempat_lahir} />
+                <TanggalLahir value={formData.tanggal_lahir ?? ""} onChange={handleChange} name="tanggal_lahir" error={errors.tanggal_lahir} />
+                <JenisKelamin value={formData.jenis_kelamin ?? ""} onChange={handleChange} name="jenis_kelamin" error={errors.jenis_kelamin} />
+                <Alamat value={formData.alamat ?? ""} onChange={handleChange} name="alamat" error={errors.alamat} />
+                <Pekerjaan value={formData.pekerjaan ?? ""} onChange={handleChange} name="pekerjaan" error={errors.pekerjaan} />
+                <Dusun value={formData.dusun ?? ""} onChange={handleChange} name="dusun" error={errors.dusun} />
+                <RtRw value={formData.rt_rw ?? ""} onChange={handleChange} name="rt_rw" error={errors.rt_rw} />
               </div>
               <div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
