@@ -57,7 +57,6 @@ const formatTanggalToSubmit = (val) => {
   return `${d}/${m}/${y}`;
 };
 
-
 const formSchemaBySuratKode = {
   SKTM: [
     { type: "separator", label: "Informasi Orang Tua" },
@@ -87,6 +86,7 @@ export default function BuatSuratBaru() {
   const [errors, setErrors] = useState({});
   const [showConfirm, setShowConfirm] = useState(false);
   const [showFailed, setShowFailed] = useState(false);
+  const [tooManyRequestsMessage, setTooManyRequestsMessage] = useState("");
 
   // Fetch surat info
   useEffect(() => {
@@ -189,6 +189,13 @@ export default function BuatSuratBaru() {
       });
 
       const result = await res.json();
+
+      if (res.status === 429) {
+        setShowConfirm(false);
+        setTooManyRequestsMessage(result.error || "Terlalu banyak permintaan. Silakan coba lagi dalam 2 menit");
+        return;
+      }
+
       if (!res.ok) {
         console.error("Respon Gagal:", result);
         setShowConfirm(false);
@@ -284,6 +291,18 @@ export default function BuatSuratBaru() {
             <p className="text-sm text-gray-800 leading-relaxed mb-4">Maaf, pengajuan surat Anda tidak berhasil diproses. Silakan coba lagi nanti atau periksa koneksi Anda.</p>
             <button onClick={() => setShowFailed(false)} className="bg-red-500 hover:bg-red-600 text-white w-full py-2 rounded font-semibold">
               Kembali
+            </button>
+          </div>
+        </div>
+      )}
+
+      {tooManyRequestsMessage && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-lg px-6 py-9 w-[300px] text-center animate-fade-in">
+            <h3 className="text-yellow-600 text-xl font-bold mb-2">Terlalu Banyak Permintaan!</h3>
+            <p className="text-sm text-gray-800 leading-relaxed mb-4">{tooManyRequestsMessage}</p>
+            <button onClick={() => setTooManyRequestsMessage("")} className="bg-yellow-500 hover:bg-yellow-600 text-white w-full py-2 rounded font-semibold">
+              Tutup
             </button>
           </div>
         </div>
