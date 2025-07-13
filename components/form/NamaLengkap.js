@@ -1,13 +1,20 @@
 "use client";
 import InputField from "./InputField";
 
-export default function NamaLengkap({ value, onChange, error, disabled = false }) {
+export default function NamaLengkap({ 
+  label = "Nama Lengkap", // default
+  name = "name", 
+  value, 
+  onChange, 
+  error, 
+  disabled = false 
+}) {
   return (
     <InputField
-      label="Nama Lengkap"
-      name="name"
+      label={label}
+      name={name}
       value={value}
-      onChange={(e) => onChange({ name: "name", value: e.target.value })}
+      onChange={(e) => onChange({ name, value: e.target.value })}
       error={error}
       disabled={disabled}
     />

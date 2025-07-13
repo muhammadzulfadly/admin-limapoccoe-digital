@@ -73,10 +73,10 @@ export default function PreviewSuratPage() {
         body: JSON.stringify({ status: "approved" }),
       });
 
-      if (!res.ok) {
-        const errData = await res.json();
-        throw new Error(errData.message || "Gagal menandatangani surat.");
-      }
+      // if (!res.ok) {
+      //   const errData = await res.json();
+      //   throw new Error(errData.message || "Gagal menandatangani surat.");
+      // }
 
       router.push(`/kepdes/pengajuan-surat/${jenisSurat}`);
     } catch (err) {

@@ -3,9 +3,14 @@ import { NextResponse } from "next/server";
 export async function PUT(request, { params }) {
   const { slug, id } = params;
   const token = request.headers.get("authorization");
-  const body = await request.text(); // pakai text() agar transparan ke backend
 
   try {
+    // Ambil body dalam bentuk JSON
+    const bodyJson = await request.json();
+
+    // Debug log (opsional): pastikan alasan_penolakan ada
+    console.log("📦 Data dikirim ke backend:", bodyJson);
+
     const response = await fetch(`${process.env.API_SECRET_URL}/api/surat/${slug}/pengajuan/${id}/rejected`, {
       method: "PUT",
       headers: {
@@ -13,7 +18,7 @@ export async function PUT(request, { params }) {
         "Content-Type": "application/json",
         Accept: "application/json",
       },
-      body,
+      body: JSON.stringify(bodyJson), // langsung teruskan seluruh payload
     });
 
     const result = await response.json();
@@ -22,6 +27,7 @@ export async function PUT(request, { params }) {
       status: response.status,
       headers: { "Content-Type": "application/json" },
     });
+
   } catch (err) {
     console.error("❌ Gagal reject surat:", err);
     return new NextResponse(JSON.stringify({ error: "Internal Server Error" }), { status: 500 });

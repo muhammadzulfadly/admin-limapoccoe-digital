@@ -32,11 +32,45 @@ export default function DashboardPendudukPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [deleteId, setDeleteId] = useState(null);
   const itemsPerPage = 10;
+  const [showFilter, setShowFilter] = useState(false);
+  const [searchGlobal, setSearchGlobal] = useState("");
+  const [searchFilters, setSearchFilters] = useState({
+    nik: "",
+    kepalaKeluarga: "",
+    dusun: "",
+    jumlah: "",
+  });
 
-  const paginatedData = data.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  const handleFilterChange = (key, value) => {
+    setSearchFilters((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+    setCurrentPage(1);
+  };
+
+  const filteredData = data.filter((item) => {
+    const kepalaKeluarga = item.anggota.find((a) => a.hubungan === "Kepala Keluarga")?.nama_lengkap || "";
+    const dusun = item.rumah?.dusun || "";
+    const jumlah = `${item.jumlah_anggota}`;
+    const nomorKK = item.nomor_kk;
+
+    const matchesGlobalSearch =
+      nomorKK.toLowerCase().includes(searchGlobal.toLowerCase()) || kepalaKeluarga.toLowerCase().includes(searchGlobal.toLowerCase()) || dusun.toLowerCase().includes(searchGlobal.toLowerCase()) || jumlah.includes(searchGlobal);
+
+    const matchesFilters =
+      nomorKK.toLowerCase().includes(searchFilters.nik.toLowerCase()) &&
+      kepalaKeluarga.toLowerCase().includes(searchFilters.kepalaKeluarga.toLowerCase()) &&
+      dusun.toLowerCase().includes(searchFilters.dusun.toLowerCase()) &&
+      jumlah.includes(searchFilters.jumlah);
+
+    return matchesGlobalSearch && matchesFilters;
+  });
+
+  const paginatedData = filteredData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   const getPaginationRange = () => {
-    const totalPages = Math.ceil(data.length / itemsPerPage);
+    const totalPages = Math.ceil(filteredData.length / itemsPerPage);
     const delta = 2;
     const range = [];
     const left = Math.max(2, currentPage - delta);
@@ -140,14 +174,29 @@ export default function DashboardPendudukPage() {
             </Link>
           </div>
 
-          <div className="flex justify-end">
-            <div className="flex items-center border border-gray-500 rounded-md px-4 py-2 bg-white text-gray-500 transition-colors w-72">
-              <Search className="w-5 h-5 mr-2" />
-              <input type="text" placeholder="Masukkan NIK Penduduk" className="flex-1 outline-none text-sm bg-white placeholder-gray-500" />
-              <SlidersHorizontal className="w-4 h-4 ml-2" />
-            </div>
+          <div className="flex items-center border border-gray-500 rounded-md px-4 py-2 bg-white text-gray-500">
+            <Search className="w-5 h-5 mr-2" />
+            <input type="text" placeholder="Cari" className="flex-1 outline-none text-sm bg-white placeholder-gray-500" value={searchGlobal} onChange={(e) => setSearchGlobal(e.target.value)} />
+            <button onClick={() => setShowFilter(!showFilter)}>
+              <SlidersHorizontal className={`w-4 h-4 ml-2 cursor-pointer transition-colors ${showFilter ? "text-green-600" : "text-gray-500"}`} />
+            </button>
           </div>
         </div>
+
+        {showFilter && (
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <input type="text" placeholder="Filter Nomor KK" className="px-4 py-2 border border-gray-400 rounded-md text-sm" value={searchFilters.nik} onChange={(e) => handleFilterChange("nik", e.target.value)} />
+            <input
+              type="text"
+              placeholder="Filter Nama Kepala Keluarga"
+              className="px-4 py-2 border border-gray-400 rounded-md text-sm"
+              value={searchFilters.kepalaKeluarga}
+              onChange={(e) => handleFilterChange("kepalaKeluarga", e.target.value)}
+            />
+            <input type="text" placeholder="Filter Dusun" className="px-4 py-2 border border-gray-400 rounded-md text-sm" value={searchFilters.dusun} onChange={(e) => handleFilterChange("dusun", e.target.value)} />
+            <input type="text" placeholder="Filter Jumlah Anggota" className="px-4 py-2 border border-gray-400 rounded-md text-sm" value={searchFilters.jumlah} onChange={(e) => handleFilterChange("jumlah", e.target.value)} />
+          </div>
+        )}
 
         <div className="overflow-x-auto mb-10">
           <table className="w-full table-fixed border border-black text-sm">
@@ -162,42 +211,43 @@ export default function DashboardPendudukPage() {
               </tr>
             </thead>
             <tbody className="bg-white text-center">
-              {paginatedData.map((item, index) => {
-                const kepalaKeluarga = item.anggota.find((a) => a.hubungan === "Kepala Keluarga");
-                return (
-                  <tr key={item.id} className="hover:bg-gray-100">
-                    <td className="border border-black p-2">{(currentPage - 1) * itemsPerPage + index + 1}</td>
-                    <td className="border border-black p-2">
-                      <div className="flex items-center justify-center gap-2">
-                        <span>{visible[item.id] ? item.nomor_kk : maskNIK(item.nomor_kk)}</span>
-                        <button onClick={() => toggleVisibility(item.id)} className="text-gray-600 hover:text-gray-800" title="Tampilkan/Sembunyikan">
-                          {visible[item.id] ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                        </button>
-                      </div>
-                    </td>
-                    <td className="border border-black p-2">{kepalaKeluarga?.nama_lengkap || "-"}</td>
-                    <td className="border border-black p-2">{item.rumah?.dusun || "-"}</td>
-                    <td className="border border-black p-2">{item.jumlah_anggota} Orang</td>
-                    <td className="border border-black p-2">
-                      <div className="flex justify-center gap-4 text-xs">
-                        <Link href={`/admin/data-penduduk/${item.id}`} className="flex flex-col items-center text-blue-600 hover:underline" title="Lihat">
-                          <Eye className="w-4 h-4" />
-                          <span className="text-black">Lihat</span>
-                        </Link>
-                        <Link href={`/admin/data-penduduk/${item.id}?mode=edit`} className="flex flex-col items-center text-orange-500 hover:underline" title="Edit">
-                          <Pencil className="w-4 h-4" />
-                          <span className="text-black">Edit</span>
-                        </Link>
-                        <button onClick={() => confirmDelete(item.id)} className="flex flex-col items-center text-red-600 hover:underline" title="Hapus">
-                          <Trash2 className="w-4 h-4" />
-                          <span className="text-black">Hapus</span>
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-              {data.length === 0 && (
+              {paginatedData.length > 0 ? (
+                paginatedData.map((item, index) => {
+                  const kepalaKeluarga = item.anggota.find((a) => a.hubungan === "Kepala Keluarga");
+                  return (
+                    <tr key={item.id} className="hover:bg-gray-100">
+                      <td className="border border-black p-2">{(currentPage - 1) * itemsPerPage + index + 1}</td>
+                      <td className="border border-black p-2">
+                        <div className="flex items-center justify-center gap-2">
+                          <span>{visible[item.id] ? item.nomor_kk : maskNIK(item.nomor_kk)}</span>
+                          <button onClick={() => toggleVisibility(item.id)} className="text-gray-600 hover:text-gray-800" title="Tampilkan/Sembunyikan">
+                            {visible[item.id] ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                          </button>
+                        </div>
+                      </td>
+                      <td className="border border-black p-2">{kepalaKeluarga?.nama_lengkap || "-"}</td>
+                      <td className="border border-black p-2">{item.rumah?.dusun || "-"}</td>
+                      <td className="border border-black p-2">{item.jumlah_anggota} Orang</td>
+                      <td className="border border-black p-2">
+                        <div className="flex justify-center gap-4 text-xs">
+                          <Link href={`/admin/data-penduduk/${item.id}`} className="flex flex-col items-center text-blue-600 hover:underline" title="Lihat">
+                            <Eye className="w-4 h-4" />
+                            <span className="text-black">Lihat</span>
+                          </Link>
+                          <Link href={`/admin/data-penduduk/${item.id}?mode=edit`} className="flex flex-col items-center text-orange-500 hover:underline" title="Edit">
+                            <Pencil className="w-4 h-4" />
+                            <span className="text-black">Edit</span>
+                          </Link>
+                          <button onClick={() => confirmDelete(item.id)} className="flex flex-col items-center text-red-600 hover:underline" title="Hapus">
+                            <Trash2 className="w-4 h-4" />
+                            <span className="text-black">Hapus</span>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
+              ) : (
                 <tr>
                   <td colSpan={6} className="py-4 text-black bg-white text-center">
                     Tidak ada data penduduk.
@@ -208,23 +258,21 @@ export default function DashboardPendudukPage() {
           </table>
         </div>
 
-        {Math.ceil(data.length / itemsPerPage) > 1 && (
-          <div className="flex justify-center mt-4">
-            <div className="flex border border-slate-800 divide-x divide-slate-800 text-slate-800 text-sm rounded overflow-hidden">
-              <button onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))} disabled={currentPage === 1} className="px-3 py-1 disabled:opacity-50">
-                &laquo;
+        <div className="flex justify-center mt-4">
+          <div className="flex border border-slate-800 divide-x divide-slate-800 text-slate-800 text-sm rounded overflow-hidden">
+            <button onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))} disabled={currentPage === 1} className="px-3 py-1 disabled:opacity-50">
+              &laquo;
+            </button>
+            {getPaginationRange().map((page, i) => (
+              <button key={i} onClick={() => typeof page === "number" && setCurrentPage(page)} disabled={typeof page !== "number"} className={`px-3 py-1 ${page === currentPage ? "bg-green-700 text-white" : "hover:bg-slate-100"}`}>
+                {page === "..." ? "..." : page}
               </button>
-              {getPaginationRange().map((page, i) => (
-                <button key={i} onClick={() => typeof page === "number" && setCurrentPage(page)} disabled={typeof page !== "number"} className={`px-3 py-1 ${page === currentPage ? "bg-green-700 text-white" : "hover:bg-slate-100"}`}>
-                  {page === "..." ? "..." : page}
-                </button>
-              ))}
-              <button onClick={() => setCurrentPage((p) => Math.min(p + 1, Math.ceil(data.length / itemsPerPage)))} disabled={currentPage === Math.ceil(data.length / itemsPerPage)} className="px-3 py-1 disabled:opacity-50">
-                &raquo;
-              </button>
-            </div>
+            ))}
+            <button onClick={() => setCurrentPage((p) => Math.min(p + 1, Math.ceil(filteredData.length / itemsPerPage)))} disabled={currentPage === Math.ceil(filteredData.length / itemsPerPage)} className="px-3 py-1 disabled:opacity-50">
+              &raquo;
+            </button>
           </div>
-        )}
+        </div>
       </div>
 
       {deleteId && <ConfirmDeletePopup onConfirm={handleConfirmedDelete} onCancel={cancelDelete} />}

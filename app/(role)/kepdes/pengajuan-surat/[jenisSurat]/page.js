@@ -11,7 +11,6 @@ import {
   FileDown,
   Plus,
 } from "lucide-react";
-import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -19,15 +18,11 @@ import { useEffect, useState } from "react";
 const statusMap = {
   approved: "Selesai",
   confirmed: "Butuh Konfirmasi",
-  rejected: "Ditolak",
-  processed: "Sedang Proses",
 };
 
 const statusStyle = {
   Selesai: "text-green-600 font-semibold",
   "Butuh Konfirmasi": "text-blue-600 font-semibold",
-  Ditolak: "text-red-600 font-semibold",
-  "Sedang Proses": "text-gray-500 font-semibold",
 };
 
 const iconStyle = {
@@ -130,9 +125,7 @@ export default function Page() {
   };
 
   const ringkasan = {
-    sedangProses: data.filter((d) => mapStatus(d.status) === "Sedang Proses").length,
     butuhKonfirmasi: data.filter((d) => mapStatus(d.status) === "Butuh Konfirmasi").length,
-    ditolak: data.filter((d) => mapStatus(d.status) === "Ditolak").length,
     selesai: data.filter((d) => mapStatus(d.status) === "Selesai").length,
   };
 
@@ -163,11 +156,8 @@ export default function Page() {
 
           {/* Ringkasan */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-            <Stat label="Sedang Proses" value={ringkasan.sedangProses} icon={<Cog size={50} className="text-gray-500" />} />
             <Stat label="Butuh Konfirmasi" value={ringkasan.butuhKonfirmasi} icon={<BadgeCheck size={50} className="text-teal-600" />} />
-            <Stat label="Ditolak" value={ringkasan.ditolak} icon={<Ban size={50} className="text-red-500" />} />
             <Stat label="Selesai" value={ringkasan.selesai} icon={<UserCheck size={50} className="text-green-500" />} />
-            <Stat label="Lihat Panduan" value="User Guide" icon={<FileText size={50} className="text-gray-800" />} />
           </div>
 
           <div className="border-t border-gray-400 mb-6 mt-6" />

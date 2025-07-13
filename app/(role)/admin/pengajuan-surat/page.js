@@ -1,6 +1,6 @@
 "use client";
 
-import { Search, SlidersHorizontal, FileDown, ChevronsLeft, ChevronsRight, MoreHorizontal } from "lucide-react";
+import { Search, SlidersHorizontal, FileDown, ChevronsLeft, ChevronsRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import SedangProsesCard from "@/components/card/SedangProses";
@@ -14,6 +14,15 @@ export default function DashboardPage() {
   const [pengajuan, setPengajuan] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchGlobal, setSearchGlobal] = useState("");
+  const [showFilter, setShowFilter] = useState(false);
+  const [searchFilters, setSearchFilters] = useState({
+    date: "",
+    name: "",
+    status: "",
+    jenis: "",
+  });
+
   const itemsPerPage = 5;
   const router = useRouter();
 
@@ -36,6 +45,15 @@ export default function DashboardPage() {
     Buka: <Search className="text-blue-600" />,
   };
 
+  const formatTanggal = (tgl) => {
+    const d = new Date(tgl);
+    return d.toLocaleDateString("id-ID", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "2-digit",
+    });
+  };
+
   const mapStatus = (raw) => statusMap[raw] || raw;
 
   useEffect(() => {
@@ -45,9 +63,7 @@ export default function DashboardPage() {
 
       try {
         const suratRes = await fetch("/api/letter", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         });
         const suratData = await suratRes.json();
         const jenisSurat = suratData.jenis_surat || [];
@@ -55,9 +71,7 @@ export default function DashboardPage() {
         const allPengajuan = await Promise.all(
           jenisSurat.map(async (surat) => {
             const res = await fetch(`/api/letter/${surat.slug}`, {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
+              headers: { Authorization: `Bearer ${token}` },
             });
             const data = await res.json();
             return (data.pengajuan_surat || []).map((item) => ({
@@ -80,24 +94,25 @@ export default function DashboardPage() {
     fetchAllPengajuan();
   }, []);
 
-  const countByStatus = (key) => pengajuan.filter((item) => item.status === key).length;
+  const filteredData = pengajuan.filter((item) => {
+    const statusLabel = mapStatus(item.status);
+    const tanggal = formatTanggal(item.created_at);
+    const nama = item.user?.name || "";
+    const jenis = item.suratNama || "";
 
-  const jumlahProcessed = countByStatus("processed");
-  const jumlahConfirmed = countByStatus("confirmed");
-  const jumlahRejected = countByStatus("rejected");
-  const jumlahApproved = countByStatus("approved");
+    const matchGlobal = tanggal.includes(searchGlobal) || nama.toLowerCase().includes(searchGlobal.toLowerCase()) || statusLabel.toLowerCase().includes(searchGlobal.toLowerCase()) || jenis.toLowerCase().includes(searchGlobal.toLowerCase());
 
-  const formatTanggal = (tgl) => {
-    const d = new Date(tgl);
-    return d.toLocaleDateString("id-ID", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "2-digit",
-    });
-  };
+    const matchFilter =
+      tanggal.includes(searchFilters.date) &&
+      nama.toLowerCase().includes(searchFilters.name.toLowerCase()) &&
+      statusLabel.toLowerCase().includes(searchFilters.status.toLowerCase()) &&
+      jenis.toLowerCase().includes(searchFilters.jenis.toLowerCase());
 
-  const totalPages = Math.ceil(pengajuan.length / itemsPerPage);
-  const paginatedData = pengajuan.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+    return matchGlobal && matchFilter;
+  });
+
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+  const paginatedData = filteredData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   const renderPageButtons = () => {
     const pages = [];
@@ -154,22 +169,33 @@ export default function DashboardPage() {
             <p className="text-gray-500 italic">Memuat data...</p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-              <SedangProsesCard count={jumlahProcessed} />
-              <ButuhKonfirmasiCard count={jumlahConfirmed} />
-              <DitolakCard count={jumlahRejected} />
-              <SelesaiCard count={jumlahApproved} />
+              <SedangProsesCard count={pengajuan.filter((x) => x.status === "processed").length} />
+              <ButuhKonfirmasiCard count={pengajuan.filter((x) => x.status === "confirmed").length} />
+              <DitolakCard count={pengajuan.filter((x) => x.status === "rejected").length} />
+              <SelesaiCard count={pengajuan.filter((x) => x.status === "approved").length} />
             </div>
           )}
 
           <hr className="border-gray-300 border-y mt-6 mb-6" />
 
-          <div className="flex justify-end items-center mb-6">
+          <div className="flex justify-end items-center mb-4">
             <div className="flex items-center border border-gray-500 rounded-md px-4 py-2 bg-white text-gray-500">
-              <Search className="w-5 h-5 mr-3" />
-              <input type="text" placeholder="Cari" className="outline-none text-sm w-28 bg-white placeholder-gray-500" />
-              <SlidersHorizontal className="w-4 h-4 ml-1" />
+              <Search className="w-5 h-5 mr-2" />
+              <input type="text" placeholder="Cari" className="flex-1 outline-none text-sm bg-white placeholder-gray-500" value={searchGlobal} onChange={(e) => setSearchGlobal(e.target.value)} />
+              <button onClick={() => setShowFilter(!showFilter)}>
+                <SlidersHorizontal className={`w-4 h-4 ml-2 cursor-pointer transition-colors ${showFilter ? "text-green-600" : "text-gray-500"}`} />
+              </button>
             </div>
           </div>
+
+          {showFilter && (
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+              <input type="text" placeholder="Filter Tanggal" className="px-4 py-2 border border-gray-400 rounded-md text-sm" value={searchFilters.date} onChange={(e) => setSearchFilters({ ...searchFilters, date: e.target.value })} />
+              <input type="text" placeholder="Filter Nama" className="px-4 py-2 border border-gray-400 rounded-md text-sm" value={searchFilters.name} onChange={(e) => setSearchFilters({ ...searchFilters, name: e.target.value })} />
+              <input type="text" placeholder="Filter Jenis Surat" className="px-4 py-2 border border-gray-400 rounded-md text-sm" value={searchFilters.jenis} onChange={(e) => setSearchFilters({ ...searchFilters, jenis: e.target.value })} />
+              <input type="text" placeholder="Filter Status" className="px-4 py-2 border border-gray-400 rounded-md text-sm" value={searchFilters.status} onChange={(e) => setSearchFilters({ ...searchFilters, status: e.target.value })} />
+            </div>
+          )}
 
           <div className="overflow-x-auto">
             <table className="table-auto w-full border border-black">
@@ -178,21 +204,21 @@ export default function DashboardPage() {
                   <th className="border border-black p-2 w-[5%]">No.</th>
                   <th className="px-4 py-2 w-1/5 border border-black">Tanggal</th>
                   <th className="px-4 py-2 w-1/5 border border-black">Nama</th>
-                  <th className="px-4 py-2 w-1/5 border border-black">Status</th>
                   <th className="px-4 py-2 w-1/5 border border-black">Jenis Surat</th>
+                  <th className="px-4 py-2 w-1/5 border border-black">Status</th>
                   <th className="px-4 py-2 w-1/5 border border-black">Aksi</th>
                 </tr>
               </thead>
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan={5} className="bg-white text-center text-black py-4 italic">
+                    <td colSpan={6} className="bg-white text-center text-black py-4 italic">
                       Memuat data...
                     </td>
                   </tr>
                 ) : paginatedData.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="bg-white text-center text-black py-4">
+                    <td colSpan={6} className="bg-white text-center text-black py-4">
                       Belum ada proses pengajuan surat
                     </td>
                   </tr>
@@ -200,15 +226,13 @@ export default function DashboardPage() {
                   paginatedData.map((item, index) => {
                     const statusLabel = mapStatus(item.status);
                     const actionLabel = statusLabel === "Selesai" ? "Unduh" : "Buka";
-
                     return (
                       <tr key={item.id} className="bg-white text-center">
                         <td className="border border-black p-2">{(currentPage - 1) * itemsPerPage + index + 1}</td>
-
                         <td className="px-4 py-2 border border-black">{formatTanggal(item.created_at)}</td>
                         <td className="px-4 py-2 border border-black">{item.user?.name || "-"}</td>
-                        <td className={`px-4 py-2 border border-black ${statusStyle[statusLabel] || ""}`}>{statusLabel}</td>
                         <td className="px-4 py-2 border border-black">{item.suratNama || "-"}</td>
+                        <td className={`px-4 py-2 border border-black ${statusStyle[statusLabel] || ""}`}>{statusLabel}</td>
                         <td className="px-4 py-2 border border-black">
                           <div className="flex justify-center items-center gap-1">
                             <button onClick={() => router.push(`/admin/pengajuan-surat/${item.suratSlug}/${item.id}`)} className="flex items-center gap-1 text-sm text-black hover:underline">
@@ -224,19 +248,17 @@ export default function DashboardPage() {
               </tbody>
             </table>
 
-            {totalPages > 1 && (
-              <div className="flex justify-center mt-6">
-                <div className="flex border border-slate-800 divide-x divide-slate-800 text-slate-800 text-sm rounded overflow-hidden">
-                  <button onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))} disabled={currentPage === 1} className="px-3 py-1 disabled:opacity-50">
-                    <ChevronsLeft className="w-4 h-4" />
-                  </button>
-                  {renderPageButtons()}
-                  <button onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))} disabled={currentPage === totalPages} className="px-3 py-1 disabled:opacity-50">
-                    <ChevronsRight className="w-4 h-4" />
-                  </button>
-                </div>
+            <div className="flex justify-center mt-6">
+              <div className="flex border border-slate-800 divide-x divide-slate-800 text-slate-800 text-sm rounded overflow-hidden">
+                <button onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))} disabled={currentPage === 1} className="px-3 py-1 disabled:opacity-50">
+                  <ChevronsLeft className="w-4 h-4" />
+                </button>
+                {renderPageButtons()}
+                <button onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))} disabled={currentPage === totalPages} className="px-3 py-1 disabled:opacity-50">
+                  <ChevronsRight className="w-4 h-4" />
+                </button>
               </div>
-            )}
+            </div>
           </div>
         </section>
       </div>

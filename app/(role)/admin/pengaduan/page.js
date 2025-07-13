@@ -22,6 +22,15 @@ const statusColor = {
 export default function PengaduanPage() {
   const [data, setData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [showFilter, setShowFilter] = useState(false);
+  const [searchGlobal, setSearchGlobal] = useState("");
+  const [searchFilters, setSearchFilters] = useState({
+    title: "",
+    category: "",
+    status: "",
+    date: "",
+  });
+
   const itemsPerPage = 5;
 
   useEffect(() => {
@@ -40,7 +49,26 @@ export default function PengaduanPage() {
     fetchAduan();
   }, []);
 
-  const totalPages = Math.ceil(data.length / itemsPerPage);
+  const filteredData = data.filter((item) => {
+    const readableStatus = statusMap[item.status] || item.status;
+    const formattedDate = new Date(item.created_at).toLocaleDateString("id-ID");
+
+    const matchGlobal =
+      item.title.toLowerCase().includes(searchGlobal.toLowerCase()) ||
+      item.category.toLowerCase().includes(searchGlobal.toLowerCase()) ||
+      readableStatus.toLowerCase().includes(searchGlobal.toLowerCase()) ||
+      formattedDate.includes(searchGlobal);
+
+    const matchFilters =
+      item.title.toLowerCase().includes(searchFilters.title.toLowerCase()) &&
+      item.category.toLowerCase().includes(searchFilters.category.toLowerCase()) &&
+      readableStatus.toLowerCase().includes(searchFilters.status.toLowerCase()) &&
+      formattedDate.includes(searchFilters.date);
+
+    return matchGlobal && matchFilters;
+  });
+
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
 
   const getPaginationRange = () => {
     const delta = 2;
@@ -80,13 +108,35 @@ export default function PengaduanPage() {
 
           <hr className="border-gray-300 border-y mb-6" />
 
-          <div className="flex justify-end items-center mb-6">
-            <div className="flex items-center border border-gray-500 rounded-md px-4 py-2 bg-white text-gray-500 transition-colors w-72">
+          <div className="flex justify-end items-center mb-4">
+            <div className="flex items-center border border-gray-500 rounded-md px-4 py-2 bg-white text-gray-500">
               <Search className="w-5 h-5 mr-2" />
-              <input type="text" placeholder="Masukkan Jenis Pengaduan" className="flex-1 outline-none text-sm bg-white placeholder-gray-500" />
-              <SlidersHorizontal className="w-4 h-4 ml-2" />
+              <input type="text" placeholder="Cari" className="flex-1 outline-none text-sm bg-white placeholder-gray-500" value={searchGlobal} onChange={(e) => setSearchGlobal(e.target.value)} />
+              <button onClick={() => setShowFilter(!showFilter)}>
+                <SlidersHorizontal className={`w-4 h-4 ml-2 cursor-pointer transition-colors ${showFilter ? "text-green-600" : "text-gray-500"}`} />
+              </button>
             </div>
           </div>
+
+          {showFilter && (
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+              <input type="text" placeholder="Filter Tanggal" className="px-4 py-2 border border-gray-400 rounded-md text-sm" value={searchFilters.date} onChange={(e) => setSearchFilters({ ...searchFilters, date: e.target.value })} />
+              <input type="text" placeholder="Filter Judul" className="px-4 py-2 border border-gray-400 rounded-md text-sm" value={searchFilters.title} onChange={(e) => setSearchFilters({ ...searchFilters, title: e.target.value })} />
+              <input
+                type="text"
+                placeholder="Filter Kategori"
+                className="px-4 py-2 border border-gray-400 rounded-md text-sm"
+                value={searchFilters.category}
+                onChange={(e) =>
+                  setSearchFilters({
+                    ...searchFilters,
+                    category: e.target.value,
+                  })
+                }
+              />
+              <input type="text" placeholder="Filter Status" className="px-4 py-2 border border-gray-400 rounded-md text-sm" value={searchFilters.status} onChange={(e) => setSearchFilters({ ...searchFilters, status: e.target.value })} />
+            </div>
+          )}
 
           <table className="w-full table-fixed border border-black">
             <thead>
@@ -100,7 +150,7 @@ export default function PengaduanPage() {
               </tr>
             </thead>
             <tbody>
-              {data.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((item, index) => {
+              {filteredData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((item, index) => {
                 const readableStatus = statusMap[item.status] || item.status;
                 return (
                   <tr key={index} className="bg-white text-center">
@@ -118,9 +168,9 @@ export default function PengaduanPage() {
                   </tr>
                 );
               })}
-              {data.length === 0 && (
+              {filteredData.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="bg-white text-center text-black py-4">
+                  <td colSpan={6} className="bg-white text-center text-black py-4">
                     Belum ada proses pengaduan
                   </td>
                 </tr>
@@ -128,25 +178,23 @@ export default function PengaduanPage() {
             </tbody>
           </table>
 
-          {totalPages > 1 && (
-            <div className="flex justify-center mt-6">
-              <div className="flex border border-slate-800 divide-x divide-slate-800 text-slate-800 text-sm rounded overflow-hidden">
-                <button onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))} disabled={currentPage === 1} className="px-3 py-1 disabled:opacity-50">
-                  &laquo;
-                </button>
+          <div className="flex justify-center mt-6">
+            <div className="flex border border-slate-800 divide-x divide-slate-800 text-slate-800 text-sm rounded overflow-hidden">
+              <button onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))} disabled={currentPage === 1} className="px-3 py-1 disabled:opacity-50">
+                &laquo;
+              </button>
 
-                {getPaginationRange().map((page, i) => (
-                  <button key={i} onClick={() => typeof page === "number" && setCurrentPage(page)} disabled={typeof page !== "number"} className={`px-3 py-1 ${page === currentPage ? "bg-green-700 text-white" : "hover:bg-slate-100"}`}>
-                    {page === "..." ? "..." : page}
-                  </button>
-                ))}
-
-                <button onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))} disabled={currentPage === totalPages} className="px-3 py-1 disabled:opacity-50">
-                  &raquo;
+              {getPaginationRange().map((page, i) => (
+                <button key={i} onClick={() => typeof page === "number" && setCurrentPage(page)} disabled={typeof page !== "number"} className={`px-3 py-1 ${page === currentPage ? "bg-green-700 text-white" : "hover:bg-slate-100"}`}>
+                  {page === "..." ? "..." : page}
                 </button>
-              </div>
+              ))}
+
+              <button onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))} disabled={currentPage === totalPages} className="px-3 py-1 disabled:opacity-50">
+                &raquo;
+              </button>
             </div>
-          )}
+          </div>
         </section>
       </div>
     </div>

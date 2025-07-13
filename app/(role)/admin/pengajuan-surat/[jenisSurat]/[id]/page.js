@@ -2,62 +2,94 @@
 
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { ChevronLeft } from "lucide-react";
+
+import Nik from "@/components/form/Nik";
+import NamaLengkap from "@/components/form/NamaLengkap";
+import TempatLahir from "@/components/form/TempatLahir";
+import TanggalLahir from "@/components/form/TanggalLahir";
+import JenisKelamin from "@/components/form/JenisKelamin";
+import Alamat from "@/components/form/Alamat";
+import Pekerjaan from "@/components/form/Pekerjaan";
+import Dusun from "@/components/form/Dusun";
+import RtRw from "@/components/form/RtRw";
+import Tanggal from "@/components/form/Tanggal";
+import NomorDokumen from "@/components/form/NomorDokumen";
 
 export default function DetailAjuanSuratPage() {
   const { jenisSurat, id } = useParams();
   const router = useRouter();
   const [ajuan, setAjuan] = useState(null);
   const [slug, setSlug] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [surat, setSurat] = useState(null);
 
-  // Ambil slug dari ID surat (via /api/surat)
+  const [showTolakModal, setShowTolakModal] = useState(false);
+  const [showVerifikasiModal, setShowVerifikasiModal] = useState(false);
+  const [alasan_penolakan, setAlasanPenolakan] = useState("");
+  const [errorCatatan, setErrorCatatan] = useState(false);
+
+  const statusMap = {
+    processed: "Sedang Proses",
+    confirmed: "Butuh Konfirmasi",
+    rejected: "Ditolak",
+    approved: "Selesai",
+  };
+
   useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token || !jenisSurat) return;
+
     const fetchSlug = async () => {
       try {
-        const token = localStorage.getItem("token");
         const res = await fetch("/api/letter", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         });
 
         const data = await res.json();
         const found = data.jenis_surat?.find((item) => item.slug.toString() === jenisSurat);
-        if (found) setSlug(found.slug);
+        if (found) {
+          setSlug(found.slug);
+          setSurat(found);
+        }
       } catch (err) {
-        console.error("⚠️ Gagal mengambil slug:", err);
+        console.error("⚠️ Gagal mendapatkan slug:", err);
       }
     };
 
-    if (jenisSurat) fetchSlug();
+    fetchSlug();
   }, [jenisSurat]);
 
-  // Ambil detail pengajuan
   useEffect(() => {
-    const fetchDetail = async () => {
+    const token = localStorage.getItem("token");
+    if (!slug || !id) return;
+
+    const fetchDetailAjuan = async () => {
       try {
-        const token = localStorage.getItem("token");
         const res = await fetch(`/api/letter/${slug}/${id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         });
 
         const json = await res.json();
+        console.log(json);
         setAjuan(json.pengajuan_surat);
       } catch (err) {
         console.error("⚠️ Gagal fetch detail ajuan:", err);
-      } finally {
-        setLoading(false);
       }
     };
 
-    if (slug && id) fetchDetail();
+    fetchDetailAjuan();
   }, [slug, id]);
 
-  const isMasyarakat = ajuan?.user?.profile_masyarakat !== null;
+  const handleTerima = () => {
+    router.push(`/admin/pengajuan-surat/${jenisSurat}/${id}/nomor-surat`);
+  };
 
   const handleTolak = async () => {
+    if (!alasan_penolakan.trim()) {
+      setErrorCatatan(true);
+      return;
+    }
+
     try {
       const token = localStorage.getItem("token");
       const res = await fetch(`/api/letter/${slug}/${id}/rejected`, {
@@ -66,7 +98,10 @@ export default function DetailAjuanSuratPage() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ status: "ditolak" }),
+        body: JSON.stringify({
+          status: "ditolak",
+          alasan_penolakan: alasan_penolakan.trim(),
+        }),
       });
 
       if (!res.ok) throw new Error("Gagal menolak surat.");
@@ -76,103 +111,133 @@ export default function DetailAjuanSuratPage() {
     }
   };
 
-  const handleTerima = () => {
-    router.push(`/admin/pengajuan-surat/${jenisSurat}/${id}/nomor-surat`);
-  };
+  const user = ajuan?.user;
+  const profile = user?.profile_masyarakat;
 
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-white shadow rounded">
-      <h2 className="text-2xl font-bold mb-4">📄 Detail Pengajuan Surat</h2>
+    <div className="flex h-full bg-gray-100 min-h-screen p-8">
+      <div className="flex-1 max-w-4xl mx-auto">
+        <h1 className="text-xl font-semibold mb-4">
+          Detail Pengajuan Surat / {surat?.nama_surat} / {statusMap[ajuan?.status]}
+        </h1>
+        <div className="bg-white rounded-md shadow-sm p-8">
+          <button type="button" onClick={() => router.back()} className="flex items-center text-base text-gray-500 mb-6">
+            <ChevronLeft size={30} className="mr-1" />
+            Kembali
+          </button>
 
-      {loading || !ajuan ? (
-        <p>🔄 Memuat data ajuan...</p>
-      ) : (
-        <>
-          {/* 👤 Informasi Pengaju */}
-          <div className="mb-6 p-4 bg-gray-50 rounded border">
-            <h3 className="font-semibold mb-2">👤 Data Pengaju:</h3>
-            <ul className="text-sm text-gray-800 list-inside list-disc">
-              <li><strong>Nama:</strong> {ajuan.user?.name || "-"}</li>
-              <li><strong>NIK:</strong> {ajuan.user?.nik || "-"}</li>
-              <li>
-                <strong>Tempat/Tanggal Lahir:</strong>{" "}
-                {ajuan.user?.profile_masyarakat?.tempat_lahir || "-"} /{" "}
-                {ajuan.user?.profile_masyarakat?.tanggal_lahir || "-"}
-              </li>
-              <li><strong>Jenis Kelamin:</strong> {ajuan.user?.profile_masyarakat?.jenis_kelamin || "-"}</li>
-              <li><strong>Alamat:</strong> {ajuan.user?.profile_masyarakat?.alamat || "-"}</li>
-            </ul>
-          </div>
-
-          {/* 📝 Informasi Ajuan */}
-          <div className="mb-6">
-            <p className="mb-2"><strong>Status:</strong> {ajuan.status}</p>
-            <p className="mb-2"><strong>Nomor Surat:</strong> {ajuan.nomor_surat || "-"}</p>
-            <p className="mb-2">
-              <strong>Lampiran:</strong>{" "}
-              {Array.isArray(ajuan.lampiran) && ajuan.lampiran.length > 0 ? (
-                ajuan.lampiran.map((file, idx) => (
-                  <a
-                    key={idx}
-                    href={`/api/file/${file}`}
-                    className="text-blue-600 underline mr-2"
-                    target="_blank"
-                  >
-                    File {idx + 1}
-                  </a>
-                ))
-              ) : (
-                "-"
-              )}
-            </p>
-          </div>
-
-          {/* 📋 Formulir */}
-          <div className="mb-6">
-            <h3 className="font-semibold text-lg mb-2">📋 Data Formulir Pengajuan:</h3>
-            <ul className="list-disc list-inside text-sm text-gray-800">
-              {Object.entries(ajuan.data_surat || {}).map(([key, value]) => (
-                <li key={key}>
-                  <strong>{key.replaceAll("_", " ")}:</strong> {value}
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Tombol */}
-          <div className="mt-4 flex justify-between items-center">
-            <button
-              onClick={() => router.back()}
-              className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
-            >
-              ⬅️ Kembali
-            </button>
-
-            {isMasyarakat ? (
-              <div className="flex gap-3">
-                <button
-                  onClick={handleTolak}
-                  className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
-                >
-                  Tolak Surat
-                </button>
-                <button
-                  onClick={handleTerima}
-                  className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-                >
-                  Terima Surat
-                </button>
+          {!ajuan ? (
+            <p className="text-gray-600">🔄 Memuat data ajuan...</p>
+          ) : (
+            <>
+              {/* Informasi Pengajuan */}
+              <div className="pt-4 mb-6">
+                <p className="text-xl font-semibold text-gray-700 mb-4">Informasi Pengajuan Surat</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <NomorDokumen value={ajuan.nomor_surat_tersimpan || "-"} disabled />
+                  <Tanggal value={ajuan.created_at?.split("T")[0] || "-"} disabled />
+                </div>
               </div>
-            ) : (
-              <button
-                onClick={handleTerima}
-                className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-              >
-                Selanjutnya
+
+              {profile && ajuan?.status === "processed" && (
+                <>
+                  <legend className="pt-4 text-xl font-semibold text-gray-700">Informasi Pribadi</legend>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 mb-6">
+                    <Nik value={user?.nik || ""} disabled />
+                    <NamaLengkap value={user?.name || ""} disabled />
+                    <TempatLahir value={profile?.tempat_lahir || ""} disabled />
+                    <TanggalLahir value={profile?.tanggal_lahir || ""} disabled />
+                    <JenisKelamin value={profile?.jenis_kelamin || ""} disabled />
+                    <Alamat value={profile?.alamat || ""} disabled />
+                    <Pekerjaan value={profile?.pekerjaan || ""} disabled />
+                    <Dusun value={profile?.dusun || ""} disabled />
+                    <RtRw value={profile?.rt_rw || ""} disabled />
+                  </div>
+                </>
+              )}
+
+              {/* Informasi Tambahan */}
+              {ajuan.data_surat && Object.keys(ajuan.data_surat).length > 0 && (
+                <div className="pt-4 mt-6">
+                  <p className="text-xl font-semibold text-gray-700 mb-4">Informasi Tambahan</p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {Object.entries(ajuan.data_surat).map(([key, value]) => (
+                      <div key={key} className="capitalize">
+                        <NamaLengkap value={value} disabled label={key.replaceAll("_", " ")} />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Tombol Aksi */}
+              <div className="mt-8 flex justify-end gap-3">
+                {profile && ajuan?.status === "processed" ? (
+                  <>
+                    <button onClick={() => setShowTolakModal(true)} className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
+                      Tolak Surat
+                    </button>
+                    <button onClick={() => setShowVerifikasiModal(true)} className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+                      Terima Surat
+                    </button>
+                  </>
+                ) : (
+                  ajuan?.status === "processed" && (
+                    <button onClick={() => setShowVerifikasiModal(true)} className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+                      Selanjutnya
+                    </button>
+                  )
+                )}
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* Modal Tolak Surat */}
+      {showTolakModal && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg p-6 max-w-sm w-full border-2 border-red-500">
+            <h2 className="text-xl font-bold text-red-600 mb-2">Tolak Pengajuan Surat!</h2>
+            <p className="text-sm text-gray-700 mb-4">Silakan isi alasan penolakan di bawah agar bisa ditinjau kembali oleh pemohon.</p>
+            <textarea
+              className={`w-full p-2 border rounded ${errorCatatan ? "border-red-500" : "border-gray-300"}`}
+              rows="3"
+              placeholder="Catatan Wajib Diisi"
+              value={alasan_penolakan}
+              onChange={(e) => {
+                setAlasanPenolakan(e.target.value);
+                if (e.target.value.trim()) setErrorCatatan(false);
+              }}
+            ></textarea>
+            <div className="mt-4 flex justify-end gap-2">
+              <button onClick={handleTolak} className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
+                Tolak Surat
               </button>
-            )}
+              <button onClick={() => setShowTolakModal(false)} className="border border-gray-400 px-4 py-2 rounded">
+                Kembali
+              </button>
+            </div>
           </div>
-        </>
+        </div>
+      )}
+
+      {/* Modal Verifikasi Pengajuan */}
+      {showVerifikasiModal && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg p-6 max-w-sm w-full border-2 border-green-500">
+            <h2 className="text-xl font-bold text-green-600 mb-2">Verifikasi Pengajuan!</h2>
+            <p className="text-sm text-gray-700 mb-4">Apakah data pengajuan surat ini sudah benar dan lengkap?</p>
+            <div className="mt-4 flex justify-end gap-2">
+              <button onClick={handleTerima} className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+                Proses Surat
+              </button>
+              <button onClick={() => setShowVerifikasiModal(false)} className="border border-gray-400 px-4 py-2 rounded">
+                Kembali
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

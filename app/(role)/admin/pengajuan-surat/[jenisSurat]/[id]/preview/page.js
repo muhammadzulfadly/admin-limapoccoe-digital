@@ -1,26 +1,27 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { ChevronLeft } from "lucide-react";
 
 export default function PreviewSuratPage() {
   const { jenisSurat, id } = useParams();
   const router = useRouter();
 
-  const [slug, setSlug] = useState('');
-  const [namaUser, setNamaUser] = useState('');
-  const [namaSurat, setNamaSurat] = useState('');
-  const [status, setStatus] = useState('');
-  const [token, setToken] = useState('');
+  const [slug, setSlug] = useState("");
+  const [namaUser, setNamaUser] = useState("Memuat...");
+  const [namaSurat, setNamaSurat] = useState("Memuat...");
+  const [status, setStatus] = useState("");
+  const [token, setToken] = useState("");
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
-  const [errorMsg, setErrorMsg] = useState('');
+  const [errorMsg, setErrorMsg] = useState("");
 
   // Ambil token dari localStorage
   useEffect(() => {
-    const storedToken = localStorage.getItem('token');
+    const storedToken = localStorage.getItem("token");
     if (!storedToken) {
-      setErrorMsg('Token tidak ditemukan. Silakan login ulang.');
+      setErrorMsg("Token tidak ditemukan. Silakan login ulang.");
       return;
     }
     setToken(storedToken);
@@ -30,7 +31,7 @@ export default function PreviewSuratPage() {
   useEffect(() => {
     if (!token || !jenisSurat) return;
 
-    fetch('/api/letter', {
+    fetch("/api/letter", {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -42,45 +43,62 @@ export default function PreviewSuratPage() {
           setSlug(found.slug);
           setNamaSurat(found.nama_surat);
         } else {
-          setNamaSurat('Surat Tidak Diketahui');
+          setNamaSurat("Surat Tidak Diketahui");
         }
       })
       .catch(() => {
-        setNamaSurat('Surat');
+        setNamaSurat("Surat");
       });
   }, [token, jenisSurat]);
 
-  // Simulasi data user & status
+  // Ambil detail pengajuan
   useEffect(() => {
-    if (id) {
-      setNamaUser('Pemohon');
-      setStatus('Butuh konfirmasi');
-      setLoading(false);
-    }
-  }, [id]);
+    if (!slug || !id || !token) return;
+
+    const fetchDetail = async () => {
+      try {
+        const res = await fetch(`/api/letter/${slug}/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await res.json();
+        const pengajuan = data.pengajuan_surat;
+
+        setNamaUser(pengajuan?.user?.name || "Pengguna");
+        setStatus(pengajuan?.status || "Belum diketahui");
+      } catch (err) {
+        console.error("Gagal mengambil detail pengajuan:", err);
+        setNamaUser("Pengguna");
+        setStatus("Status tidak tersedia");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDetail();
+  }, [slug, id, token]);
 
   const handleProsesTandaTangan = async () => {
     setProcessing(true);
-    setErrorMsg('');
+    setErrorMsg("");
 
     try {
-      const res = await fetch(
-        `/api/letter/${slug}/${id}/confirmed`,
-        {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ status: 'confirmed' }),
-        }
-      );
+      const res = await fetch(`/api/letter/${slug}/${id}/confirmed`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ status: "confirmed" }),
+      });
 
-      if (!res.ok) throw new Error('Gagal mengubah status menjadi confirmed.');
+      if (!res.ok) throw new Error("Gagal mengubah status.");
 
       router.push(`/admin/pengajuan-surat/${jenisSurat}`);
     } catch (err) {
-      setErrorMsg(err.message || 'Terjadi kesalahan saat mengubah status.');
+      setErrorMsg(err.message || "Terjadi kesalahan saat mengubah status.");
     } finally {
       setProcessing(false);
     }
@@ -91,33 +109,27 @@ export default function PreviewSuratPage() {
   }
 
   return (
-    <div className="bg-gray-100 min-h-screen p-10">
-      <div className="mb-4 font-bold text-lg">
-        {namaUser} / {namaSurat} / {status || 'Status tidak tersedia'}
-      </div>
+    <div className="flex h-full">
+      <div className="flex-1 p-8 space-y-8 bg-[#EDF0F5]">
+        <h2 className="text-2xl font-semibold">
+          {namaUser} / {namaSurat} / Preview
+          <button type="button" onClick={() => router.back()} className="flex items-center text-base text-gray-500 mt-3">
+            <ChevronLeft size={30} className="mr-1" />
+            Kembali
+          </button>
+        </h2>
 
-      <div className="my-4 bg-white shadow-md rounded-md overflow-hidden min-h-[80vh]">
-        <iframe
-          src={`/api/letter/${slug}/${id}/preview?token=${token}`}
-          width="100%"
-          height="700"
-          className="w-full border"
-          title="Preview Surat"
-        />
-      </div>
+        <div className="bg-white rounded-lg shadow-md p-6 mx-auto">
+          <iframe src={`/api/letter/${slug}/${id}/preview?token=${token}`} width="100%" height="700" className="w-full border" title="Preview Surat" />
+        </div>
 
-      {errorMsg && (
-        <p className="text-red-600 text-sm mt-4 text-right">{errorMsg}</p>
-      )}
+        {errorMsg && <p className="text-red-600 text-sm mt-4 text-right">{errorMsg}</p>}
 
-      <div className="flex justify-end mt-4">
-        <button
-          onClick={handleProsesTandaTangan}
-          disabled={processing}
-          className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 disabled:opacity-60"
-        >
-          {processing ? 'Memproses...' : 'Proses tanda tangan'}
-        </button>
+        <div className="flex justify-end mt-4">
+          <button onClick={handleProsesTandaTangan} disabled={processing} className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 disabled:opacity-60">
+            {processing ? "Memproses..." : "Proses tanda tangan"}
+          </button>
+        </div>
       </div>
     </div>
   );
