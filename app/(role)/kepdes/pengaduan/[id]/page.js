@@ -30,7 +30,7 @@ export default function DetailPengaduanPage() {
     const fetchPengaduan = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch(`/api/admin/complaint/${id}`, {
+        const res = await fetch(`/api/complaint/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

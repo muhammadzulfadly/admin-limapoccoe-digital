@@ -11,7 +11,6 @@ export default function PreviewSuratPage() {
   const [slug, setSlug] = useState("");
   const [namaUser, setNamaUser] = useState("Memuat...");
   const [namaSurat, setNamaSurat] = useState("Memuat...");
-  const [status, setStatus] = useState("");
   const [token, setToken] = useState("");
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
@@ -70,8 +69,6 @@ export default function PreviewSuratPage() {
         setStatus(pengajuan?.status || "Belum diketahui");
       } catch (err) {
         console.error("Gagal mengambil detail pengajuan:", err);
-        setNamaUser("Pengguna");
-        setStatus("Status tidak tersedia");
       } finally {
         setLoading(false);
       }
