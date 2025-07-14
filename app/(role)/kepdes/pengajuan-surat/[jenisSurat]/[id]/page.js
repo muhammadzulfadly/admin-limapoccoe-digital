@@ -134,9 +134,9 @@ export default function PreviewSuratPage() {
             <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm" onClick={handleProsesTandaTangan}>
               Tanda Tangan
             </button>
-            <p className="mt-4 text-xs text-gray-500 underline cursor-pointer" onClick={() => setShowSuccess(false)}>
+            <button className="mt-4 text-xs text-gray-500 underline cursor-pointer" onClick={() => setShowSuccess(false)}>
               Baca Kembali
-            </p>
+            </button>
           </div>
         </div>
       )}

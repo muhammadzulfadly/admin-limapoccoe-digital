@@ -154,9 +154,9 @@ export default function InputNomorSuratPage() {
             <button onClick={handleSubmit} className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm">
               Ya, Sudah Benar
             </button>
-            <p onClick={() => setShowConfirmPopup(false)} className="mt-4 text-sm text-gray-600 underline cursor-pointer">
+            <button onClick={() => setShowConfirmPopup(false)} className="mt-4 text-sm text-gray-600 underline cursor-pointer bg-transparent border-none p-0 focus:outline-none">
               Periksa Lagi
-            </p>
+            </button>
           </div>
         </div>
       )}

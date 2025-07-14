@@ -289,9 +289,9 @@ export default function DetailKeluargaPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <Nik value={item.nik ?? ""} onChange={(v) => updateAnggota(index, "nik", v)} disabled={!isEditMode} />
                   <NamaLengkap value={item.nama_lengkap ?? ""} onChange={(v) => updateAnggota(index, "nama_lengkap", v)} disabled={!isEditMode} />
-                  <Hubungan value={item.hubungan ?? ""} onChange={(v) => updateAnggota(index, "hubungan", v)} disabled={!isEditMode ?? ""} />
+                  <Hubungan value={item.hubungan ?? ""} onChange={(v) => updateAnggota(index, "hubungan", v)} disabled={!isEditMode} />
                   <TempatLahir value={item.tempat_lahir ?? ""} onChange={(v) => updateAnggota(index, "tempat_lahir", v)} disabled={!isEditMode} />
-                  <TglLahir value={item.tgl_lahir} onChange={(v) => updateAnggota(index, "tgl_lahir", v)} disabled={!isEditMode ?? ""} />
+                  <TglLahir value={item.tgl_lahir} onChange={(v) => updateAnggota(index, "tgl_lahir", v)} disabled={!isEditMode} />
                   <JenisKelamin value={item.jenis_kelamin ?? ""} onChange={(v) => updateAnggota(index, "jenis_kelamin", v)} disabled={!isEditMode} />
                   <StatusPerkawinan value={item.status_perkawinan ?? ""} onChange={(v) => updateAnggota(index, "status_perkawinan", v)} disabled={!isEditMode} />
                   <Agama value={item.agama ?? ""} onChange={(v) => updateAnggota(index, "agama", v)} disabled={!isEditMode} />

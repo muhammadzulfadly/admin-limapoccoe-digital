@@ -104,7 +104,7 @@ export default function DetailPengaduanPage() {
             </div>
           )}
           <Nik value={pengaduan.user?.nik || pengaduan.nik} onChange={() => {}} disabled />
-          <Tanggal value={pengaduan.created_at || pengaduan.created_at} onChange={() => {}} disabled />
+          <Tanggal value={pengaduan.created_at} onChange={() => {}} disabled />
           <NamaLengkap value={pengaduan.user?.name || pengaduan.name} onChange={() => {}} disabled />
           <KategoriPengaduan value={pengaduan.category} onChange={() => {}} disabled />
           <JudulPengaduan value={pengaduan.title} onChange={() => {}} disabled />

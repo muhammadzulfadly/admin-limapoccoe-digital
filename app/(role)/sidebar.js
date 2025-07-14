@@ -193,9 +193,12 @@ export default function AdminLayout({ children }) {
 
       {/* Sidebar for Mobile */}
       {sidebarOpen && (
-        <div className="fixed z-40 inset-0 bg-black/40 flex">
-          <div className="bg-white w-64 h-full shadow-lg">{renderSidebar()}</div>
-          <div className="flex-1" onClick={() => setSidebarOpen(false)} />
+        <div className="fixed inset-0 z-40 flex">
+          {/* Overlay */}
+          <div className="absolute inset-0 bg-black/40" onClick={() => setSidebarOpen(false)} aria-hidden="true" />
+
+          {/* Sidebar */}
+          <div className="relative z-50 bg-white w-64 h-full shadow-lg">{renderSidebar()}</div>
         </div>
       )}
 
