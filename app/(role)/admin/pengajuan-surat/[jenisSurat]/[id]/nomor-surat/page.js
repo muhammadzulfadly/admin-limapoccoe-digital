@@ -15,6 +15,7 @@ export default function InputNomorSuratPage() {
   const [namaSurat, setNamaSurat] = useState("Memuat...");
   const [kodeSurat, setKodeSurat] = useState("Memuat...");
   const [slug, setSlug] = useState(null);
+  const [nomorSuratTerakhir, setNomorSuratTerakhir] = useState("");
 
   const [showConfirmPopup, setShowConfirmPopup] = useState(false);
   const [showErrorPopup, setShowErrorPopup] = useState(false);
@@ -59,7 +60,6 @@ export default function InputNomorSuratPage() {
         const data = await res.json();
         const pengajuan = data.pengajuan_surat;
         setNamaUser(pengajuan?.data_surat?.nama || pengajuan?.user?.name || "Pengguna");
-        setNomorSurat(pengajuan?.nomor_surat || "");
       } catch (err) {
         console.error("⚠️ Gagal mengambil detail pengajuan:", err);
         setNamaUser("Pengguna");
@@ -96,14 +96,36 @@ export default function InputNomorSuratPage() {
         throw new Error("Nomor Surat telah terpakai");
       }
 
-      if (!res.ok) throw new Error("Gagal menyimpan nomor surat.");
+      if (!res.ok) {
+        setShowErrorPopup(true);
+      }
 
       router.push(`/admin/pengajuan-surat/${jenisSurat}/${id}/preview`);
     } catch (err) {
       setErrorMsg(err.message || "Terjadi kesalahan saat menyimpan.");
-      setShowErrorPopup(true);
     }
   };
+
+  useEffect(() => {
+    const fetchNomorSurat = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await fetch("/api/letter/last-number", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await res.json();
+        setNomorSuratTerakhir(data.nomor_surat_terakhir);
+        setNomorSurat(data.nomor_surat_berikutnya);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchNomorSurat();
+  }, []);
 
   if (loading) return <p className="p-6">Memuat data...</p>;
 
@@ -132,7 +154,7 @@ export default function InputNomorSuratPage() {
               />
               <span className="text-lg text-gray-700">/{kodeSurat}/10.2003/VII/2025</span>
             </div>
-            <p className="text-center text-sm text-gray-500 mb-4">Nomor Surat Terakhir : - </p>
+            <p className="text-center text-sm text-gray-500 mb-4">Nomor Surat Terakhir : {nomorSuratTerakhir} </p>
 
             {errorMsg && <p className="text-red-600 text-sm text-center mb-2">{errorMsg}</p>}
 
@@ -151,12 +173,14 @@ export default function InputNomorSuratPage() {
           <div className="bg-white rounded-lg shadow-md px-6 py-8 text-center max-w-sm mx-auto border border-gray-300">
             <h3 className="text-green-600 font-bold text-lg mb-3">Konfirmasi Nomor Surat!</h3>
             <p className="text-gray-700 text-sm mb-4">Apakah Anda yakin nomor surat yang dimasukkan sudah benar dan sesuai format?</p>
-            <button onClick={handleSubmit} className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm">
-              Ya, Sudah Benar
-            </button>
-            <button onClick={() => setShowConfirmPopup(false)} className="mt-4 text-sm text-gray-600 underline cursor-pointer bg-transparent border-none p-0 focus:outline-none">
-              Periksa Lagi
-            </button>
+            <div className="flex flex-col">
+              <button onClick={handleSubmit} className="bg-green-600 hover:bg-green-700 text-white py-2 rounded text-sm">
+                Ya, Sudah Benar
+              </button>
+              <button onClick={() => setShowConfirmPopup(false)} className="mt-4 text-sm text-gray-600 underline cursor-pointer bg-transparent border-none p-0 focus:outline-none">
+                Periksa Lagi
+              </button>
+            </div>
           </div>
         </div>
       )}

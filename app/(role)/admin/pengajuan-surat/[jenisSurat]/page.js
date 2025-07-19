@@ -239,6 +239,11 @@ export default function Page() {
                                 {iconStyle["Unduh"]}
                                 <span>Unduh</span>
                               </button>
+                            ) : statusLabel === "Butuh Konfirmasi" ? (
+                              <button onClick={() => router.push(`/admin/pengajuan-surat/${jenisSurat}/${item.id}/preview`)} className="flex items-center gap-1 text-sm text-black hover:underline">
+                                {iconStyle["Buka"]}
+                                <span>Buka</span>
+                              </button>
                             ) : (
                               <button onClick={() => router.push(`/admin/pengajuan-surat/${jenisSurat}/${item.id}`)} className="flex items-center gap-1 text-sm text-black hover:underline">
                                 {iconStyle["Buka"]}

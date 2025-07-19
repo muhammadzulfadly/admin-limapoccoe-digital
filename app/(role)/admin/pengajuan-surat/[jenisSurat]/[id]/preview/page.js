@@ -11,6 +11,7 @@ export default function PreviewSuratPage() {
   const [slug, setSlug] = useState("");
   const [namaUser, setNamaUser] = useState("Memuat...");
   const [namaSurat, setNamaSurat] = useState("Memuat...");
+  const [status, setStatus] = useState("");
   const [token, setToken] = useState("");
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
@@ -65,7 +66,7 @@ export default function PreviewSuratPage() {
 
         const data = await res.json();
         const pengajuan = data.pengajuan_surat;
-
+        setStatus(pengajuan?.status || "");
         setNamaUser(pengajuan?.data_surat?.nama || pengajuan?.user?.name || "Pengguna");
       } catch (err) {
         console.error("Gagal mengambil detail pengajuan:", err);
@@ -128,7 +129,11 @@ export default function PreviewSuratPage() {
         {errorMsg && <p className="text-red-600 text-sm mt-4 text-right">{errorMsg}</p>}
 
         <div className="flex justify-end mt-4">
-          <button onClick={() => setShowConfirmPopup(true)} disabled={processing} className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 disabled:opacity-60">
+          <button
+            onClick={() => setShowConfirmPopup(true)}
+            disabled={processing || status === "confirmed"}
+            className={`bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 disabled:opacity-60 ${status === "confirmed" ? "hidden" : ""}`}
+          >
             {processing ? "Memproses..." : "Proses tanda tangan"}
           </button>
         </div>
@@ -140,12 +145,14 @@ export default function PreviewSuratPage() {
           <div className="bg-white rounded-lg shadow-md px-6 py-8 text-center max-w-sm mx-auto border">
             <h3 className="text-green-600 font-bold text-lg mb-3">Konfirmasi!</h3>
             <p className="text-gray-700 text-sm mb-4">Apakah Anda sudah memastikan bahwa semua data dalam surat ini sudah benar? Periksa kembali sebelum melanjutkan.</p>
-            <button onClick={handleProsesTandaTangan} className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm">
-              Ya, Sudah Benar
-            </button>
-            <button onClick={() => setShowConfirmPopup(false)} className="mt-4 text-sm text-gray-600 underline cursor-pointer">
-              Periksa Lagi
-            </button>
+            <div className="flex flex-col">
+              <button onClick={handleProsesTandaTangan} className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm">
+                Ya, Sudah Benar
+              </button>
+              <button onClick={() => setShowConfirmPopup(false)} className="mt-4 text-sm text-gray-600 underline cursor-pointer">
+                Periksa Lagi
+              </button>
+            </div>
           </div>
         </div>
       )}

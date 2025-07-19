@@ -121,7 +121,7 @@ export default function DetailAjuanSuratPage() {
     if (isEditing) {
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch(`/api/letter/${slug}/${id}/update-data`, {
+        const res = await fetch(`/api/letter/${slug}/${id}`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -263,11 +263,11 @@ export default function DetailAjuanSuratPage() {
             <h2 className="text-xl font-bold text-green-600 mb-2">Verifikasi Pengajuan!</h2>
             <p className="text-sm text-gray-700 mb-4">Apakah data pengajuan surat ini sudah benar dan lengkap?</p>
             <div className="mt-4 flex justify-end gap-2">
-              <button onClick={handleTerima} className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
-                Proses Surat
-              </button>
               <button onClick={() => setShowVerifikasiModal(false)} className="border border-gray-400 px-4 py-2 rounded">
                 Kembali
+              </button>
+              <button onClick={handleTerima} className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+                Proses Surat
               </button>
             </div>
           </div>
