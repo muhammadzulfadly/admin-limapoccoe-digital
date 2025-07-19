@@ -3,7 +3,7 @@
 export default function Pekerjaan({ value, onChange, error, disabled = false }) {
   return (
     <div>
-      <label className="text-sm font-semibold text-gray-500">No. BPJS (opsional)</label>
+      <label className="text-sm font-semibold text-gray-500">No. BPJS (tidak wajib diisi)</label>
       <input
         name="bpjs"
         value={value}

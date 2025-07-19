@@ -3,7 +3,7 @@
 export default function RtRw({ value, onChange, error, disabled = false}) {
   return (
     <div>
-      <label className="text-sm font-semibold text-gray-500">RT/RW (opsional)</label>
+      <label className="text-sm font-semibold text-gray-500">RT/RW (tidak wajib diisi)</label>
       <input
         name="rt_rw"
         value={value}

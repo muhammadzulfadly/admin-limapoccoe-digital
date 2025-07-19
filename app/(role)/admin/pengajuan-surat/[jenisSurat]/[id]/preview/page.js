@@ -115,7 +115,7 @@ export default function PreviewSuratPage() {
     <div className="flex h-full">
       <div className="flex-1 p-8 space-y-8 bg-[#EDF0F5]">
         <h2 className="text-2xl font-semibold">
-          {namaUser} / {namaSurat} / Preview
+          {namaUser} / {namaSurat} / Pratinjau Surat
           <button type="button" onClick={() => router.back()} className="flex items-center text-base text-gray-500 mt-3">
             <ChevronLeft size={30} className="mr-1" />
             Kembali
