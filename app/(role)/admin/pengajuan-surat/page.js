@@ -281,16 +281,21 @@ export default function DashboardPage() {
                           <td className="px-4 py-2 border border-black">
                             <div className="flex justify-center items-center gap-1">
                               {statusLabel === "Selesai" ? (
-                                <button onClick={() => handleDownload(item.suratSlug, item.id, item.suratNama, item.data_surat?.nama || item.user?.name)} className="flex items-center gap-1 text-sm text-black hover:underline">
-                                  {iconStyle["Unduh"]}
-                                  <span>Unduh</span>
-                                </button>
-                              ) : (
-                                <button onClick={() => router.push(`/admin/pengajuan-surat/${item.suratSlug}/${item.id}`)} className="flex items-center gap-1 text-sm text-black hover:underline">
-                                  {iconStyle["Buka"]}
-                                  <span>Buka</span>
-                                </button>
-                              )}
+                              <button onClick={() => handleDownload(item.id, `${judul}`, `${item.data_surat?.nama || item.user?.name}`)} className="flex items-center gap-1 text-sm text-black hover:underline">
+                                {iconStyle["Unduh"]}
+                                <span>Unduh</span>
+                              </button>
+                            ) : statusLabel === "Butuh Konfirmasi" ? (
+                              <button onClick={() => router.push(`/admin/pengajuan-surat/${jenisSurat}/${item.id}/preview`)} className="flex items-center gap-1 text-sm text-black hover:underline">
+                                {iconStyle["Buka"]}
+                                <span>Buka</span>
+                              </button>
+                            ) : (
+                              <button onClick={() => router.push(`/admin/pengajuan-surat/${jenisSurat}/${item.id}`)} className="flex items-center gap-1 text-sm text-black hover:underline">
+                                {iconStyle["Buka"]}
+                                <span>Buka</span>
+                              </button>
+                            )}
                             </div>
                           </td>
                         </tr>
