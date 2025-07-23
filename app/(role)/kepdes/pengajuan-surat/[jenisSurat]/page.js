@@ -3,6 +3,7 @@
 import { BadgeCheck, UserCheck, Search, SlidersHorizontal } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 const statusMap = {
   approved: "Selesai",
@@ -12,10 +13,6 @@ const statusMap = {
 const statusStyle = {
   Selesai: "text-green-600 font-semibold",
   "Butuh Konfirmasi": "text-blue-600 font-semibold",
-};
-
-const iconStyle = {
-  Buka: <Search className="text-blue-600" />,
 };
 
 const mapStatus = (raw) => statusMap[raw] || raw;
@@ -126,7 +123,7 @@ export default function Page() {
       <div className="flex-1 bg-gray-100 p-8">
         <h1 className="text-xl font-bold mb-6">Dashboard Pengajuan Surat / {judul}</h1>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
           <Stat label="Butuh Konfirmasi" value={ringkasan.butuhKonfirmasi} icon={<BadgeCheck size={50} className="text-teal-600" />} />
           <Stat label="Selesai" value={ringkasan.selesai} icon={<UserCheck size={50} className="text-green-500" />} />
         </div>
@@ -134,8 +131,8 @@ export default function Page() {
         <div className="border-t border-gray-400 mb-6 mt-6" />
 
         {/* Search and filter */}
-        <div className="flex justify-end items-center mb-4">
-          <div className="flex items-center border border-gray-500 rounded-md px-4 py-2 bg-white text-gray-500">
+        <div className="flex flex-col sm:flex-row sm:justify-end sm:items-center gap-4 mb-6">
+          <div className="flex items-center border border-gray-500 rounded-md px-4 py-2 bg-white text-gray-500 w-full sm:w-auto min-w-0">
             <Search className="w-5 h-5 mr-2" />
             <input
               type="text"
@@ -199,16 +196,16 @@ export default function Page() {
           </div>
         )}
 
-        <div className="overflow-x-auto">
-          <table className="table-auto w-full border border-black">
+        <div className="w-full overflow-x-auto">
+          <table className="table-fixed w-full border border-black text-[9px] sm:text-sm md:text-base">
             <thead>
               <tr className="bg-green-600 text-white">
-                <th className="border border-black p-2 w-[5%]">No.</th>
-                <th className="px-4 py-2 w-1/5 border border-black">Tanggal</th>
-                <th className="px-4 py-2 w-1/5 border border-black">Nama</th>
-                <th className="px-4 py-2 w-1/5 border border-black">Jenis Surat</th>
-                <th className="px-4 py-2 w-1/5 border border-black">Status</th>
-                <th className="px-4 py-2 w-1/5 border border-black">Aksi</th>
+                <th className="border border-black p-2 w-[10%] whitespace-normal break-words hidden sm:table-cell">No.</th>
+                <th className="border border-black p-2 w-[15%] whitespace-normal break-words">Tanggal</th>
+                <th className="border border-black p-2 w-[20%] whitespace-normal break-words">Nama</th>
+                <th className="border border-black p-2 w-[20%] whitespace-normal break-words">Jenis Surat</th>
+                <th className="border border-black p-2 w-[20%] whitespace-normal break-words">Status</th>
+                <th className="border border-black p-2 w-[15%] whitespace-normal break-words">Aksi</th>
               </tr>
             </thead>
             <tbody>
@@ -230,18 +227,16 @@ export default function Page() {
                   const actionLabel = "Buka";
                   return (
                     <tr key={item.id} className="bg-white text-center">
-                      <td className="border border-black p-2">{(currentPage - 1) * itemsPerPage + index + 1}</td>
-                      <td className="px-4 py-2 border border-black">{formatTanggal(item.created_at)}</td>
-                      <td className="px-4 py-2 border border-black">{item.user?.name || "-"}</td>
-                      <td className="px-4 py-2 border border-black">{item.surat?.nama_surat || judul}</td>
-                      <td className={`px-4 py-2 border border-black ${statusStyle[statusLabel] || ""}`}>{statusLabel}</td>
-                      <td className="px-4 py-2 border border-black">
-                        <div className="flex justify-center items-center gap-1">
-                          <button onClick={() => router.push(`/kepdes/pengajuan-surat/${jenisSurat}/${item.id}?status=${item.status}`)} className="flex items-center gap-1 text-sm text-black hover:underline">
-                            {iconStyle[actionLabel]}
-                            <span>{actionLabel}</span>
-                          </button>
-                        </div>
+                      <td className="border border-black p-2 whitespace-normal break-words hidden sm:table-cell">{(currentPage - 1) * itemsPerPage + index + 1}</td>
+                      <td className="border border-black p-2 whitespace-normal break-words">{formatTanggal(item.created_at)}</td>
+                      <td className="border border-black p-2 whitespace-normal break-words">{item.user?.name || "-"}</td>
+                      <td className="border border-black p-2 whitespace-normal break-words">{item.surat?.nama_surat || judul}</td>
+                      <td className={`border border-black p-2 whitespace-normal break-words ${statusStyle[statusLabel] || ""}`}>{statusLabel}</td>
+                      <td className="border border-black p-2 whitespace-normal break-words">
+                        <Link href={`/kepdes/pengajuan-surat/${jenisSurat}/${item.id}?status=${item.status}`} className="flex flex-col items-center justify-center text-center group text-[9px] sm:text-sm">
+                          <Search className="text-sky-500 w-4 h-4 sm:w-5 sm:h-5 group-hover:scale-105 transition-transform" />
+                          <span className="text-black group-hover:underline">Buka</span>
+                        </Link>
                       </td>
                     </tr>
                   );

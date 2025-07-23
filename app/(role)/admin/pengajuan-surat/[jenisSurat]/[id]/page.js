@@ -4,17 +4,14 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ChevronLeft } from "lucide-react";
 
-import Nik from "@/components/form/Nik";
-import NamaLengkap from "@/components/form/NamaLengkap";
-import TempatLahir from "@/components/form/TempatLahir";
-import TanggalLahir from "@/components/form/TanggalLahir";
-import JenisKelamin from "@/components/form/JenisKelamin";
-import Alamat from "@/components/form/Alamat";
-import Pekerjaan from "@/components/form/Pekerjaan";
-import Dusun from "@/components/form/Dusun";
-import RtRw from "@/components/form/RtRw";
-import Tanggal from "@/components/form/Tanggal";
-import NomorDokumen from "@/components/form/NomorDokumen";
+import AngkaHuruf from "@/components/forms/AngkaHuruf";
+import Dusun from "@/components/forms/Dusun";
+import Huruf from "@/components/forms/Huruf";
+import JenisKelamin from "@/components/forms/JenisKelamin";
+import NIK from "@/components/forms/NIK";
+import RTRW from "@/components/forms/RTRW";
+import Tanggal from "@/components/forms/Tanggal";
+import Date from "@/components/forms/Date";
 
 export default function DetailAjuanSuratPage() {
   const { jenisSurat, id } = useParams();
@@ -23,6 +20,7 @@ export default function DetailAjuanSuratPage() {
   const [slug, setSlug] = useState(null);
   const [surat, setSurat] = useState(null);
 
+  const [formKey, setFormKey] = useState(null);
   const [showTolakModal, setShowTolakModal] = useState(false);
   const [showVerifikasiModal, setShowVerifikasiModal] = useState(false);
   const [alasan_penolakan, setAlasanPenolakan] = useState("");
@@ -52,6 +50,7 @@ export default function DetailAjuanSuratPage() {
         if (found) {
           setSlug(found.slug);
           setSurat(found);
+          setFormKey(found.kode_surat);
         }
       } catch (err) {
         console.error("⚠️ Gagal mendapatkan slug:", err);
@@ -165,24 +164,24 @@ export default function DetailAjuanSuratPage() {
               <div className="pt-4 mb-6">
                 <p className="text-xl font-semibold text-gray-700 mb-4">Informasi Pengajuan Surat</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <NomorDokumen value={ajuan.nomor_surat_tersimpan || "-"} disabled />
-                  <Tanggal value={ajuan.created_at?.split("T")[0] || "-"} disabled />
+                  <AngkaHuruf value={ajuan.nomor_surat_tersimpan || "-"} disabled label="Nomor Surat" />
+                  <Date value={ajuan.created_at?.split("T")[0] || "-"} disabled label="Tanggal" />
                 </div>
               </div>
 
-              {profile && (
+              {formKey !== "SKL" && profile && (
                 <>
                   <legend className="pt-4 text-xl font-semibold text-gray-700">Informasi Pribadi</legend>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 mb-6">
-                    <Nik value={user?.nik || ""} disabled />
-                    <NamaLengkap value={user?.name || ""} disabled />
-                    <TempatLahir value={profile?.tempat_lahir || ""} disabled />
-                    <TanggalLahir value={profile?.tanggal_lahir || ""} disabled />
-                    <JenisKelamin value={profile?.jenis_kelamin || ""} disabled />
-                    <Alamat value={profile?.alamat || ""} disabled />
-                    <Pekerjaan value={profile?.pekerjaan || ""} disabled />
-                    <Dusun value={profile?.dusun || ""} disabled />
-                    <RtRw value={profile?.rt_rw || ""} disabled />
+                    <NIK value={user?.nik || ""} disabled label="NIK" />
+                    <Huruf value={user?.name || ""} disabled label="Nama Lengkap" />
+                    <Huruf value={profile?.tempat_lahir || ""} disabled label="Tempat Lahir" />
+                    <Tanggal value={profile?.tanggal_lahir || ""} disabled label="Tanggal Lahir" />
+                    <JenisKelamin value={profile?.jenis_kelamin || ""} disabled label="Jenis Kelamin" />
+                    <AngkaHuruf value={profile?.alamat || ""} disabled label="Alamat" />
+                    <Huruf value={profile?.pekerjaan || ""} disabled label="Pekerjaan" />
+                    <Dusun value={profile?.dusun || ""} disabled label="Dusun" />
+                    <RTRW value={profile?.rt_rw || ""} disabled />
                   </div>
                 </>
               )}
@@ -193,7 +192,7 @@ export default function DetailAjuanSuratPage() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {Object.entries(editedDataSurat).map(([key, value]) => (
                       <div key={key} className="capitalize">
-                        <NamaLengkap value={value} disabled={!isEditing} label={key.replaceAll("_", " ")} onChange={({ value }) => handleEditChange(key, value)} />
+                        <AngkaHuruf value={value} disabled={!isEditing} label={key.replaceAll("_", " ")} onChange={({ value }) => handleEditChange(key, value)} />
                       </div>
                     ))}
                   </div>

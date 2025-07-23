@@ -2,9 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
-import Username, { validateUsername } from "@/components/form/Username";
-import KataSandi, { validatePassword } from "@/components/form/KataSandi";
+import KataSandi, { validateKataSandi } from "@/components/forms/KataSandi";
+import AngkaHuruf, { validateAngkaHuruf } from "@/components/forms/AngkaHuruf";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -15,8 +14,8 @@ export default function LoginPage() {
 
   const handleChange = ({ name, value }) => {
     setForm((prev) => ({ ...prev, [name]: value }));
-    if (name === "username") setErrors((prev) => ({ ...prev, username: validateUsername(value) }));
-    if (name === "password") setErrors((prev) => ({ ...prev, password: validatePassword(value) }));
+    if (name === "username") setErrors((prev) => ({ ...prev, username: validateAngkaHuruf(value) }));
+    if (name === "password") setErrors((prev) => ({ ...prev, password: validateKataSandi(value) }));
   };
 
   const validate = () => {
@@ -84,8 +83,8 @@ export default function LoginPage() {
       <h2 className="text-4xl font-bold mb-6 text-center text-[#27AE60]">MASUK</h2>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        <Username value={form.username} onChange={handleChange} error={errors.username} />
-        <KataSandi value={form.password} onChange={handleChange} error={errors.password} />
+        <AngkaHuruf name="username" value={form.username} onChange={handleChange} error={errors.username} label="Username"/>
+        <KataSandi name="password" value={form.password} onChange={handleChange} error={errors.password} label="Kata Sandi"/>
         {errors.general && <p className="text-red-600 text-sm text-center">{errors.general}</p>}
 
         <button type="submit" disabled={loading} className="w-full bg-[#27AE60] text-white py-2 rounded-md hover:bg-green-600 disabled:opacity-50">

@@ -59,17 +59,16 @@ export async function PUT(request, { params }) {
       body: JSON.stringify(body),
     });
 
-    if (!response.ok) {
-      const errorBody = await response.text();
-      console.error("❌ Error response:", errorBody);
-      return new Response(
-        JSON.stringify({
-          error: "Gagal memperbarui data di server.",
-          detail: errorBody,
-        }),
-        { status: response.status, headers: { "Content-Type": "application/json" } }
-      );
-    }
+   if (!response.ok) {
+  const errorBody = await response.json();
+  console.error("❌ Error response:", errorBody);
+
+  return new Response(
+    JSON.stringify(errorBody),
+    { status: response.status, headers: { "Content-Type": "application/json" } }
+  );
+}
+
 
     const data = await response.json();
 

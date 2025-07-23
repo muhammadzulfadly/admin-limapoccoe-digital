@@ -4,23 +4,18 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Trash2, ChevronDown, ChevronUp, ChevronLeft } from "lucide-react";
 
-import Nik, { validateNik } from "@/components/form/Nik";
-import NamaLengkap, { validateNama } from "@/components/form/NamaLengkap";
-import Hubungan, { validateHubungan } from "@/components/form/StatusHubungan";
-import TempatLahir, { validateTempat } from "@/components/form/TempatLahir";
-import TglLahir, { validateTanggal } from "@/components/form/TanggalLahir";
-import JenisKelamin, { validateGender } from "@/components/form/JenisKelamin";
-import StatusPerkawinan, { validatePerkawinan } from "@/components/form/StatusPerkawinan";
-import Agama, { validateAgama } from "@/components/form/Agama";
-import Pendidikan, { validatePendidikan } from "@/components/form/Pendidikan";
-import Pekerjaan, { validatePekerjaan } from "@/components/form/Pekerjaan";
-import NoBpjs, { validateBpjs } from "@/components/form/Bpjs";
-import NamaAyah, { validateNamaAyah } from "@/components/form/NamaAyah";
-import NamaIbu, { validateNamaIbu } from "@/components/form/NamaIbu";
-import NoRumah, { validateNoRumah } from "@/components/form/NomorRumah";
-import RtRw, { validateRtRw } from "@/components/form/RtRw";
-import Dusun, { validateDusun } from "@/components/form/Dusun";
-import NomorKk, { validateNomorKK } from "@/components/form/NomorKk";
+import NIK, { validateNIK } from "@/components/forms/NIK";
+import Huruf, { validateHuruf } from "@/components/forms/Huruf";
+import StatusHubungan, { validateStatusHubungan } from "@/components/forms/StatusHubungan";
+import Tanggal, { validateTanggal } from "@/components/forms/Tanggal";
+import JenisKelamin, { validateJenisKelamin} from "@/components/forms/JenisKelamin";
+import StatusPerkawinan, { validateStatusPerkawinan } from "@/components/forms/StatusPerkawinan";
+import Agama, { validateAgama } from "@/components/forms/Agama";
+import Pendidikan, { validatePendidikan } from "@/components/forms/Pendidikan";
+import BPJS, { validateBPJS} from "@/components/forms/BPJS";
+import Angka, { validateAngka} from "@/components/forms/Angka";
+import RTRW, { validateRTRW} from "@/components/forms/RTRW";
+import Dusun, { validateDusun } from "@/components/forms/Dusun";
 
 export default function TambahDataKependudukan() {
   const router = useRouter();
@@ -68,9 +63,9 @@ export default function TambahDataKependudukan() {
     let hasError = false;
 
     // Validasi rumah
-    newErrors.nomor_kk = validateNomorKK(form.nomor_kk);
-    newErrors.no_rumah = validateNoRumah(form.no_rumah);
-    newErrors.rt_rw = validateRtRw(form.rt_rw);
+    newErrors.nomor_kk = validateNIK(form.nomor_kk);
+    newErrors.no_rumah = validateAngka(form.no_rumah);
+    newErrors.rt_rw = validateRTRW(form.rt_rw);
     newErrors.dusun = validateDusun(form.dusun);
 
     if (newErrors.nomor_kk) hasError = true;
@@ -82,19 +77,23 @@ export default function TambahDataKependudukan() {
     form.anggota.forEach((anggota, i) => {
       const anggotaErrors = {};
 
-      anggotaErrors.nik = validateNik(anggota.nik);
-      anggotaErrors.hubungan = validateHubungan(anggota.hubungan);
-      anggotaErrors.nama_lengkap = validateNama(anggota.nama_lengkap);
-      anggotaErrors.tempat_lahir = validateTempat(anggota.tempat_lahir);
+      anggotaErrors.nik = validateNIK(anggota.nik);
+      anggotaErrors.hubungan = validateStatusHubungan(anggota.hubungan);
+      anggotaErrors.nama_lengkap = validateHuruf(anggota.nama_lengkap);
+      anggotaErrors.tempat_lahir = validateHuruf(anggota.tempat_lahir);
       anggotaErrors.tgl_lahir = validateTanggal(anggota.tgl_lahir);
-      anggotaErrors.jenis_kelamin = validateGender(anggota.jenis_kelamin);
-      anggotaErrors.status_perkawinan = validatePerkawinan(anggota.status_perkawinan);
+      anggotaErrors.jenis_kelamin = validateJenisKelamin(anggota.jenis_kelamin);
+      anggotaErrors.status_perkawinan = validateStatusPerkawinan(anggota.status_perkawinan);
       anggotaErrors.agama = validateAgama(anggota.agama);
       anggotaErrors.pendidikan = validatePendidikan(anggota.pendidikan);
-      anggotaErrors.pekerjaan = validatePekerjaan(anggota.pekerjaan);
-      anggotaErrors.no_bpjs = validateBpjs(anggota.no_bpjs);
-      anggotaErrors.nama_ayah = validateNamaAyah(anggota.nama_ayah);
-      anggotaErrors.nama_ibu = validateNamaIbu(anggota.nama_ibu);
+      anggotaErrors.pekerjaan = validateHuruf(anggota.pekerjaan);
+      anggotaErrors.nama_ayah = validateHuruf(anggota.nama_ayah);
+      anggotaErrors.nama_ibu = validateHuruf(anggota.nama_ibu);
+
+      // BPJS tidak wajib diisi, hanya validasi jika ada isinya
+      if (anggota.no_bpjs && anggota.no_bpjs.trim() !== "") {
+        anggotaErrors.no_bpjs = validateBPJS(anggota.no_bpjs);
+      }
 
       if (Object.values(anggotaErrors).some((msg) => msg)) {
         hasError = true;
@@ -201,16 +200,16 @@ export default function TambahDataKependudukan() {
           </button>
           <h3 className="font-semibold mb-3">Informasi Rumah</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <NoRumah value={form.no_rumah} onChange={(v) => setForm({ ...form, no_rumah: v.value })} error={errors.no_rumah} />
-            <Dusun value={form.dusun} onChange={(v) => setForm({ ...form, dusun: v.value })} error={errors.dusun} />
-            <RtRw value={form.rt_rw} onChange={(v) => setForm({ ...form, rt_rw: v.value })} error={errors.rt_rw} />
+            <Angka value={form.no_rumah} onChange={(v) => setForm({ ...form, no_rumah: v.value })} error={errors.no_rumah} label="No. Rumah"/>
+            <Dusun value={form.dusun} onChange={(v) => setForm({ ...form, dusun: v.value })} error={errors.dusun} label="Dusun"/>
+            <RTRW value={form.rt_rw} onChange={(v) => setForm({ ...form, rt_rw: v.value })} error={errors.rt_rw} />
           </div>
         </div>
 
         {/* Informasi KK */}
         <div className="border bg-white p-4 rounded-md">
           <h3 className="font-semibold mb-3">Informasi Keluarga</h3>
-          <NomorKk value={form.nomor_kk} onChange={(v) => setForm({ ...form, nomor_kk: v.value })} error={errors.nomor_kk} />
+          <NIK value={form.nomor_kk} onChange={(v) => setForm({ ...form, nomor_kk: v.value })} error={errors.nomor_kk} label="No. Kartu Keluarga"/>
         </div>
 
         {/* Anggota */}
@@ -257,19 +256,19 @@ export default function TambahDataKependudukan() {
 
               {openForm[index] && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Nik value={item.nik} onChange={(v) => updateAnggota(index, "nik", v)} error={errors.anggota[index]?.nik} />
-                  <NamaLengkap value={item.nama_lengkap} onChange={(v) => updateAnggota(index, "nama_lengkap", v)} error={errors.anggota[index]?.nama_lengkap} />
-                  <Hubungan value={item.hubungan} onChange={(v) => updateAnggota(index, "hubungan", v)} error={errors.anggota[index]?.hubungan} />
-                  <TempatLahir value={item.tempat_lahir} onChange={(v) => updateAnggota(index, "tempat_lahir", v)} error={errors.anggota[index]?.tempat_lahir} />
-                  <TglLahir value={item.tgl_lahir} onChange={(v) => updateAnggota(index, "tgl_lahir", v)} error={errors.anggota[index]?.tgl_lahir} />
-                  <JenisKelamin value={item.jenis_kelamin} onChange={(v) => updateAnggota(index, "jenis_kelamin", v)} error={errors.anggota[index]?.jenis_kelamin} />
-                  <StatusPerkawinan value={item.status_perkawinan} onChange={(v) => updateAnggota(index, "status_perkawinan", v)} error={errors.anggota[index]?.status_perkawinan} />
-                  <Agama value={item.agama} onChange={(v) => updateAnggota(index, "agama", v)} error={errors.anggota[index]?.agama} />
-                  <Pendidikan value={item.pendidikan} onChange={(v) => updateAnggota(index, "pendidikan", v)} error={errors.anggota[index]?.pendidikan} />
-                  <Pekerjaan value={item.pekerjaan} onChange={(v) => updateAnggota(index, "pekerjaan", v)} error={errors.anggota[index]?.pekerjaan} />
-                  <NamaAyah value={item.nama_ayah} onChange={(v) => updateAnggota(index, "nama_ayah", v)} error={errors.anggota[index]?.nama_ayah} />
-                  <NamaIbu value={item.nama_ibu} onChange={(v) => updateAnggota(index, "nama_ibu", v)} error={errors.anggota[index]?.nama_ibu} />
-                  <NoBpjs value={item.no_bpjs} onChange={(v) => updateAnggota(index, "no_bpjs", v)} error={errors.anggota[index]?.no_bpjs} />
+                  <NIK value={item.nik} onChange={(v) => updateAnggota(index, "nik", v)} error={errors.anggota[index]?.nik} />
+                  <Huruf value={item.nama_lengkap} onChange={(v) => updateAnggota(index, "nama_lengkap", v)} error={errors.anggota[index]?.nama_lengkap} label="Nama Lengkap"/>
+                  <StatusHubungan value={item.hubungan} onChange={(v) => updateAnggota(index, "hubungan", v)} error={errors.anggota[index]?.hubungan} />
+                  <Huruf value={item.tempat_lahir} onChange={(v) => updateAnggota(index, "tempat_lahir", v)} error={errors.anggota[index]?.tempat_lahir} label="Tempat Lahir"/>
+                  <Tanggal value={item.tgl_lahir} onChange={(v) => updateAnggota(index, "tgl_lahir", v)} error={errors.anggota[index]?.tgl_lahir} label="Tanggal Lahir"/>
+                  <JenisKelamin value={item.jenis_kelamin} onChange={(v) => updateAnggota(index, "jenis_kelamin", v)} error={errors.anggota[index]?.jenis_kelamin} label="Jenis Kelamin"/>
+                  <StatusPerkawinan value={item.status_perkawinan} onChange={(v) => updateAnggota(index, "status_perkawinan", v)} error={errors.anggota[index]?.status_perkawinan} label="Status Perkawinan"/>
+                  <Agama value={item.agama} onChange={(v) => updateAnggota(index, "agama", v)} error={errors.anggota[index]?.agama} label="Agama"/>
+                  <Pendidikan value={item.pendidikan} onChange={(v) => updateAnggota(index, "pendidikan", v)} error={errors.anggota[index]?.pendidikan} label="Pendidikan Terakhir"/>
+                  <Huruf value={item.pekerjaan} onChange={(v) => updateAnggota(index, "pekerjaan", v)} error={errors.anggota[index]?.pekerjaan} label="Pekerjaan"/>
+                  <Huruf value={item.nama_ayah} onChange={(v) => updateAnggota(index, "nama_ayah", v)} error={errors.anggota[index]?.nama_ayah} label="Nama Ayah"/>
+                  <Huruf value={item.nama_ibu} onChange={(v) => updateAnggota(index, "nama_ibu", v)} error={errors.anggota[index]?.nama_ibu} label="Nama Ibu"/>
+                  <BPJS value={item.no_bpjs} onChange={(v) => updateAnggota(index, "no_bpjs", v)} error={errors.anggota[index]?.no_bpjs} />
                 </div>
               )}
             </div>

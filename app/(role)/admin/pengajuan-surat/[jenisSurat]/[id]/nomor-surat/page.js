@@ -135,7 +135,7 @@ export default function InputNomorSuratPage() {
         <h2 className="text-2xl font-semibold mb-4">
           {namaUser} / {namaSurat} / Nomor surat
         </h2>
-        <div className="bg-white rounded-lg shadow-md p-8 mx-auto">
+        <div className="bg-white rounded-lg shadow-md p-4 sm:p-8 mx-auto w-full">
           <button type="button" onClick={() => router.push(`/admin/pengajuan-surat/${jenisSurat}/${id}`)} className="flex items-center text-base text-gray-500 mb-6">
             <ChevronLeft size={30} className="mr-1" />
             Kembali
@@ -149,17 +149,17 @@ export default function InputNomorSuratPage() {
                 value={nomorSurat}
                 onChange={(e) => setNomorSurat(e.target.value)}
                 onWheel={(e) => e.target.blur()}
-                className="w-20 px-2 py-2 border rounded text-center focus:outline-none focus:ring-2 focus:ring-green-600"
+                className="w-24 sm:w-20 px-2 py-2 border rounded text-center focus:outline-none focus:ring-2 focus:ring-green-600"
                 required
               />
-              <span className="text-lg text-gray-700">/{kodeSurat}/10.2003/VII/2025</span>
+              <span className="text-sm sm:text-lg text-gray-700 text-wrap text-center">/{kodeSurat}/10.2003/VII/2025</span>
             </div>
             <p className="text-center text-sm text-gray-500 mb-4">Nomor Surat Terakhir : {nomorSuratTerakhir} </p>
 
             {errorMsg && <p className="text-red-600 text-sm text-center mb-2">{errorMsg}</p>}
 
             <div className="flex justify-center mt-2">
-              <button type="submit" className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 transition">
+              <button type="submit" className="bg-green-600 text-white px-4 sm:px-6 py-2 w-full sm:w-auto text-sm sm:text-base rounded hover:bg-green-700 transition">
                 Submit
               </button>
             </div>
@@ -170,7 +170,7 @@ export default function InputNomorSuratPage() {
       {/* ✅ Popup Konfirmasi */}
       {showConfirmPopup && (
         <div className="fixed inset-0 bg-black bg-opacity-30 z-50 flex items-center justify-center">
-          <div className="bg-white rounded-lg shadow-md px-6 py-8 text-center max-w-sm mx-auto border border-gray-300">
+          <div className="bg-white rounded-lg shadow-md px-4 sm:px-6 py-6 text-center w-full max-w-sm mx-4">
             <h3 className="text-green-600 font-bold text-lg mb-3">Konfirmasi Nomor Surat!</h3>
             <p className="text-gray-700 text-sm mb-4">Apakah Anda yakin nomor surat yang dimasukkan sudah benar dan sesuai format?</p>
             <div className="flex flex-col">

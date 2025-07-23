@@ -83,7 +83,7 @@ export default function DashboardPage() {
           {loadingSurat ? (
             <p className="text-gray-500 italic">Memuat data pengajuan...</p>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
               <ButuhKonfirmasiCard count={countByStatus(pengajuan, "confirmed")} />
               <SelesaiCard count={countByStatus(pengajuan, "approved")} />
             </div>
@@ -98,7 +98,7 @@ export default function DashboardPage() {
           {loadingPengaduan ? (
             <p className="text-gray-500 italic">Memuat data pengaduan...</p>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
               <DiterimaCard count={countByStatus(pengaduan, "processed")} />
               <SelesaiCard count={countByStatus(pengaduan, "approved")} />
             </div>
@@ -109,7 +109,7 @@ export default function DashboardPage() {
         {/* Panduan */}
         <section>
           <h2 className="font-semibold text-2xl mb-4">Panduan Pengguna</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
             <UserGuideCard />
           </div>
         </section>

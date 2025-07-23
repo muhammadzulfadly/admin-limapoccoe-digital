@@ -4,23 +4,18 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { ChevronLeft, ChevronDown, ChevronUp, Trash2 } from "lucide-react";
 
-import Nik from "@/components/form/Nik";
-import NamaLengkap from "@/components/form/NamaLengkap";
-import Hubungan from "@/components/form/StatusHubungan";
-import TempatLahir from "@/components/form/TempatLahir";
-import TglLahir from "@/components/form/TanggalLahir";
-import JenisKelamin from "@/components/form/JenisKelamin";
-import StatusPerkawinan from "@/components/form/StatusPerkawinan";
-import Agama from "@/components/form/Agama";
-import Pendidikan from "@/components/form/Pendidikan";
-import Pekerjaan from "@/components/form/Pekerjaan";
-import NoBpjs from "@/components/form/Bpjs";
-import NamaAyah from "@/components/form/NamaAyah";
-import NamaIbu from "@/components/form/NamaIbu";
-import NoRumah from "@/components/form/NomorRumah";
-import RtRw from "@/components/form/RtRw";
-import Dusun from "@/components/form/Dusun";
-import NomorKk from "@/components/form/NomorKk";
+import NIK, { validateNIK } from "@/components/forms/NIK";
+import Huruf, { validateHuruf } from "@/components/forms/Huruf";
+import StatusHubungan, { validateStatusHubungan } from "@/components/forms/StatusHubungan";
+import Tanggal, { validateTanggal } from "@/components/forms/Tanggal";
+import JenisKelamin, { validateJenisKelamin } from "@/components/forms/JenisKelamin";
+import StatusPerkawinan, { validateStatusPerkawinan } from "@/components/forms/StatusPerkawinan";
+import Agama, { validateAgama } from "@/components/forms/Agama";
+import Pendidikan, { validatePendidikan } from "@/components/forms/Pendidikan";
+import BPJS, { validateBPJS } from "@/components/forms/BPJS";
+import Angka, { validateAngka } from "@/components/forms/Angka";
+import RTRW, { validateRTRW } from "@/components/forms/RTRW";
+import Dusun, { validateDusun } from "@/components/forms/Dusun";
 
 function SuccessPopup({ title = "Berhasil", message, onClose }) {
   return (
@@ -83,6 +78,7 @@ export default function DetailKeluargaPage() {
   const [successMsg, setSuccessMsg] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [confirmIndex, setConfirmIndex] = useState(null);
+  const [errors, setErrors] = useState({ nomor_kk: "", no_rumah: "", dusun: "", rt_rw: "", anggota: [] });
 
   useEffect(() => {
     const fetchDetail = async () => {
@@ -120,6 +116,13 @@ export default function DetailKeluargaPage() {
         });
 
         setOpenForm(Array(data.anggota.length).fill(true));
+        setErrors({
+          nomor_kk: "",
+          no_rumah: "",
+          dusun: "",
+          rt_rw: "",
+          anggota: Array(data.anggota.length).fill({}),
+        });
       } catch (err) {
         setErrorMessage(err.message || "Terjadi kesalahan saat memuat data.");
       } finally {
@@ -194,6 +197,51 @@ export default function DetailKeluargaPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const newErrors = { nomor_kk: "", no_rumah: "", dusun: "", rt_rw: "", anggota: [] };
+    let hasError = false;
+
+    // Validasi rumah
+    newErrors.nomor_kk = validateNIK(form.nomor_kk);
+    newErrors.no_rumah = validateAngka(form.no_rumah);
+    newErrors.rt_rw = validateRTRW(form.rt_rw);
+    newErrors.dusun = validateDusun(form.dusun);
+
+    if (newErrors.nomor_kk || newErrors.no_rumah || newErrors.rt_rw || newErrors.dusun) {
+      hasError = true;
+    }
+
+    // Validasi anggota
+    form.anggota.forEach((anggota, i) => {
+      const anggotaErrors = {};
+
+      anggotaErrors.nik = validateNIK(anggota.nik);
+      anggotaErrors.hubungan = validateStatusHubungan(anggota.hubungan);
+      anggotaErrors.nama_lengkap = validateHuruf(anggota.nama_lengkap);
+      anggotaErrors.tempat_lahir = validateHuruf(anggota.tempat_lahir);
+      anggotaErrors.tgl_lahir = validateTanggal(anggota.tgl_lahir);
+      anggotaErrors.jenis_kelamin = validateJenisKelamin(anggota.jenis_kelamin);
+      anggotaErrors.status_perkawinan = validateStatusPerkawinan(anggota.status_perkawinan);
+      anggotaErrors.agama = validateAgama(anggota.agama);
+      anggotaErrors.pendidikan = validatePendidikan(anggota.pendidikan);
+      anggotaErrors.pekerjaan = validateHuruf(anggota.pekerjaan);
+      anggotaErrors.nama_ayah = validateHuruf(anggota.nama_ayah);
+      anggotaErrors.nama_ibu = validateHuruf(anggota.nama_ibu);
+
+      // BPJS tidak wajib diisi, hanya validasi jika ada isinya
+      if (anggota.no_bpjs && anggota.no_bpjs.trim() !== "") {
+        anggotaErrors.no_bpjs = validateBPJS(anggota.no_bpjs);
+      }
+
+      if (Object.values(anggotaErrors).some((msg) => msg)) hasError = true;
+      newErrors.anggota[i] = anggotaErrors;
+    });
+
+    if (hasError) {
+      setErrors(newErrors);
+      return;
+    }
+
+    // Submit jika valid
     try {
       const token = localStorage.getItem("token");
       const res = await fetch(`/api/population/${id}`, {
@@ -206,11 +254,29 @@ export default function DetailKeluargaPage() {
       });
 
       if (!res.ok) {
-        const json = await res.json();
-        throw new Error(json.error || "Gagal memperbarui data.");
-      }
+        const data = await res.json();
+        if (res.status === 422 && data.errors) {
+          const backendErrors = { nomor_kk: "", anggota: [] };
 
-      setSuccessMsg("Data warga telah berhasil diperbarui. Informasi terbaru sudah tersimpan di sistem dan dapat langsung terlihat di daftar data masyarakat.");
+          if (data.errors.nomor_kk) {
+            backendErrors.nomor_kk = data.errors.nomor_kk[0];
+          }
+
+          form.anggota.forEach((_, i) => {
+            const anggotaErr = {};
+            if (data.errors[`anggota.${i}.nik`]) {
+              anggotaErr.nik = data.errors[`anggota.${i}.nik`][0];
+            }
+            backendErrors.anggota[i] = anggotaErr;
+          });
+
+          setErrors(backendErrors);
+          return;
+        }
+        setErrorMessage(data.message || "Gagal menyimpan data.");
+        return;
+      }
+      setSuccessMsg("Data warga telah berhasil diperbarui.");
       setShowSuccess(true);
     } catch (err) {
       setErrorMessage(err.message || "Terjadi kesalahan saat memperbarui data.");
@@ -246,16 +312,16 @@ export default function DetailKeluargaPage() {
           </button>
           <h3 className="font-semibold mb-3">Informasi Rumah</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <NoRumah value={form.no_rumah ?? ""} onChange={(v) => setForm({ ...form, no_rumah: v.value })} disabled={!isEditMode} />
-            <Dusun value={form.dusun ?? ""} onChange={(v) => setForm({ ...form, dusun: v.value })} disabled={!isEditMode} />
-            <RtRw value={form.rt_rw ?? ""} onChange={(v) => setForm({ ...form, rt_rw: v.value })} disabled={!isEditMode} />
+            <Angka value={form.no_rumah ?? ""} onChange={(v) => setForm({ ...form, no_rumah: v.value })} disabled={!isEditMode} label="No. Rumah" error={errors.no_rumah} />
+            <Dusun value={form.dusun ?? ""} onChange={(v) => setForm({ ...form, dusun: v.value })} disabled={!isEditMode} label="Dusun" error={errors.dusun} />
+            <RTRW value={form.rt_rw ?? ""} onChange={(v) => setForm({ ...form, rt_rw: v.value })} disabled={!isEditMode} error={errors.rt_rw} />
           </div>
         </div>
 
         {/* Informasi KK */}
         <div className="border bg-white p-4 rounded-md">
           <h3 className="font-semibold mb-3">Informasi Keluarga</h3>
-          <NomorKk value={form.nomor_kk} onChange={(v) => setForm({ ...form, nomor_kk: v.value })} disabled={!isEditMode} />
+          <NIK value={form.nomor_kk} onChange={(v) => setForm({ ...form, nomor_kk: v.value })} disabled={!isEditMode} label="No. Kartu Keluarga" error={errors.nomor_kk} />
         </div>
 
         {/* Anggota */}
@@ -279,7 +345,7 @@ export default function DetailKeluargaPage() {
                 </button>
 
                 {isEditMode && form.anggota.length > 1 && (
-                  <button type="button" onClick={() => setConfirmIndex(index)}className="text-red-600 hover:text-red-800" title="Hapus Anggota">
+                  <button type="button" onClick={() => setConfirmIndex(index)} className="text-red-600 hover:text-red-800" title="Hapus Anggota">
                     <Trash2 size={16} />
                   </button>
                 )}
@@ -287,19 +353,19 @@ export default function DetailKeluargaPage() {
 
               {openForm[index] && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Nik value={item.nik ?? ""} onChange={(v) => updateAnggota(index, "nik", v)} disabled={!isEditMode} />
-                  <NamaLengkap value={item.nama_lengkap ?? ""} onChange={(v) => updateAnggota(index, "nama_lengkap", v)} disabled={!isEditMode} />
-                  <Hubungan value={item.hubungan ?? ""} onChange={(v) => updateAnggota(index, "hubungan", v)} disabled={!isEditMode} />
-                  <TempatLahir value={item.tempat_lahir ?? ""} onChange={(v) => updateAnggota(index, "tempat_lahir", v)} disabled={!isEditMode} />
-                  <TglLahir value={item.tgl_lahir} onChange={(v) => updateAnggota(index, "tgl_lahir", v)} disabled={!isEditMode} />
-                  <JenisKelamin value={item.jenis_kelamin ?? ""} onChange={(v) => updateAnggota(index, "jenis_kelamin", v)} disabled={!isEditMode} />
-                  <StatusPerkawinan value={item.status_perkawinan ?? ""} onChange={(v) => updateAnggota(index, "status_perkawinan", v)} disabled={!isEditMode} />
-                  <Agama value={item.agama ?? ""} onChange={(v) => updateAnggota(index, "agama", v)} disabled={!isEditMode} />
-                  <Pendidikan value={item.pendidikan ?? ""} onChange={(v) => updateAnggota(index, "pendidikan", v)} disabled={!isEditMode} />
-                  <Pekerjaan value={item.pekerjaan ?? ""} onChange={(v) => updateAnggota(index, "pekerjaan", v)} disabled={!isEditMode} />
-                  <NamaAyah value={item.nama_ayah ?? ""} onChange={(v) => updateAnggota(index, "nama_ayah", v)} disabled={!isEditMode} />
-                  <NamaIbu value={item.nama_ibu ?? ""} onChange={(v) => updateAnggota(index, "nama_ibu", v)} disabled={!isEditMode} />
-                  <NoBpjs value={item.no_bpjs ?? ""} onChange={(v) => updateAnggota(index, "no_bpjs", v)} disabled={!isEditMode} />
+                  <NIK value={item.nik ?? ""} onChange={(v) => updateAnggota(index, "nik", v)} disabled={!isEditMode} error={errors.anggota[index]?.nik} />
+                  <Huruf value={item.nama_lengkap ?? ""} onChange={(v) => updateAnggota(index, "nama_lengkap", v)} disabled={!isEditMode} label="Nama Lengkap" error={errors.anggota[index]?.nama_lengkap} />
+                  <StatusHubungan value={item.hubungan ?? ""} onChange={(v) => updateAnggota(index, "hubungan", v)} disabled={!isEditMode} error={errors.anggota[index]?.hubungan} />
+                  <Huruf value={item.tempat_lahir ?? ""} onChange={(v) => updateAnggota(index, "tempat_lahir", v)} disabled={!isEditMode} label="Tempat Lahir" error={errors.anggota[index]?.tempat_lahir} />
+                  <Tanggal value={item.tgl_lahir} onChange={(v) => updateAnggota(index, "tgl_lahir", v)} disabled={!isEditMode} label="Tanggal Lahir" error={errors.anggota[index]?.tgl_lahir} />
+                  <JenisKelamin value={item.jenis_kelamin ?? ""} onChange={(v) => updateAnggota(index, "jenis_kelamin", v)} disabled={!isEditMode} error={errors.anggota[index]?.jenis_kelamin} />
+                  <StatusPerkawinan value={item.status_perkawinan ?? ""} onChange={(v) => updateAnggota(index, "status_perkawinan", v)} disabled={!isEditMode} error={errors.anggota[index]?.status_perkawinan} />
+                  <Agama value={item.agama ?? ""} onChange={(v) => updateAnggota(index, "agama", v)} disabled={!isEditMode} error={errors.anggota[index]?.agama} />
+                  <Pendidikan value={item.pendidikan ?? ""} onChange={(v) => updateAnggota(index, "pendidikan", v)} disabled={!isEditMode} error={errors.anggota[index]?.pendidikan} />
+                  <Huruf value={item.pekerjaan ?? ""} onChange={(v) => updateAnggota(index, "pekerjaan", v)} disabled={!isEditMode} label="Pekerjaan" error={errors.anggota[index]?.pekerjaan} />
+                  <Huruf value={item.nama_ayah ?? ""} onChange={(v) => updateAnggota(index, "nama_ayah", v)} disabled={!isEditMode} label="Nama Ayah" error={errors.anggota[index]?.nama_ayah} />
+                  <Huruf value={item.nama_ibu ?? ""} onChange={(v) => updateAnggota(index, "nama_ibu", v)} disabled={!isEditMode} label="Nama Ibu" error={errors.anggota[index]?.nama_ibu} />
+                  <BPJS value={item.no_bpjs ?? ""} onChange={(v) => updateAnggota(index, "no_bpjs", v)} disabled={!isEditMode} error={errors.anggota[index]?.no_bpjs} />
                 </div>
               )}
             </div>

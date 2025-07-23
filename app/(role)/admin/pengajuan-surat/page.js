@@ -207,7 +207,7 @@ export default function DashboardPage() {
             {loading ? (
               <p className="text-gray-500 italic">Memuat data...</p>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
                 <SedangProsesCard count={pengajuan.filter((x) => x.status === "processed").length} />
                 <ButuhKonfirmasiCard count={pengajuan.filter((x) => x.status === "confirmed").length} />
                 <DitolakCard count={pengajuan.filter((x) => x.status === "rejected").length} />
@@ -217,8 +217,8 @@ export default function DashboardPage() {
 
             <hr className="border-gray-300 border-y mt-6 mb-6" />
 
-            <div className="flex justify-end items-center mb-4">
-              <div className="flex items-center border border-gray-500 rounded-md px-4 py-2 bg-white text-gray-500">
+            <div className="flex flex-col sm:flex-row sm:justify-end sm:items-center gap-4 mb-6">
+              <div className="flex items-center border border-gray-500 rounded-md px-4 py-2 bg-white text-gray-500 w-full sm:w-auto min-w-0">
                 <Search className="w-5 h-5 mr-2" />
                 <input type="text" placeholder="Cari" className="flex-1 outline-none text-sm bg-white placeholder-gray-500" value={searchGlobal} onChange={(e) => setSearchGlobal(e.target.value)} />
                 <button onClick={() => setShowFilter(!showFilter)}>
@@ -242,16 +242,16 @@ export default function DashboardPage() {
               </div>
             )}
 
-            <div className="overflow-x-auto">
-              <table className="table-auto w-full border border-black">
+          <div className="w-full overflow-x-auto">
+            <table className="table-fixed w-full border border-black text-[9px] sm:text-sm md:text-base">
                 <thead>
                   <tr className="bg-green-600 text-white">
-                    <th className="border border-black p-2 w-[5%]">No.</th>
-                    <th className="px-4 py-2 w-1/5 border border-black">Tanggal</th>
-                    <th className="px-4 py-2 w-1/5 border border-black">Nama</th>
-                    <th className="px-4 py-2 w-1/5 border border-black">Jenis Surat</th>
-                    <th className="px-4 py-2 w-1/5 border border-black">Status</th>
-                    <th className="px-4 py-2 w-1/5 border border-black">Aksi</th>
+                    <th className="border border-black p-2 w-[10%] whitespace-normal break-words hidden sm:table-cell">No.</th>
+                    <th className="border border-black p-2 w-[15%] whitespace-normal break-words">Tanggal</th>
+                    <th className="border border-black p-2 w-[20%] whitespace-normal break-words">Nama</th>
+                    <th className="border border-black p-2 w-[20%] whitespace-normal break-words">Jenis Surat</th>
+                    <th className="border border-black p-2 w-[20%] whitespace-normal break-words">Status</th>
+                    <th className="border border-black p-2 w-[15%] whitespace-normal break-words">Aksi</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -273,29 +273,29 @@ export default function DashboardPage() {
                       const actionLabel = statusLabel === "Selesai" ? "Unduh" : "Buka";
                       return (
                         <tr key={item.id} className="bg-white text-center">
-                          <td className="border border-black p-2">{(currentPage - 1) * itemsPerPage + index + 1}</td>
-                          <td className="px-4 py-2 border border-black">{formatTanggal(item.created_at)}</td>
-                          <td className="px-4 py-2 border border-black">{item.user?.name || "-"}</td>
-                          <td className="px-4 py-2 border border-black">{item.suratNama || "-"}</td>
-                          <td className={`px-4 py-2 border border-black ${statusStyle[statusLabel] || ""}`}>{statusLabel}</td>
-                          <td className="px-4 py-2 border border-black">
-                            <div className="flex justify-center items-center gap-1">
+                          <td className="border border-black p-2 whitespace-normal break-words hidden sm:table-cell">{(currentPage - 1) * itemsPerPage + index + 1}</td>
+                          <td className="border border-black p-2 whitespace-normal break-words">{formatTanggal(item.created_at)}</td>
+                          <td className="border border-black p-2 whitespace-normal break-words">{item.user?.name || "-"}</td>
+                          <td className="border border-black p-2 whitespace-normal break-words">{item.suratNama || "-"}</td>
+                          <td className={`border border-black p-2 whitespace-normal break-words ${statusStyle[statusLabel] || ""}`}>{statusLabel}</td>
+                          <td className="border border-black p-2 whitespace-normal break-words">
+                            <div className="flex flex-col items-center justify-center text-center group">
                               {statusLabel === "Selesai" ? (
-                              <button onClick={() => handleDownload(item.id, `${judul}`, `${item.data_surat?.nama || item.user?.name}`)} className="flex items-center gap-1 text-sm text-black hover:underline">
-                                {iconStyle["Unduh"]}
-                                <span>Unduh</span>
-                              </button>
-                            ) : statusLabel === "Butuh Konfirmasi" ? (
-                              <button onClick={() => router.push(`/admin/pengajuan-surat/${jenisSurat}/${item.id}/preview`)} className="flex items-center gap-1 text-sm text-black hover:underline">
-                                {iconStyle["Buka"]}
-                                <span>Buka</span>
-                              </button>
-                            ) : (
-                              <button onClick={() => router.push(`/admin/pengajuan-surat/${jenisSurat}/${item.id}`)} className="flex items-center gap-1 text-sm text-black hover:underline">
-                                {iconStyle["Buka"]}
-                                <span>Buka</span>
-                              </button>
-                            )}
+                                <button onClick={() => handleDownload(item.suratSlug, item.id, item.suratNama, item.data_surat?.nama || item.user?.name)} className="flex flex-col items-center justify-center text-center group text-[9px] sm:text-sm">
+                                  {iconStyle["Unduh"]}
+                                  <span>Unduh</span>
+                                </button>
+                              ) : statusLabel === "Butuh Konfirmasi" ? (
+                                <button onClick={() => router.push(`/admin/pengajuan-surat/${item.suratSlug}/${item.id}/preview`)} className="flex flex-col items-center justify-center text-center group text-[9px] sm:text-sm">
+                                  {iconStyle["Buka"]}
+                                  <span>Buka</span>
+                                </button>
+                              ) : (
+                                <button onClick={() => router.push(`/admin/pengajuan-surat/${item.suratSlug}/${item.id}`)} className="flex flex-col items-center justify-center text-center group text-[9px] sm:text-sm">
+                                  {iconStyle["Buka"]}
+                                  <span>Buka</span>
+                                </button>
+                              )}
                             </div>
                           </td>
                         </tr>

@@ -158,23 +158,24 @@ export default function DashboardPendudukPage() {
           <h1 className="text-xl font-bold mb-3">Dashboard Data Kependudukan</h1>
         </header>
 
-        <div className="flex justify-between items-center mb-6">
-          <div className="flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
+          <div className="grid grid-cols-2 flex-col sm:flex-row gap-2 sm:gap-6 w-full sm:w-auto">
             <Link href="/admin/data-penduduk/tambah">
-              <button className="flex items-center gap-1 px-4 py-2 bg-green-600 text-white rounded-md text-sm hover:bg-green-700 transition">
+              <button className="flex items-center gap-1 px-4 py-2 bg-[#27AE60] text-white rounded-md text-sm hover:bg-green-600 transition w-full sm:w-auto">
                 <Plus className="w-5 h-5" strokeWidth={3} />
-                Tambah Data Penduduk
+                <span className="block sm:hidden">Tambah Data</span>
+                <span className="hidden sm:block">Tambah Data Penduduk</span>
               </button>
             </Link>
             <Link href="/admin/data-penduduk/import">
-              <button className="flex items-center gap-1 px-4 py-2 bg-green-600 text-white rounded-md text-sm hover:bg-green-700 transition">
+              <button className="flex items-center gap-1 px-4 py-2 bg-[#27AE60] text-white rounded-md text-sm hover:bg-green-600 transition w-full sm:w-auto">
                 <FileUp className="w-5 h-5" strokeWidth={2.5} />
                 Import
               </button>
             </Link>
           </div>
 
-          <div className="flex items-center border border-gray-500 rounded-md px-4 py-2 bg-white text-gray-500">
+          <div className="flex items-center border border-gray-500 rounded-md px-4 py-2 bg-white text-gray-500 w-full sm:w-auto min-w-0">
             <Search className="w-5 h-5 mr-2" />
             <input type="text" placeholder="Cari" className="flex-1 outline-none text-sm bg-white placeholder-gray-500" value={searchGlobal} onChange={(e) => setSearchGlobal(e.target.value)} />
             <button onClick={() => setShowFilter(!showFilter)}>
@@ -198,16 +199,16 @@ export default function DashboardPendudukPage() {
           </div>
         )}
 
-        <div className="overflow-x-auto mb-10">
-          <table className="w-full table-fixed border border-black text-sm">
+        <div className="w-full overflow-x-auto">
+          <table className="table-fixed w-full border border-black text-[9px] sm:text-sm md:text-base">
             <thead className="bg-[#27AE60] text-white">
               <tr>
-                <th className="border border-black p-2 w-[5%]">No.</th>
-                <th className="border border-black p-2 w-[25%]">No. KK</th>
-                <th className="border border-black p-2 w-[25%]">Nama Kepala Keluarga</th>
-                <th className="border border-black p-2 w-[20%]">Dusun</th>
-                <th className="border border-black p-2 w-[10%]">Jumlah</th>
-                <th className="border border-black p-2 w-[15%]">Aksi</th>
+                <th className="border border-black p-2 w-[10%] whitespace-normal break-words hidden sm:table-cell">No.</th>
+                <th className="border border-black p-2 w-[25%] whitespace-normal break-words">No. KK</th>
+                <th className="border border-black p-2 w-[20%] whitespace-normal break-words">Nama Kepala Keluarga</th>
+                <th className="border border-black p-2 w-[15%] whitespace-normal break-words">Dusun</th>
+                <th className="border border-black p-2 w-[15%] whitespace-normal break-words">Jumlah</th>
+                <th className="border border-black p-2 w-[15%] whitespace-normal break-words">Aksi</th>
               </tr>
             </thead>
             <tbody className="bg-white text-center">
@@ -216,8 +217,8 @@ export default function DashboardPendudukPage() {
                   const kepalaKeluarga = item.anggota.find((a) => a.hubungan === "Kepala Keluarga");
                   return (
                     <tr key={item.id} className="hover:bg-gray-100">
-                      <td className="border border-black p-2">{(currentPage - 1) * itemsPerPage + index + 1}</td>
-                      <td className="border border-black p-2">
+                      <td className="border border-black p-2 whitespace-normal break-words hidden sm:table-cell">{(currentPage - 1) * itemsPerPage + index + 1}</td>
+                      <td className="border border-black p-2 whitespace-normal break-all">
                         <div className="flex items-center justify-center gap-2">
                           <span>{visible[item.id] ? item.nomor_kk : maskNIK(item.nomor_kk)}</span>
                           <button onClick={() => toggleVisibility(item.id)} className="text-gray-600 hover:text-gray-800" title="Tampilkan/Sembunyikan">
@@ -225,22 +226,22 @@ export default function DashboardPendudukPage() {
                           </button>
                         </div>
                       </td>
-                      <td className="border border-black p-2">{kepalaKeluarga?.nama_lengkap || "-"}</td>
-                      <td className="border border-black p-2">{item.rumah?.dusun || "-"}</td>
-                      <td className="border border-black p-2">{item.jumlah_anggota} Orang</td>
-                      <td className="border border-black p-2">
-                        <div className="flex justify-center gap-4 text-xs">
-                          <Link href={`/admin/data-penduduk/${item.id}`} className="flex flex-col items-center text-blue-600 hover:underline" title="Lihat">
+                      <td className="border border-black p-2 whitespace-normal break-words">{kepalaKeluarga?.nama_lengkap || "-"}</td>
+                      <td className="border border-black p-2 whitespace-normal break-words">{item.rumah?.dusun || "-"}</td>
+                      <td className="border border-black p-2 whitespace-normal break-words">{item.jumlah_anggota} Orang</td>
+                      <td className="border border-black p-2 whitespace-normal break-words">
+                        <div className="flex flex-col sm:flex-row justify-center items-start gap-3 sm:gap-4 text-[9px] sm:text-sm md:text-xs">
+                          <Link href={`/admin/data-penduduk/${item.id}`} className="flex flex-row sm:flex-col items-center gap-1 text-blue-600 hover:underline" title="Lihat">
                             <Eye className="w-4 h-4" />
-                            <span className="text-black">Lihat</span>
+                            <span className="text-black whitespace-nowrap">Lihat</span>
                           </Link>
-                          <Link href={`/admin/data-penduduk/${item.id}?mode=edit`} className="flex flex-col items-center text-orange-500 hover:underline" title="Edit">
+                          <Link href={`/admin/data-penduduk/${item.id}?mode=edit`} className="flex flex-row sm:flex-col items-center gap-1 text-orange-500 hover:underline" title="Edit">
                             <Pencil className="w-4 h-4" />
-                            <span className="text-black">Edit</span>
+                            <span className="text-black whitespace-nowrap">Edit</span>
                           </Link>
-                          <button onClick={() => confirmDelete(item.id)} className="flex flex-col items-center text-red-600 hover:underline" title="Hapus">
+                          <button onClick={() => confirmDelete(item.id)} className="flex flex-row sm:flex-col items-center gap-1 text-red-600 hover:underline" title="Hapus">
                             <Trash2 className="w-4 h-4" />
-                            <span className="text-black">Hapus</span>
+                            <span className="text-black whitespace-nowrap">Hapus</span>
                           </button>
                         </div>
                       </td>

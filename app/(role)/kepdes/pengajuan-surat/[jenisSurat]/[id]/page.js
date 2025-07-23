@@ -5,7 +5,6 @@ import { useParams, useRouter } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 
-
 export default function PreviewSuratPage() {
   const { jenisSurat, id } = useParams();
   const router = useRouter();
@@ -127,27 +126,29 @@ export default function PreviewSuratPage() {
 
       {/* Success Popup */}
       {showSuccess && (
-        <div className="fixed inset-0 bg-black bg-opacity-30 z-50 flex items-center justify-center">
-          <div className="bg-white rounded-lg shadow-md px-6 py-8 text-center max-w-sm mx-auto border border-gray-300">
+        <div className="fixed inset-0 bg-black bg-opacity-30 z-50 flex items-center justify-center px-4">
+          <div className="bg-white rounded-lg shadow-md px-4 sm:px-6 py-6 sm:py-8 text-center w-full max-w-sm border border-gray-300">
             <h3 className="text-green-600 font-bold text-lg mb-3">Siap untuk Ditandatangani?</h3>
-            <p className="text-gray-700 text-sm mb-4">Pastikan surat sudah dicek dan valid sebelum ditandatangani.</p>
-            <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm" onClick={handleProsesTandaTangan}>
-              Tanda Tangan
-            </button>
-            <button className="mt-4 text-xs text-gray-500 underline cursor-pointer" onClick={() => setShowSuccess(false)}>
-              Baca Kembali
-            </button>
+            <p className="text-gray-700 text-sm sm:text-base mb-4">Pastikan surat sudah dicek dan valid sebelum ditandatangani.</p>
+            <div className="flex flex-col items-center">
+              <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm w-full sm:w-auto" onClick={handleProsesTandaTangan}>
+                Tanda Tangan
+              </button>
+              <button className="mt-4 text-xs sm:text-sm text-gray-500 hover:underline cursor-pointer" onClick={() => setShowSuccess(false)}>
+                Baca Kembali
+              </button>
+            </div>
           </div>
         </div>
       )}
 
       {/* Error Popup */}
       {showFailure && (
-        <div className="fixed inset-0 bg-black bg-opacity-30 z-50 flex items-center justify-center">
-          <div className="bg-white rounded-lg shadow-md px-6 py-8 text-center max-w-sm mx-auto border border-red-300">
+        <div className="fixed inset-0 bg-black bg-opacity-30 z-50 flex items-center justify-center px-4">
+          <div className="bg-white rounded-lg shadow-md px-4 sm:px-6 py-6 sm:py-8 text-center w-full max-w-sm border border-red-300">
             <h3 className="text-red-600 font-bold text-lg mb-3">Gagal Menandatangani</h3>
-            <p className="text-gray-700 text-sm mb-4">{errorMsg || "Terjadi kesalahan saat memproses."}</p>
-            <button className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm" onClick={() => setShowFailure(false)}>
+            <p className="text-gray-700 text-sm sm:text-base mb-4">{errorMsg || "Terjadi kesalahan saat memproses."}</p>
+            <button className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm w-full sm:w-auto" onClick={() => setShowFailure(false)}>
               Tutup
             </button>
           </div>

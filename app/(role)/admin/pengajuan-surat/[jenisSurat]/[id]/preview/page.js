@@ -160,7 +160,7 @@ export default function PreviewSuratPage() {
       {/* ✅ Popup Sukses */}
       {showSuccessPopup && (
         <div className="fixed inset-0 bg-black bg-opacity-30 z-50 flex items-center justify-center">
-          <div className="bg-white rounded-lg shadow-md px-6 py-8 text-center max-w-sm mx-auto border">
+          <div className="bg-white rounded-lg shadow-md px-4 sm:px-6 py-6 text-center w-full max-w-sm mx-4">
             <h3 className="text-green-600 font-bold text-lg mb-3">Menunggu Tanda Tangan Kepala Desa !</h3>
             <p className="text-gray-700 text-sm">Surat telah dikirim dan sedang menunggu tanda tangan dari Kepala Desa.</p>
           </div>
@@ -170,7 +170,7 @@ export default function PreviewSuratPage() {
       {/* ❌ Popup Gagal */}
       {showErrorPopup && (
         <div className="fixed inset-0 bg-black bg-opacity-30 z-50 flex items-center justify-center">
-          <div className="bg-white rounded-lg shadow-md px-6 py-8 text-center max-w-sm mx-auto border border-red-300">
+          <div className="bg-white rounded-lg shadow-md px-4 sm:px-6 py-6 text-center w-full max-w-sm mx-4">
             <h3 className="text-red-600 font-bold text-lg mb-3">Gagal Memproses</h3>
             <p className="text-gray-700 text-sm mb-4">{errorMsg || "Terjadi kesalahan saat mengubah status."}</p>
             <button onClick={() => setShowErrorPopup(false)} className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm">

@@ -79,14 +79,14 @@ export default function DashboardPage() {
 
   return (
     <div className="flex h-full">
-      <div className="flex-1 p-8 space-y-8 bg-[#EDF0F5]">
+      <div className="flex-1 p-8 space-y-8">
         {/* Pengajuan Surat */}
         <section>
-          <h2 className="font-semibold text-2xl mb-4">Pengajuan Surat</h2>
+          <h2 className="sm:text-2xl text-base font-semibold mb-4">Pengajuan Surat</h2>
           {loadingSurat ? (
             <p className="text-gray-500 italic">Memuat data pengajuan...</p>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
               <SedangProsesCard count={countByStatus(pengajuan, "processed")} />
               <ButuhKonfirmasiCard count={countByStatus(pengajuan, "confirmed")} />
               <DitolakCard count={countByStatus(pengajuan, "rejected")} />
@@ -99,11 +99,11 @@ export default function DashboardPage() {
 
         {/* Pengaduan */}
         <section>
-          <h2 className="font-semibold text-2xl mb-4">Pengaduan</h2>
+          <h2 className="sm:text-2xl text-base font-semibold mb-4">Pengaduan</h2>
           {loadingPengaduan ? (
             <p className="text-gray-500 italic">Memuat data pengaduan...</p>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
               <MenungguCard count={countByStatus(pengaduan, "waiting")} />
               <DiterimaCard count={countByStatus(pengaduan, "processed")} />
               <SelesaiCard count={countByStatus(pengaduan, "approved")} />
@@ -114,8 +114,8 @@ export default function DashboardPage() {
         <hr className="border-gray-300 border-y" />
         {/* Panduan */}
         <section>
-          <h2 className="font-semibold text-2xl mb-4">Panduan Pengguna</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <h2 className="sm:text-2xl text-base font-semibold mb-4">Panduan Pengguna</h2>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
             <UserGuideCard />
           </div>
         </section>

@@ -4,66 +4,33 @@ import { useRouter, useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ChevronLeft } from "lucide-react";
 
-import {
-  Agama,
-  Alamat,
-  validateAlamat,
-  AnakKe,
-  Bangsa,
-  Bpjs,
-  DeskripsiPengaduan,
-  Dusun,
-  validateDusun,
-  InputField,
-  JenisKelamin,
-  validateGender,
-  JudulPengaduan,
-  JumlahTanggunganOrtu,
-  validateTanggungan,
-  KataSandi,
-  KategoriPengaduan,
-  KonfirmasiSandi,
-  LokasiKejadian,
-  LokasiUsaha,
-  MasKawin,
-  NamaLengkap,
-  validateNama,
-  NamaUsaha,
-  Nik,
-  validateNik,
-  NomorDokumen,
-  NomorRumah,
-  NomorTelepon,
-  Pekerjaan,
-  validatePekerjaan,
-  Pendidikan,
-  Penghasilan,
-  PerkiraanLokasi,
-  PukulKelahiran,
-  Respon,
-  RtRw,
-  validateRtRw,
-  Saksi,
-  StatusHubungan,
-  StatusPerkawinan,
-  Tanggal,
-  TanggalLahir,
-  validateTanggal,
-  TempatLahir,
-  validateTempat,
-  Username,
-} from "@/components/form";
+import Agama, { validateAgama } from "@/components/forms/Agama";
+import Angka, { validateAngka } from "@/components/forms/Angka";
+import AngkaHuruf, { validateAngkaHuruf } from "@/components/forms/AngkaHuruf";
+import DokumenHilang, { validateDokumenHilang } from "@/components/forms/DokumenHilang";
+import Dusun, { validateDusun } from "@/components/forms/Dusun";
+import Huruf, { validateHuruf } from "@/components/forms/Huruf";
+import JenisKelamin, { validateJenisKelamin } from "@/components/forms/JenisKelamin";
+import NIK, { validateNIK } from "@/components/forms/NIK";
+import Penghasilan, { validatePenghasilan } from "@/components/forms/Penghasilan";
+import RTRW, { validateRTRW } from "@/components/forms/RTRW";
+import StatusHubungan, { validateStatusHubungan } from "@/components/forms/StatusHubungan";
+import StatusPerkawinan, { validateStatusPerkawinan } from "@/components/forms/StatusPerkawinan";
+import Tanggal, { validateTanggal } from "@/components/forms/Tanggal";
 
-Nik.validate = validateNik;
-NamaLengkap.validate = validateNama;
-TempatLahir.validate = validateTempat;
-TanggalLahir.validate = validateTanggal;
-JenisKelamin.validate = validateGender;
-Alamat.validate = validateAlamat;
-Pekerjaan.validate = validatePekerjaan;
+Agama.validate = validateAgama;
+Angka.validate = validateAngka;
+AngkaHuruf.validate = validateAngkaHuruf;
+DokumenHilang.validate = validateDokumenHilang;
 Dusun.validate = validateDusun;
-RtRw.validate = validateRtRw;
-JumlahTanggunganOrtu.validate = validateTanggungan;
+Huruf.validate = validateHuruf;
+JenisKelamin.validate = validateJenisKelamin;
+NIK.validate = validateNIK;
+Penghasilan.validate = validatePenghasilan;
+RTRW.validate = validateRTRW;
+StatusHubungan.validate = validateStatusHubungan;
+StatusPerkawinan.validate = validateStatusPerkawinan;
+Tanggal.validate = validateTanggal;
 
 const formatTanggalToSubmit = (val) => {
   if (!val) return "";
@@ -74,16 +41,314 @@ const formatTanggalToSubmit = (val) => {
 const formSchemaBySuratKode = {
   SKTM: [
     { type: "separator", label: "Informasi Orang Tua" },
-    { name: "nama_ayah", Component: NamaLengkap, props: { label: "Nama Ayah" } },
-    { name: "pekerjaan_ayah", Component: Pekerjaan, props: { label: "Pekerjaan Ayah" } },
-    { name: "nama_ibu", Component: NamaLengkap, props: { label: "Nama Ibu" } },
-    { name: "pekerjaan_ibu", Component: Pekerjaan, props: { label: "Pekerjaan Ibu" } },
-    { name: "jumlah_tanggungan", Component: JumlahTanggunganOrtu },
+    {
+      name: "nama_ayah",
+      Component: Huruf,
+      props: {
+        label: "Nama Ayah",
+      },
+    },
+    {
+      name: "pekerjaan_ayah",
+      Component: Huruf,
+      props: {
+        label: "Pekerjaan Ayah",
+      },
+    },
+    {
+      name: "nama_ibu",
+      Component: Huruf,
+      props: {
+        label: "Nama Ibu",
+      },
+    },
+    {
+      name: "pekerjaan_ibu",
+      Component: Huruf,
+      props: {
+        label: "Pekerjaan Ibu",
+      },
+    },
+    {
+      name: "jumlah_tanggungan",
+      Component: Angka,
+      props: {
+        label: "Jumlah Tanggungan Ortu",
+      },
+    },
   ],
   SKU: [
     { type: "separator", label: "Informasi Usaha" },
-    { name: "nama_usaha", Component: NamaUsaha },
-    { name: "lokasi_usaha", Component: LokasiUsaha },
+    {
+      name: "nama_usaha",
+      Component: AngkaHuruf,
+      props: {
+        label: "Nama Usaha",
+      },
+    },
+    {
+      name: "dusun_usaha",
+      Component: Dusun,
+      props: {
+        label: "Lokasi Usaha",
+      },
+    },
+  ],
+  SKCK: [
+    { type: "separator", label: "Informasi Tambahan" },
+    {
+      name: "suku",
+      Component: Huruf,
+      props: {
+        label: "Suku/Bangsa",
+      },
+    },
+    {
+      name: "agama",
+      Component: Agama,
+      props: {
+        label: "Agama",
+      },
+    },
+  ],
+  SKD: [],
+  SKPH: [
+    { type: "separator", label: "Informasi Tambahan" },
+    {
+      name: "asal_sekolah",
+      Component: AngkaHuruf,
+      props: {
+        label: "Asal Sekolah",
+      },
+    },
+    {
+      name: "jurusan",
+      Component: Huruf,
+      props: {
+        label: "Jurusan",
+      },
+    },
+    {
+      name: "agama",
+      Component: Agama,
+      props: {
+        label: "Agama",
+      },
+    },
+    { type: "separator", label: "Informasi Orang Tua" },
+    {
+      name: "nama_ayah",
+      Component: Huruf,
+      props: {
+        label: "Nama Ayah",
+      },
+    },
+    {
+      name: "alamat_ayah",
+      Component: Dusun,
+      props: {
+        label: "Dusun Ayah",
+      },
+    },
+    {
+      name: "pekerjaan_ayah",
+      Component: Huruf,
+      props: {
+        label: "Pekerjaan Ayah",
+      },
+    },
+    {
+      name: "penghasilan_ayah",
+      Component: Penghasilan,
+      props: {
+        label: "Penghasilan Ayah (Per Bulan)",
+      },
+    },
+    {
+      name: "nama_ibu",
+      Component: Huruf,
+      props: {
+        label: "Nama Ibu",
+      },
+    },
+    {
+      name: "alamat_ibu",
+      Component: Dusun,
+      props: {
+        label: "Dusun Ibu",
+      },
+    },
+    {
+      name: "pekerjaan_ibu",
+      Component: Huruf,
+      props: {
+        label: "Pekerjaan Ibu",
+      },
+    },
+    {
+      name: "penghasilan_ibu",
+      Component: Penghasilan,
+      props: {
+        label: "Penghasilan Ibu (Per Bulan)",
+      },
+    },
+  ],
+  SKH: [
+    { type: "separator", label: "Informasi Dokumen Hilang" },
+    {
+      name: "jenis_dokumen",
+      Component: DokumenHilang,
+      props: {
+        label: "Jenis Dokumen Yang Hilang",
+      },
+    },
+    {
+      name: "no_dokumen",
+      Component: Angka,
+      props: {
+        label: "Nomor Dokumen Yang Hilang",
+      },
+    },
+    {
+      name: "perkiraan_lokasi_hilang",
+      Component: AngkaHuruf,
+      props: {
+        label: "Perkiraan Lokasi Hilang",
+      },
+    },
+    {
+      name: "no_kk",
+      Component: NIK,
+      props: {
+        label: "Nomor KK",
+      },
+    },
+  ],
+  SKL: [
+    { type: "separator", label: "Informasi Anak" },
+    {
+      name: "nama_anak",
+      Component: Huruf,
+      props: {
+        label: "Nama Anak",
+      },
+    },
+    {
+      name: "tempat_lahir",
+      Component: Huruf,
+      props: {
+        label: "Tempat Lahir Anak",
+      },
+    },
+    {
+      name: "tanggal_lahir",
+      Component: Tanggal,
+      props: {
+        label: "Tanggal Lahir Anak",
+      },
+    },
+    {
+      name: "pukul",
+      Component: Angka,
+      props: {
+        label: "Pukul Kelahiran (WITA)",
+      },
+    },
+    {
+      name: "jenis_kelamin",
+      Component: JenisKelamin,
+      props: {
+        label: "Jenis Kelamin Anak",
+      },
+    },
+    {
+      name: "anak_ke",
+      Component: Angka,
+      props: {
+        label: "Anak Ke-",
+      },
+    },
+    {
+      name: "panjang_bayi",
+      Component: Angka,
+      props: {
+        label: "Panjang Bayi (CM)",
+      },
+    },
+    {
+      name: "berat_bayi",
+      Component: Angka,
+      props: {
+        label: "Berat Bayi (KG)",
+      },
+    },
+    { type: "separator", label: "Informasi Orang Tua" },
+    {
+      name: "nama_ayah",
+      Component: Huruf,
+      props: {
+        label: "Nama Ayah",
+      },
+    },
+    {
+      name: "pekerjaan_ayah",
+      Component: Huruf,
+      props: {
+        label: "Pekerjaan Ayah",
+      },
+    },
+    {
+      name: "nama_ibu",
+      Component: Huruf,
+      props: {
+        label: "Nama Ibu",
+      },
+    },
+    {
+      name: "pekerjaan_ibu",
+      Component: Huruf,
+      props: {
+        label: "Pekerjaan Ibu",
+      },
+    },
+    {
+      name: "dusun",
+      Component: Dusun,
+      props: {
+        label: "Dusun Orang Tua",
+      },
+    },
+    {
+      name: "alamat",
+      Component: AngkaHuruf,
+      props: {
+        label: "Alamat Orang Tua",
+      },
+    },
+  ],
+  SKBR: [
+    { type: "separator", label: "Informasi Tambahan" },
+    {
+      name: "agama",
+      Component: Agama,
+      props: {
+        label: "Agama",
+      },
+    },
+    {
+      name: "nama_orang_tua",
+      Component: Huruf,
+      props: {
+        label: "Nama Orang Tua",
+      },
+    },
+    {
+      name: "keperluan",
+      Component: AngkaHuruf,
+      props: {
+        label: "Keperluan Surat",
+      },
+    },
   ],
 };
 
@@ -140,15 +405,15 @@ export default function BuatSuratBaru() {
 
     // Coba cari di semua komponen yang ada validatornya
     const validators = {
-      nik: Nik.validate,
-      nama: NamaLengkap.validate,
-      tempat_lahir: TempatLahir.validate,
-      tanggal_lahir: TanggalLahir.validate,
+      nik: NIK.validate,
+      nama: Huruf.validate,
+      tempat_lahir: Huruf.validate,
+      tanggal_lahir: Tanggal.validate,
       jenis_kelamin: JenisKelamin.validate,
-      alamat: Alamat.validate,
-      pekerjaan: Pekerjaan.validate,
+      alamat: AngkaHuruf.validate,
+      pekerjaan: Huruf.validate,
       dusun: Dusun.validate,
-      rt_rw: RtRw.validate,
+      rt_rw: RTRW.validate,
     };
 
     if (validators[name]) {
@@ -165,28 +430,30 @@ export default function BuatSuratBaru() {
     // Validasi Informasi Pribadi (manual)
     const personalFields = [
       { name: "nik", required: true },
-      { name: "nama", required: true, validate: NamaLengkap.validate },
-      { name: "tempat_lahir", required: true, validate: TempatLahir.validate },
+      { name: "nama", required: true },
+      { name: "tempat_lahir", required: true },
       { name: "tanggal_lahir", required: true },
       { name: "jenis_kelamin", required: true },
       { name: "alamat", required: true },
-      { name: "pekerjaan", required: true, validate: Pekerjaan.validate },
+      { name: "pekerjaan", required: true },
       { name: "dusun", required: true },
     ];
 
-    personalFields.forEach(({ name, required, validate }) => {
-      const value = formData[name];
+    if (formKey !== "SKL") {
+      personalFields.forEach(({ name, required, validate }) => {
+        const value = formData[name];
 
-      if (required && (!value || value.toString().trim() === "")) {
-        newErrors[name] = "Form tidak boleh kosong.";
-        return;
-      }
+        if (required && (!value || value.toString().trim() === "")) {
+          newErrors[name] = "Form tidak boleh kosong.";
+          return;
+        }
 
-      if (typeof validate === "function") {
-        const errorMsg = validate(value);
-        if (errorMsg) newErrors[name] = errorMsg;
-      }
-    });
+        if (typeof validate === "function") {
+          const errorMsg = validate(value);
+          if (errorMsg) newErrors[name] = errorMsg;
+        }
+      });
+    }
 
     // Validasi field tambahan (berdasarkan kode surat)
     dataFields.forEach(({ name, Component }) => {
@@ -283,18 +550,22 @@ export default function BuatSuratBaru() {
             <p className="text-red-600">Formulir tidak tersedia untuk jenis surat ini.</p>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-6">
-              <legend className="text-xl text-start font-semibold text-gray-700">Informasi Pribadi</legend>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
-                <Nik value={formData.nik ?? ""} onChange={handleChange} name="nik" error={errors.nik} />
-                <NamaLengkap value={formData.nama ?? ""} onChange={handleChange} name="nama" error={errors.nama} />
-                <TempatLahir value={formData.tempat_lahir ?? ""} onChange={handleChange} name="tempat_lahir" error={errors.tempat_lahir} />
-                <TanggalLahir value={formData.tanggal_lahir ?? ""} onChange={handleChange} name="tanggal_lahir" error={errors.tanggal_lahir} />
-                <JenisKelamin value={formData.jenis_kelamin ?? ""} onChange={handleChange} name="jenis_kelamin" error={errors.jenis_kelamin} />
-                <Alamat value={formData.alamat ?? ""} onChange={handleChange} name="alamat" error={errors.alamat} />
-                <Pekerjaan value={formData.pekerjaan ?? ""} onChange={handleChange} name="pekerjaan" error={errors.pekerjaan} />
-                <Dusun value={formData.dusun ?? ""} onChange={handleChange} name="dusun" error={errors.dusun} />
-                <RtRw value={formData.rt_rw ?? ""} onChange={handleChange} name="rt_rw" error={errors.rt_rw} />
-              </div>
+              {formKey !== "SKL" && (
+                <>
+                  <legend className="text-xl text-start font-semibold text-gray-700">Informasi Pribadi</legend>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
+                    <NIK value={formData.nik ?? ""} onChange={handleChange} name="nik" error={errors.nik} />
+                    <Huruf value={formData.nama ?? ""} onChange={handleChange} name="nama" error={errors.nama} label="Nama Lengkap" />
+                    <Huruf value={formData.tempat_lahir ?? ""} onChange={handleChange} name="tempat_lahir" error={errors.tempat_lahir} label="Tempat Lahir" />
+                    <Tanggal value={formData.tanggal_lahir ?? ""} onChange={handleChange} name="tanggal_lahir" error={errors.tanggal_lahir} label="Tanggal Lahir" />
+                    <JenisKelamin value={formData.jenis_kelamin ?? ""} onChange={handleChange} name="jenis_kelamin" error={errors.jenis_kelamin} label="Jenis Kelamin" />
+                    <AngkaHuruf value={formData.alamat ?? ""} onChange={handleChange} name="alamat" error={errors.alamat} label="Alamat" />
+                    <Huruf value={formData.pekerjaan ?? ""} onChange={handleChange} name="pekerjaan" error={errors.pekerjaan} label="Pekerjaan" />
+                    <Dusun value={formData.dusun ?? ""} onChange={handleChange} name="dusun" error={errors.dusun} label="Dusun" />
+                    <RTRW value={formData.rt_rw ?? ""} onChange={handleChange} name="rt_rw" error={errors.rt_rw} />
+                  </div>
+                </>
+              )}
               <div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {fields.map((field, index) => {

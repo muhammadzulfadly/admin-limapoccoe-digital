@@ -1,22 +1,22 @@
 "use client";
 
-export default function Deskripsi({ label = "Deskripsi", name = "description", value, onChange, error, disabled = false }) {
+export default function Deskripsi({ label = "Deskripsi", name = "description", value, onChange, error, disabled = false, hideLabel = false }) {
   return (
     <div>
-      {/* Label */}
-      <label className={`block mb-1 text-xs md:text-sm font-medium ${error ? "text-red-500" : "text-gray-500"}`}>
-        {label} <span className="text-red-500">*</span>
-      </label>
-
+      {!hideLabel && (
+        <label className={`block mb-1 text-xs md:text-sm font-medium ${error ? "text-red-500" : "text-gray-500"}`}>
+          {label} <span className="text-red-500">*</span>
+        </label>
+      )}
       {/* Textarea */}
       <textarea
-  name={name}
-  value={value}
-  disabled={disabled}
-  onChange={(e) => onChange({ name, value: e.target.value })}
-  placeholder={`Masukkan ${label}`}
-  rows={5} // gunakan rows agar tinggi natural di desktop
-  className={`
+        name={name}
+        value={value}
+        disabled={disabled}
+        onChange={(e) => onChange({ name, value: e.target.value })}
+        placeholder={`Masukkan ${label}`}
+        rows={5} // gunakan rows agar tinggi natural di desktop
+        className={`
     w-full
     outline-none
     text-sm
@@ -33,8 +33,7 @@ export default function Deskripsi({ label = "Deskripsi", name = "description", v
     md:border md:rounded-lg md:py-2 md:border-b md:border-gray-300
     ${error ? "border-red-500 focus:border-red-500" : ""}
   `}
-/>
-
+      />
 
       {/* Error */}
       {error && <p className="text-red-500 text-xs mt-1">{error}</p>}

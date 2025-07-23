@@ -20,7 +20,7 @@ export default function LoginLayout({ children }) {
       </div>
 
       {/* Kanan: Area konten */}
-      <div className="w-full lg:w-1/2 relative flex items-center justify-center px-6">
+      <div className="w-full lg:w-1/2 bg-white relative flex items-center justify-center px-6">
       {children}
       </div>
     </div>
