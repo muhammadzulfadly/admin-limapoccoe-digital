@@ -373,7 +373,7 @@ export default function DetailKeluargaPage() {
           ))}
 
           {isEditMode && (
-            <button type="button" onClick={addAnggota} className="bg-blue-600 text-white px-4 py-2 text-sm rounded hover:bg-blue-700">
+            <button type="button" onClick={addAnggota} className="bg-[#27AE60] text-white px-4 py-2 text-sm rounded hover:bg-green-600">
               + Tambah Anggota
             </button>
           )}
