@@ -1,4 +1,5 @@
 import { BadgeCheck } from "lucide-react";
+import PropTypes from "prop-types";
 
 export default function ButuhKonfirmasiCard({ count }) {
   return (
@@ -14,3 +15,7 @@ export default function ButuhKonfirmasiCard({ count }) {
     </div>
   );
 }
+
+ButuhKonfirmasiCard.propTypes = {
+  count: PropTypes.number.isRequired,
+};

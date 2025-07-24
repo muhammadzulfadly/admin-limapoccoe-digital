@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { User, Menu, X } from "lucide-react";
 import Sidebar from "../../components/Sidebar";
+import PropTypes from "prop-types";
 
 export default function BerandaLayout({ children }) {
   const [userName, setUserName] = useState("");
@@ -97,3 +98,7 @@ export default function BerandaLayout({ children }) {
     </div>
   );
 }
+
+BerandaLayout.propTypes = {
+  children: PropTypes.node.isRequired,
+};

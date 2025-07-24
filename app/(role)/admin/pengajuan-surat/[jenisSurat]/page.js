@@ -8,6 +8,7 @@ import SedangProsesCard from "@/components/card/SedangProses";
 import ButuhKonfirmasiCard from "@/components/card/ButuhKonfirmasi";
 import DitolakCard from "@/components/card/DiTolak";
 import SelesaiCard from "@/components/card/Selesai";
+import PropTypes from "prop-types";
 
 const statusMap = {
   approved: "Selesai",
@@ -293,3 +294,9 @@ function Stat({ label, value, icon }) {
     </div>
   );
 }
+
+Stat.propTypes = {
+  label: PropTypes.string.isRequired,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  icon: PropTypes.element.isRequired,
+};

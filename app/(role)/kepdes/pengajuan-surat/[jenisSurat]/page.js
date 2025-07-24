@@ -4,6 +4,7 @@ import { BadgeCheck, UserCheck, Search, SlidersHorizontal } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import PropTypes from "prop-types";
 
 const statusMap = {
   approved: "Selesai",
@@ -278,3 +279,9 @@ function Stat({ label, value, icon }) {
     </div>
   );
 }
+
+Stat.propTypes = {
+  label: PropTypes.string.isRequired,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  icon: PropTypes.element.isRequired,
+};

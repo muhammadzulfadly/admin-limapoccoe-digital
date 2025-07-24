@@ -1,4 +1,5 @@
 import { UserCheck } from "lucide-react";
+import PropTypes from "prop-types";
 
 export default function SelesaiCard({ count }) {
   return (
@@ -14,3 +15,7 @@ export default function SelesaiCard({ count }) {
     </div>
   );
 }
+
+SelesaiCard.propTypes = {
+  count: PropTypes.number.isRequired,
+};

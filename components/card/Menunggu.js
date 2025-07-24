@@ -1,4 +1,5 @@
 import { Clock } from "lucide-react";
+import PropTypes from "prop-types";
 
 export default function MenungguCard({ count }) {
   return (
@@ -14,3 +15,7 @@ export default function MenungguCard({ count }) {
     </div>
   );
 }
+
+MenungguCard.propTypes = {
+  count: PropTypes.number.isRequired,
+};

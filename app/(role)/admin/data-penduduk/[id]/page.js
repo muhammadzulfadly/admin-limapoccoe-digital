@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { ChevronLeft, ChevronDown, ChevronUp, Trash2 } from "lucide-react";
+import PropTypes from "prop-types";
 
 import NIK, { validateNIK } from "@/components/forms/NIK";
 import Huruf, { validateHuruf } from "@/components/forms/Huruf";
@@ -389,3 +390,19 @@ export default function DetailKeluargaPage() {
     </>
   );
 }
+
+ConfirmDeletePopup.propTypes = {
+  onConfirm: PropTypes.func.isRequired,
+  onCancel: PropTypes.func.isRequired,
+};
+
+SuccessPopup.propTypes = {
+  title: PropTypes.string.isRequired,
+  message: PropTypes.string.isRequired,
+  onClose: PropTypes.func.isRequired,
+};
+
+ErrorPopup.propTypes = {
+  message: PropTypes.string.isRequired,
+  onClose: PropTypes.func.isRequired,
+};

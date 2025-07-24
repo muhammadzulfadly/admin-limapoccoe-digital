@@ -1,4 +1,5 @@
 import { Ban } from "lucide-react";
+import PropTypes from "prop-types";
 
 export default function DitolakCard({ count }) {
   return (
@@ -14,3 +15,7 @@ export default function DitolakCard({ count }) {
     </div>
   );
 }
+
+DitolakCard.propTypes = {
+  count: PropTypes.number.isRequired,
+};

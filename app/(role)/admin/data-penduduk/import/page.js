@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { FileUp, ChevronLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
+import PropTypes from "prop-types";
 
 function SuccessPopup({ onClose }) {
   return (
@@ -125,3 +126,12 @@ export default function ImportPendudukPage() {
     </div>
   );
 }
+
+SuccessPopup.propTypes = {
+  onClose: PropTypes.func.isRequired,
+};
+
+ErrorPopup.propTypes = {
+  message: PropTypes.string.isRequired,
+  onClose: PropTypes.func.isRequired,
+};

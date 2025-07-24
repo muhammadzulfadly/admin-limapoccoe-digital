@@ -3,19 +3,48 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Trash2, ChevronDown, ChevronUp, ChevronLeft } from "lucide-react";
+import PropTypes from "prop-types";
 
 import NIK, { validateNIK } from "@/components/forms/NIK";
 import Huruf, { validateHuruf } from "@/components/forms/Huruf";
 import StatusHubungan, { validateStatusHubungan } from "@/components/forms/StatusHubungan";
 import Tanggal, { validateTanggal } from "@/components/forms/Tanggal";
-import JenisKelamin, { validateJenisKelamin} from "@/components/forms/JenisKelamin";
+import JenisKelamin, { validateJenisKelamin } from "@/components/forms/JenisKelamin";
 import StatusPerkawinan, { validateStatusPerkawinan } from "@/components/forms/StatusPerkawinan";
 import Agama, { validateAgama } from "@/components/forms/Agama";
 import Pendidikan, { validatePendidikan } from "@/components/forms/Pendidikan";
-import BPJS, { validateBPJS} from "@/components/forms/BPJS";
-import Angka, { validateAngka} from "@/components/forms/Angka";
-import RTRW, { validateRTRW} from "@/components/forms/RTRW";
+import BPJS, { validateBPJS } from "@/components/forms/BPJS";
+import Angka, { validateAngka } from "@/components/forms/Angka";
+import RTRW, { validateRTRW } from "@/components/forms/RTRW";
 import Dusun, { validateDusun } from "@/components/forms/Dusun";
+
+function SuccessPopup({ onClose }) {
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg p-6 max-w-sm w-full text-center shadow-lg">
+        <h2 className="text-[#27AE60] text-2xl font-bold mb-4">Data Berhasil Disimpan</h2>
+        <p className="text-gray-700 mb-6">Data warga telah berhasil disimpan ke dalam sistem.</p>
+        <button onClick={onClose} className="bg-[#27AE60] text-white px-4 py-2 rounded hover:bg-green-600">
+          Tutup
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function ErrorPopup({ message, onClose }) {
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg p-6 max-w-sm w-full text-center shadow-lg">
+        <h2 className="text-red-600 text-2xl font-bold mb-4">Gagal Menyimpan</h2>
+        <p className="text-gray-700 mb-6">{message || "Terjadi kesalahan saat menyimpan data."}</p>
+        <button onClick={onClose} className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
+          Tutup
+        </button>
+      </div>
+    </div>
+  );
+}
 
 export default function TambahDataKependudukan() {
   const router = useRouter();
@@ -147,34 +176,6 @@ export default function TambahDataKependudukan() {
     }
   };
 
-  function SuccessPopup({ onClose }) {
-    return (
-      <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-        <div className="bg-white rounded-lg p-6 max-w-sm w-full text-center shadow-lg">
-          <h2 className="text-[#27AE60] text-2xl font-bold mb-4">Data Berhasil Disimpan</h2>
-          <p className="text-gray-700 mb-6">Data warga telah berhasil disimpan ke dalam sistem.</p>
-          <button onClick={onClose} className="bg-[#27AE60] text-white px-4 py-2 rounded hover:bg-green-600">
-            Tutup
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  function ErrorPopup({ message, onClose }) {
-    return (
-      <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-        <div className="bg-white rounded-lg p-6 max-w-sm w-full text-center shadow-lg">
-          <h2 className="text-red-600 text-2xl font-bold mb-4">Gagal Menyimpan</h2>
-          <p className="text-gray-700 mb-6">{message || "Terjadi kesalahan saat menyimpan data."}</p>
-          <button onClick={onClose} className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
-            Tutup
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <>
       {showSuccess && (
@@ -200,8 +201,8 @@ export default function TambahDataKependudukan() {
           </button>
           <h3 className="font-semibold mb-3">Informasi Rumah</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Angka value={form.no_rumah} onChange={(v) => setForm({ ...form, no_rumah: v.value })} error={errors.no_rumah} label="No. Rumah"/>
-            <Dusun value={form.dusun} onChange={(v) => setForm({ ...form, dusun: v.value })} error={errors.dusun} label="Dusun"/>
+            <Angka value={form.no_rumah} onChange={(v) => setForm({ ...form, no_rumah: v.value })} error={errors.no_rumah} label="No. Rumah" />
+            <Dusun value={form.dusun} onChange={(v) => setForm({ ...form, dusun: v.value })} error={errors.dusun} label="Dusun" />
             <RTRW value={form.rt_rw} onChange={(v) => setForm({ ...form, rt_rw: v.value })} error={errors.rt_rw} />
           </div>
         </div>
@@ -209,7 +210,7 @@ export default function TambahDataKependudukan() {
         {/* Informasi KK */}
         <div className="border bg-white p-4 rounded-md">
           <h3 className="font-semibold mb-3">Informasi Keluarga</h3>
-          <NIK value={form.nomor_kk} onChange={(v) => setForm({ ...form, nomor_kk: v.value })} error={errors.nomor_kk} label="No. Kartu Keluarga"/>
+          <NIK value={form.nomor_kk} onChange={(v) => setForm({ ...form, nomor_kk: v.value })} error={errors.nomor_kk} label="No. Kartu Keluarga" />
         </div>
 
         {/* Anggota */}
@@ -257,17 +258,17 @@ export default function TambahDataKependudukan() {
               {openForm[index] && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <NIK value={item.nik} onChange={(v) => updateAnggota(index, "nik", v)} error={errors.anggota[index]?.nik} />
-                  <Huruf value={item.nama_lengkap} onChange={(v) => updateAnggota(index, "nama_lengkap", v)} error={errors.anggota[index]?.nama_lengkap} label="Nama Lengkap"/>
+                  <Huruf value={item.nama_lengkap} onChange={(v) => updateAnggota(index, "nama_lengkap", v)} error={errors.anggota[index]?.nama_lengkap} label="Nama Lengkap" />
                   <StatusHubungan value={item.hubungan} onChange={(v) => updateAnggota(index, "hubungan", v)} error={errors.anggota[index]?.hubungan} />
-                  <Huruf value={item.tempat_lahir} onChange={(v) => updateAnggota(index, "tempat_lahir", v)} error={errors.anggota[index]?.tempat_lahir} label="Tempat Lahir"/>
-                  <Tanggal value={item.tgl_lahir} onChange={(v) => updateAnggota(index, "tgl_lahir", v)} error={errors.anggota[index]?.tgl_lahir} label="Tanggal Lahir"/>
-                  <JenisKelamin value={item.jenis_kelamin} onChange={(v) => updateAnggota(index, "jenis_kelamin", v)} error={errors.anggota[index]?.jenis_kelamin} label="Jenis Kelamin"/>
-                  <StatusPerkawinan value={item.status_perkawinan} onChange={(v) => updateAnggota(index, "status_perkawinan", v)} error={errors.anggota[index]?.status_perkawinan} label="Status Perkawinan"/>
-                  <Agama value={item.agama} onChange={(v) => updateAnggota(index, "agama", v)} error={errors.anggota[index]?.agama} label="Agama"/>
-                  <Pendidikan value={item.pendidikan} onChange={(v) => updateAnggota(index, "pendidikan", v)} error={errors.anggota[index]?.pendidikan} label="Pendidikan Terakhir"/>
-                  <Huruf value={item.pekerjaan} onChange={(v) => updateAnggota(index, "pekerjaan", v)} error={errors.anggota[index]?.pekerjaan} label="Pekerjaan"/>
-                  <Huruf value={item.nama_ayah} onChange={(v) => updateAnggota(index, "nama_ayah", v)} error={errors.anggota[index]?.nama_ayah} label="Nama Ayah"/>
-                  <Huruf value={item.nama_ibu} onChange={(v) => updateAnggota(index, "nama_ibu", v)} error={errors.anggota[index]?.nama_ibu} label="Nama Ibu"/>
+                  <Huruf value={item.tempat_lahir} onChange={(v) => updateAnggota(index, "tempat_lahir", v)} error={errors.anggota[index]?.tempat_lahir} label="Tempat Lahir" />
+                  <Tanggal value={item.tgl_lahir} onChange={(v) => updateAnggota(index, "tgl_lahir", v)} error={errors.anggota[index]?.tgl_lahir} label="Tanggal Lahir" />
+                  <JenisKelamin value={item.jenis_kelamin} onChange={(v) => updateAnggota(index, "jenis_kelamin", v)} error={errors.anggota[index]?.jenis_kelamin} label="Jenis Kelamin" />
+                  <StatusPerkawinan value={item.status_perkawinan} onChange={(v) => updateAnggota(index, "status_perkawinan", v)} error={errors.anggota[index]?.status_perkawinan} label="Status Perkawinan" />
+                  <Agama value={item.agama} onChange={(v) => updateAnggota(index, "agama", v)} error={errors.anggota[index]?.agama} label="Agama" />
+                  <Pendidikan value={item.pendidikan} onChange={(v) => updateAnggota(index, "pendidikan", v)} error={errors.anggota[index]?.pendidikan} label="Pendidikan Terakhir" />
+                  <Huruf value={item.pekerjaan} onChange={(v) => updateAnggota(index, "pekerjaan", v)} error={errors.anggota[index]?.pekerjaan} label="Pekerjaan" />
+                  <Huruf value={item.nama_ayah} onChange={(v) => updateAnggota(index, "nama_ayah", v)} error={errors.anggota[index]?.nama_ayah} label="Nama Ayah" />
+                  <Huruf value={item.nama_ibu} onChange={(v) => updateAnggota(index, "nama_ibu", v)} error={errors.anggota[index]?.nama_ibu} label="Nama Ibu" />
                   <BPJS value={item.no_bpjs} onChange={(v) => updateAnggota(index, "no_bpjs", v)} error={errors.anggota[index]?.no_bpjs} />
                 </div>
               )}
@@ -316,3 +317,12 @@ export default function TambahDataKependudukan() {
     </>
   );
 }
+
+SuccessPopup.propTypes = {
+  onClose: PropTypes.func.isRequired,
+};
+
+ErrorPopup.propTypes = {
+  message: PropTypes.string.isRequired,
+  onClose: PropTypes.func.isRequired,
+};

@@ -1,4 +1,5 @@
 import { CheckCheck } from "lucide-react";
+import PropTypes from "prop-types";
 
 export default function DiterimaCard({ count }) {
   return (
@@ -14,3 +15,7 @@ export default function DiterimaCard({ count }) {
     </div>
   );
 }
+
+DiterimaCard.propTypes = {
+  count: PropTypes.number.isRequired,
+};

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Plus, Search, SlidersHorizontal, Pencil, Trash2, Eye, EyeOff, FileUp } from "lucide-react";
 import Link from "next/link";
+import PropTypes from "prop-types";
 
 const maskNIK = (nik) => nik.slice(0, 6) + "XXXXXX";
 
@@ -280,3 +281,8 @@ export default function DashboardPendudukPage() {
     </div>
   );
 }
+
+ConfirmDeletePopup.propTypes = {
+  onConfirm: PropTypes.func.isRequired,
+  onCancel: PropTypes.func.isRequired,
+};

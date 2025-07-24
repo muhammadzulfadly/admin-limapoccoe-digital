@@ -1,5 +1,6 @@
 // app/auth/layout.js
 import "../globals.css";
+import PropTypes from "prop-types";
 
 export const metadata = {
   title: "Desa Limmapocoe",
@@ -26,3 +27,7 @@ export default function LoginLayout({ children }) {
     </div>
   );
 }
+
+LoginLayout.propTypes = {
+  children: PropTypes.node.isRequired,
+};

@@ -1,4 +1,5 @@
 import { Cog } from "lucide-react";
+import PropTypes from "prop-types";
 
 export default function SedangProsesCard({ count }) {
   return (
@@ -14,3 +15,7 @@ export default function SedangProsesCard({ count }) {
     </div>
   );
 }
+
+SedangProsesCard.propTypes = {
+  count: PropTypes.number.isRequired,
+};
