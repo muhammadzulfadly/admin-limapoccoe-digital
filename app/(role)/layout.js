@@ -82,7 +82,7 @@ export default function BerandaLayout({ children }) {
         {sidebarOpen && (
           <>
             <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-            <div className="fixed inset-0 bg-black/50 z-30 md:hidden" onClick={() => setSidebarOpen(false)} />
+            <button type="button" aria-label="Tutup sidebar" className="fixed inset-0 bg-black/50 z-30 md:hidden" onClick={() => setSidebarOpen(false)}></button>
           </>
         )}
 

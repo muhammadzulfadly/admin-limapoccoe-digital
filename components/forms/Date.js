@@ -1,7 +1,7 @@
 "use client";
 import InputField from "./InputField";
 import PropTypes from "prop-types";
-export default function Date({ value }) {
+export default function Tanggal({ value }) {
   const formattedValue = value
     ? new Date(value).toLocaleString("id-ID", {
         dateStyle: "full",
@@ -18,6 +18,6 @@ export default function Date({ value }) {
   );
 }
 
-Date.propTypes = {
+Tanggal.propTypes = {
   value: PropTypes.string.isRequired,
 };
