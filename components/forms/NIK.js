@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import InputField from "./InputField";
 import PropTypes from "prop-types";
-export default function Nik({
+export default function NIK({
   label = "NIK",
   name = "nik",
   value,
@@ -50,7 +50,7 @@ export function validateNIK(value) {
   return "";
 }
 
-Nik.propTypes = {
+NIK.propTypes = {
   label: PropTypes.string,
   name: PropTypes.string,
   value: PropTypes.string.isRequired,

@@ -77,8 +77,6 @@ export default function ProfilePage() {
 
   const handleToggleEdit = () => {
     if (isEditable) {
-      // TODO: Kirim data form ke API untuk menyimpan perubahan
-
       setShowSuccessEdit(true);
       setTimeout(() => {
         setShowSuccessEdit(false);

@@ -1,6 +1,6 @@
 "use client";
 import PropTypes from "prop-types";
-export default function RtRw({
+export default function RTRW({
   label = "RT/RW (tidak wajib)",
   name = "rt_rw",
   value,
@@ -56,7 +56,7 @@ export function validateRTRW(value) {
   return "";
 }
 
-RtRw.propTypes = {
+RTRW.propTypes = {
   label: PropTypes.string,
   name: PropTypes.string,
   value: PropTypes.string.isRequired,

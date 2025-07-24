@@ -133,7 +133,7 @@ export default function PengaduanPage() {
                   paginatedData.map((item, index) => {
                     const readableStatus = statusMap[item.status] || item.status;
                     return (
-                      <tr key={index} className="bg-white text-center">
+                      <tr key={item.id} className="bg-white text-center">
                         <td className="border border-black p-2 whitespace-normal break-words hidden sm:table-cell">{(currentPage - 1) * itemsPerPage + index + 1}</td>
                         <td className="border border-black p-2 whitespace-normal break-words">{new Date(item.created_at).toLocaleDateString("id-ID")}</td>
                         <td className="border border-black p-2 whitespace-normal break-words">{item.title}</td>
