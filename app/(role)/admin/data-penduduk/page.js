@@ -152,10 +152,10 @@ export default function DashboardPendudukPage() {
   };
 
   return (
-    <div className="flex h-full">
-      <div className="flex-1 bg-gray-100 p-8">
+    <div>
+      <div className="min-h-full p-8">
         <header>
-          <h1 className="text-xl font-bold mb-3">Dashboard Data Kependudukan</h1>
+          <h2 className="sm:text-2xl text-base font-semibold mb-4">Data Kependudukan</h2>
         </header>
 
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
@@ -179,7 +179,7 @@ export default function DashboardPendudukPage() {
             <Search className="w-5 h-5 mr-2" />
             <input type="text" placeholder="Cari" className="flex-1 outline-none text-sm bg-white placeholder-gray-500" value={searchGlobal} onChange={(e) => setSearchGlobal(e.target.value)} />
             <button onClick={() => setShowFilter(!showFilter)}>
-              <SlidersHorizontal className={`w-4 h-4 ml-2 cursor-pointer transition-colors ${showFilter ? "text-green-600" : "text-gray-500"}`} />
+              <SlidersHorizontal className={`w-4 h-4 ml-2 cursor-pointer transition-colors ${showFilter ? "text-[#27AE60]" : "text-gray-500"}`} />
             </button>
           </div>
         </div>
@@ -265,7 +265,7 @@ export default function DashboardPendudukPage() {
               &laquo;
             </button>
             {getPaginationRange().map((page, i) => (
-              <button key={i} onClick={() => typeof page === "number" && setCurrentPage(page)} disabled={typeof page !== "number"} className={`px-3 py-1 ${page === currentPage ? "bg-green-700 text-white" : "hover:bg-slate-100"}`}>
+              <button key={i} onClick={() => typeof page === "number" && setCurrentPage(page)} disabled={typeof page !== "number"} className={`px-3 py-1 ${page === currentPage ? "bg-[#27AE60] text-white" : "hover:bg-slate-100"}`}>
                 {page === "..." ? "..." : page}
               </button>
             ))}

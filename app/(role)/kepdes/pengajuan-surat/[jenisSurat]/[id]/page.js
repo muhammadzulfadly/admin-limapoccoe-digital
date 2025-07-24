@@ -96,9 +96,9 @@ export default function PreviewSuratPage() {
   }
 
   return (
-    <div className="flex h-full">
-      <div className="flex-1 p-8 space-y-8 bg-[#EDF0F5]">
-        <h2 className="text-2xl font-semibold">
+    <div>
+      <div className="min-h-full p-8">
+        <h2 className="sm:text-2xl text-base font-semibold mb-4">
           Pengajuan Surat / {namaSurat} / Pratinjau Surat
           <button type="button" onClick={() => router.back()} className="flex items-center text-base text-gray-500 mt-3">
             <ChevronLeft size={30} className="mr-1" />
@@ -117,7 +117,7 @@ export default function PreviewSuratPage() {
 
         <div className="flex justify-end mt-4">
           {statusSurat != "approved" && (
-            <button onClick={() => setShowSuccess(true)} disabled={processing} className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 disabled:opacity-60">
+            <button onClick={() => setShowSuccess(true)} disabled={processing} className="bg-[#27AE60] text-white px-6 py-2 rounded hover:bg-green-600 disabled:opacity-60">
               {processing ? "Memproses..." : "Tanda Tangani Surat"}
             </button>
           )}
@@ -128,10 +128,10 @@ export default function PreviewSuratPage() {
       {showSuccess && (
         <div className="fixed inset-0 bg-black bg-opacity-30 z-50 flex items-center justify-center px-4">
           <div className="bg-white rounded-lg shadow-md px-4 sm:px-6 py-6 sm:py-8 text-center w-full max-w-sm border border-gray-300">
-            <h3 className="text-green-600 font-bold text-lg mb-3">Siap untuk Ditandatangani?</h3>
+            <h3 className="text-[#27AE60] font-bold text-lg mb-3">Siap untuk Ditandatangani?</h3>
             <p className="text-gray-700 text-sm sm:text-base mb-4">Pastikan surat sudah dicek dan valid sebelum ditandatangani.</p>
             <div className="flex flex-col items-center">
-              <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm w-full sm:w-auto" onClick={handleProsesTandaTangan}>
+              <button className="bg-[#27AE60] hover:bg-green-600 text-white px-4 py-2 rounded text-sm w-full sm:w-auto" onClick={handleProsesTandaTangan}>
                 Tanda Tangan
               </button>
               <button className="mt-4 text-xs sm:text-sm text-gray-500 hover:underline cursor-pointer" onClick={() => setShowSuccess(false)}>

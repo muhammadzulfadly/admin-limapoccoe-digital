@@ -533,11 +533,11 @@ export default function BuatSuratBaru() {
   };
 
   return (
-    <div className="flex h-full">
-      <div className="flex-1 bg-gray-100 p-8">
-        <h1 className="text-xl font-semibold mb-6">
-          Pengajuan Surat / <span className="font-semibold">{surat?.nama_surat}</span>
-        </h1>
+    <div>
+      <div className="min-h-full p-8">
+        <h2 className="sm:text-2xl text-base font-semibold mb-4">
+          Pengajuan Surat / {surat?.nama_surat} / Buat Surat Baru
+        </h2>
 
         <div className="bg-white rounded-md shadow-sm p-8">
           <button type="button" onClick={() => router.back()} className="flex items-center text-base text-gray-500 mb-6">
@@ -594,9 +594,9 @@ export default function BuatSuratBaru() {
       {showConfirm && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-lg px-6 py-8 w-[300px] text-center space-y-4 animate-fade-in">
-            <h3 className="text-green-600 text-xl font-bold">Konfirmasi Pengajuan Surat!</h3>
+            <h3 className="text-[#27AE60] text-xl font-bold">Konfirmasi Pengajuan Surat!</h3>
             <p className="text-sm text-gray-700">Pastikan seluruh informasi yang Anda isi sudah benar.</p>
-            <button onClick={submitSurat} className="bg-green-600 hover:bg-green-700 text-white w-full py-2 rounded font-semibold">
+            <button onClick={submitSurat} className="bg-[#27AE60] hover:bg-green-600 text-white w-full py-2 rounded font-semibold">
               Ajukan surat
             </button>
             <button onClick={() => setShowConfirm(false)} className="text-gray-500 hover:underline text-sm">

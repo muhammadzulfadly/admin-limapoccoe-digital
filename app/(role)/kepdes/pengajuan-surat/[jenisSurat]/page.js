@@ -11,8 +11,8 @@ const statusMap = {
 };
 
 const statusStyle = {
-  Selesai: "text-green-600 font-semibold",
-  "Butuh Konfirmasi": "text-blue-600 font-semibold",
+  Selesai: "text-[#34C759] font-semibold",
+  "Butuh Konfirmasi": "text-[#016E84] font-semibold",
 };
 
 const mapStatus = (raw) => statusMap[raw] || raw;
@@ -119,13 +119,13 @@ export default function Page() {
   };
 
   return (
-    <div className="flex h-full">
-      <div className="flex-1 bg-gray-100 p-8">
-        <h1 className="text-xl font-bold mb-6">Dashboard Pengajuan Surat / {judul}</h1>
+    <div>
+      <div className="min-h-full p-8">
+        <h2 className="sm:text-2xl text-base font-semibold mb-4">Pengajuan Surat / {judul}</h2>
 
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
           <Stat label="Butuh Konfirmasi" value={ringkasan.butuhKonfirmasi} icon={<BadgeCheck size={50} className="text-teal-600" />} />
-          <Stat label="Selesai" value={ringkasan.selesai} icon={<UserCheck size={50} className="text-green-500" />} />
+          <Stat label="Selesai" value={ringkasan.selesai} icon={<UserCheck size={50} className="text-[#27AE60]" />} />
         </div>
 
         <div className="border-t border-gray-400 mb-6 mt-6" />
@@ -199,7 +199,7 @@ export default function Page() {
         <div className="w-full overflow-x-auto">
           <table className="table-fixed w-full border border-black text-[9px] sm:text-sm md:text-base">
             <thead>
-              <tr className="bg-green-600 text-white">
+              <tr className="bg-[#27AE60] text-white">
                 <th className="border border-black p-2 w-[10%] whitespace-normal break-words hidden sm:table-cell">No.</th>
                 <th className="border border-black p-2 w-[15%] whitespace-normal break-words">Tanggal</th>
                 <th className="border border-black p-2 w-[20%] whitespace-normal break-words">Nama</th>
@@ -234,7 +234,7 @@ export default function Page() {
                       <td className={`border border-black p-2 whitespace-normal break-words ${statusStyle[statusLabel] || ""}`}>{statusLabel}</td>
                       <td className="border border-black p-2 whitespace-normal break-words">
                         <Link href={`/kepdes/pengajuan-surat/${jenisSurat}/${item.id}?status=${item.status}`} className="flex flex-col items-center justify-center text-center group text-[9px] sm:text-sm">
-                          <Search className="text-sky-500 w-4 h-4 sm:w-5 sm:h-5 group-hover:scale-105 transition-transform" />
+                          <Search className="text-[#00A8E8] w-4 h-4 sm:w-5 sm:h-5 group-hover:scale-105 transition-transform" />
                           <span className="text-black group-hover:underline">Buka</span>
                         </Link>
                       </td>
@@ -253,7 +253,7 @@ export default function Page() {
               {"<"}
             </button>
             {[...Array(totalPages)].map((_, i) => (
-              <button key={i} onClick={() => setCurrentPage(i + 1)} className={`px-3 py-1 ${currentPage === i + 1 ? "bg-green-700 text-white" : "hover:bg-slate-100"}`}>
+              <button key={i} onClick={() => setCurrentPage(i + 1)} className={`px-3 py-1 ${currentPage === i + 1 ? "bg-[#27AE60] text-white" : "hover:bg-slate-100"}`}>
                 {i + 1}
               </button>
             ))}

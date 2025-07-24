@@ -31,10 +31,8 @@ export default function DashboardPage() {
   };
 
   const statusStyle = {
-    Selesai: "text-green-600 font-semibold",
-    "Butuh Konfirmasi": "text-blue-600 font-semibold",
-    Ditolak: "text-red-600 font-semibold",
-    "Sedang Proses": "text-gray-500 font-semibold",
+    Selesai: "text-[#34C759] font-semibold",
+    "Butuh Konfirmasi": "text-[#016E84] font-semibold",
   };
 
   const formatTanggal = (tgl) => {
@@ -114,7 +112,7 @@ export default function DashboardPage() {
 
     if (start > 1) {
       pages.push(
-        <button key={1} onClick={() => setCurrentPage(1)} className={`px-3 py-1 ${currentPage === 1 ? "bg-green-600 text-white" : "hover:bg-slate-100"}`}>
+        <button key={1} onClick={() => setCurrentPage(1)} className={`px-3 py-1 ${currentPage === 1 ? "bg-[#27AE60] text-white" : "hover:bg-slate-100"}`}>
           1
         </button>
       );
@@ -128,7 +126,7 @@ export default function DashboardPage() {
 
     for (let i = start; i <= end; i++) {
       pages.push(
-        <button key={i} onClick={() => setCurrentPage(i)} className={`px-3 py-1 ${currentPage === i ? "bg-green-600 text-white" : "hover:bg-slate-100"}`}>
+        <button key={i} onClick={() => setCurrentPage(i)} className={`px-3 py-1 ${currentPage === i ? "bg-[#27AE60] text-white" : "hover:bg-slate-100"}`}>
           {i}
         </button>
       );
@@ -142,7 +140,7 @@ export default function DashboardPage() {
           </span>
         );
       pages.push(
-        <button key={totalPages} onClick={() => setCurrentPage(totalPages)} className={`px-3 py-1 ${currentPage === totalPages ? "bg-green-600 text-white" : "hover:bg-slate-100"}`}>
+        <button key={totalPages} onClick={() => setCurrentPage(totalPages)} className={`px-3 py-1 ${currentPage === totalPages ? "bg-[#27AE60]text-white" : "hover:bg-slate-100"}`}>
           {totalPages}
         </button>
       );
@@ -153,9 +151,9 @@ export default function DashboardPage() {
 
   return (
     <div className="flex h-full">
-      <div className="flex-1 p-8 space-y-8 bg-[#EDF0F5]">
+      <div className="flex-1 p-8 space-y-8">
         <section>
-          <h2 className="font-semibold text-2xl mb-4">Pengajuan Surat</h2>
+          <h2 className="sm:text-2xl text-base font-semibold mb-4">Pengajuan Surat</h2>
 
           {loading ? (
             <p className="text-gray-500 italic">Memuat data...</p>
@@ -173,7 +171,7 @@ export default function DashboardPage() {
               <Search className="w-5 h-5 mr-2" />
               <input type="text" placeholder="Cari" className="flex-1 outline-none text-sm bg-white placeholder-gray-500" value={searchGlobal} onChange={(e) => setSearchGlobal(e.target.value)} />
               <button onClick={() => setShowFilter(!showFilter)}>
-                <SlidersHorizontal className={`w-4 h-4 ml-2 cursor-pointer transition-colors ${showFilter ? "text-green-600" : "text-gray-500"}`} />
+                <SlidersHorizontal className={`w-4 h-4 ml-2 cursor-pointer transition-colors ${showFilter ? "text-[#27AE60]" : "text-gray-500"}`} />
               </button>
             </div>
           </div>
@@ -190,7 +188,7 @@ export default function DashboardPage() {
           <div className="w-full overflow-x-auto">
             <table className="table-fixed w-full border border-black text-[9px] sm:text-sm md:text-base">
               <thead>
-                <tr className="bg-green-600 text-white">
+                <tr className="bg-[#27AE60] text-white">
                   <th className="border border-black p-2 w-[10%] whitespace-normal break-words hidden sm:table-cell">No.</th>
                   <th className="border border-black p-2 w-[15%] whitespace-normal break-words">Tanggal</th>
                   <th className="border border-black p-2 w-[20%] whitespace-normal break-words">Nama</th>
@@ -224,7 +222,7 @@ export default function DashboardPage() {
                         <td className={`border border-black p-2 whitespace-normal break-words ${statusStyle[statusLabel] || ""}`}>{statusLabel}</td>
                         <td className="border border-black p-2 whitespace-normal break-words">
                           <Link href={`/kepdes/pengajuan-surat/${item.suratSlug}/${item.id}?status=${item.status}`} className="flex flex-col items-center justify-center text-center group text-[9px] sm:text-sm">
-                            <Search className="text-sky-500 w-4 h-4 sm:w-5 sm:h-5 group-hover:scale-105 transition-transform" />
+                            <Search className="text-[#00A8E8] w-4 h-4 sm:w-5 sm:h-5 group-hover:scale-105 transition-transform" />
                             <span className="text-black group-hover:underline">Buka</span>
                           </Link>
                         </td>

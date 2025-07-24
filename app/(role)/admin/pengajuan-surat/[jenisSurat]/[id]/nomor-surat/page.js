@@ -130,10 +130,10 @@ export default function InputNomorSuratPage() {
   if (loading) return <p className="p-6">Memuat data...</p>;
 
   return (
-    <div className="flex h-full">
-      <div className="flex-1 p-8 space-y-8 bg-[#EDF0F5]">
-        <h2 className="text-2xl font-semibold mb-4">
-          {namaUser} / {namaSurat} / Nomor surat
+    <div>
+      <div className="min-h-full p-8">
+        <h2 className="sm:text-2xl text-base font-semibold mb-4">
+          Pengajuan Surat / {namaSurat} / Nomor surat
         </h2>
         <div className="bg-white rounded-lg shadow-md p-4 sm:p-8 mx-auto w-full">
           <button type="button" onClick={() => router.push(`/admin/pengajuan-surat/${jenisSurat}/${id}`)} className="flex items-center text-base text-gray-500 mb-6">
@@ -159,7 +159,7 @@ export default function InputNomorSuratPage() {
             {errorMsg && <p className="text-red-600 text-sm text-center mb-2">{errorMsg}</p>}
 
             <div className="flex justify-center mt-2">
-              <button type="submit" className="bg-green-600 text-white px-4 sm:px-6 py-2 w-full sm:w-auto text-sm sm:text-base rounded hover:bg-green-700 transition">
+              <button type="submit" className="bg-[#27AE60] text-white px-4 sm:px-6 py-2 w-full sm:w-auto text-sm sm:text-base rounded hover:bg-green-600 transition">
                 Submit
               </button>
             </div>
@@ -171,10 +171,10 @@ export default function InputNomorSuratPage() {
       {showConfirmPopup && (
         <div className="fixed inset-0 bg-black bg-opacity-30 z-50 flex items-center justify-center">
           <div className="bg-white rounded-lg shadow-md px-4 sm:px-6 py-6 text-center w-full max-w-sm mx-4">
-            <h3 className="text-green-600 font-bold text-lg mb-3">Konfirmasi Nomor Surat!</h3>
+            <h3 className="text-[#27AE60] font-bold text-lg mb-3">Konfirmasi Nomor Surat!</h3>
             <p className="text-gray-700 text-sm mb-4">Apakah Anda yakin nomor surat yang dimasukkan sudah benar dan sesuai format?</p>
             <div className="flex flex-col">
-              <button onClick={handleSubmit} className="bg-green-600 hover:bg-green-700 text-white py-2 rounded text-sm">
+              <button onClick={handleSubmit} className="bg-[#27AE60] hover:bg-green-600 text-white py-2 rounded text-sm">
                 Ya, Sudah Benar
               </button>
               <button onClick={() => setShowConfirmPopup(false)} className="mt-4 text-sm text-gray-600 underline cursor-pointer bg-transparent border-none p-0 focus:outline-none">

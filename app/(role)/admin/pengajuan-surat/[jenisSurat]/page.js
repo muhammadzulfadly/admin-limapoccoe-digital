@@ -17,15 +17,15 @@ const statusMap = {
 };
 
 const statusStyle = {
-  Selesai: "text-green-600 font-semibold",
-  "Butuh Konfirmasi": "text-blue-600 font-semibold",
-  Ditolak: "text-red-600 font-semibold",
-  "Sedang Proses": "text-gray-500 font-semibold",
+  Selesai: "text-[#34C759] font-semibold",
+  "Butuh Konfirmasi": "text-[#016E84] font-semibold",
+  Ditolak: "text-[#E74C3C] font-semibold",
+  "Sedang Proses": "text-[#666666] font-semibold",
 };
 
 const iconStyle = {
-  Unduh: <FileDown className="text-green-600" />,
-  Buka: <Search className="text-blue-600" />,
+  Unduh: <FileDown className="text-[#34C759]" />,
+  Buka: <Search className="text-[#00A8E8]" />,
 };
 
 const mapStatus = (raw) => statusMap[raw] || raw;
@@ -154,14 +154,14 @@ export default function Page() {
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-white px-6 py-4 rounded shadow-md text-center">
             <p className="text-lg font-semibold mb-2">Mengunduh file...</p>
-            <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-green-600 mx-auto" />
+            <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-[#27AE60] mx-auto" />
           </div>
         </div>
       )}
 
-      <div className="flex h-full">
-        <div className="flex-1 bg-gray-100 p-8">
-          <h1 className="text-xl font-bold mb-6">Dashboard Pengajuan Surat / {judul}</h1>
+      <div>
+        <div className="min-h-full p-8">
+          <h2 className="sm:text-2xl text-base font-semibold mb-4">Pengajuan Surat / {judul}</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
             <SedangProsesCard count={sedangProses.length} />
             <ButuhKonfirmasiCard count={butuhKonfirmasi.length} />
@@ -184,7 +184,7 @@ export default function Page() {
               <Search className="w-5 h-5 mr-2" />
               <input type="text" placeholder="Cari" className="flex-1 outline-none text-sm bg-white placeholder-gray-500 min-w-0" value={searchGlobal} onChange={(e) => setSearchGlobal(e.target.value)} />
               <button onClick={() => setShowFilter(!showFilter)}>
-                <SlidersHorizontal className={`w-4 h-4 ml-2 cursor-pointer transition-colors ${showFilter ? "text-green-600" : "text-gray-500"}`} />
+                <SlidersHorizontal className={`w-4 h-4 ml-2 cursor-pointer transition-colors ${showFilter ? "text-[#27AE60]" : "text-gray-500"}`} />
               </button>
             </div>
           </div>
@@ -200,7 +200,7 @@ export default function Page() {
           <div className="w-full overflow-x-auto">
             <table className="table-fixed w-full border border-black text-[9px] sm:text-sm md:text-base">
               <thead>
-                <tr className="bg-green-600 text-white">
+                <tr className="bg-[#27AE60] text-white">
                   <th className="border border-black p-2 w-[10%] whitespace-normal break-words hidden sm:table-cell">No.</th>
                   <th className="border border-black p-2 w-[15%] whitespace-normal break-words">Tanggal</th>
                   <th className="border border-black p-2 w-[20%] whitespace-normal break-words">Nama</th>
@@ -266,7 +266,7 @@ export default function Page() {
                   <ChevronsLeft className="w-4 h-4" />
                 </button>
                 {getPaginationRange().map((page, i) => (
-                  <button key={i} onClick={() => typeof page === "number" && setCurrentPage(page)} disabled={typeof page !== "number"} className={`px-3 py-1 ${page === currentPage ? "bg-green-700 text-white" : "hover:bg-slate-100"}`}>
+                  <button key={i} onClick={() => typeof page === "number" && setCurrentPage(page)} disabled={typeof page !== "number"} className={`px-3 py-1 ${page === currentPage ? "bg-[#27AE60] text-white" : "hover:bg-slate-100"}`}>
                     {page === "..." ? <MoreHorizontal className="w-4 h-4" /> : page}
                   </button>
                 ))}

@@ -99,7 +99,7 @@ export default function ProfilePage() {
           <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
             {/* Icon + Nama */}
             <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4 text-center md:text-left">
-              <div className="w-12 h-12 rounded-full bg-[#2DB567] flex items-center justify-center">
+              <div className="w-12 h-12 rounded-full bg-[#27AE60] flex items-center justify-center">
                 <User className="text-white" size={24} />
               </div>
               <p className="font-semibold text-black">{form.name}</p>
@@ -107,7 +107,7 @@ export default function ProfilePage() {
 
             {/* Tombol Aksi */}
             <div className={`w-full sm:flex sm:items-center sm:gap-4 sm:w-auto grid gap-2 ${isEditable ? "grid-cols-1 justify-center" : "grid-cols-2"}`}>
-              <button onClick={handleToggleEdit} className="bg-[#2DB567] hover:bg-[#239653] text-white text-sm font-medium px-4 py-1.5 rounded w-full sm:w-auto whitespace-nowrap">
+              <button onClick={handleToggleEdit} className="bg-[#27AE60] hover:bg-green-600 text-white text-sm font-medium px-4 py-1.5 rounded w-full sm:w-auto whitespace-nowrap">
                 {isEditable ? "Simpan" : "Ubah Profil"}
               </button>
 
@@ -151,7 +151,7 @@ export default function ProfilePage() {
       {showSuccessLogout && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-lg px-6 py-9 w-[280px] text-center animate-fade-in">
-            <h3 className="text-green-600 text-2xl font-bold mb-2">Berhasil Logout</h3>
+            <h3 className="text-[#27AE60] text-2xl font-bold mb-2">Berhasil Logout</h3>
             <p className="text-sm text-gray-800">Anda sudah berhasil logout.</p>
           </div>
         </div>

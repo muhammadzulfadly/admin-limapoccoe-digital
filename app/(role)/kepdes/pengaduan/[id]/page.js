@@ -54,8 +54,8 @@ export default function DetailPengaduanPage() {
   if (!pengaduan) return <p className="p-8">Data tidak ditemukan.</p>;
 
   return (
-    <div className="bg-[#EDF0F5] min-h-screen p-8">
-      <h1 className="text-lg font-semibold mb-6">
+    <div className="min-h-full p-8">
+      <h1 className="sm:text-2xl text-base font-semibold mb-4">
         Pengaduan / {pengaduan.user?.name} / {statusMap[pengaduan.status]}
       </h1>
 

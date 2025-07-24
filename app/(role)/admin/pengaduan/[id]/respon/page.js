@@ -74,9 +74,9 @@ export default function ResponPengaduanPage() {
   };
 
   return (
-    <div className="flex h-full">
-      <div className="flex-1 p-4 sm:p-8 space-y-8">
-        <h2 className="text-xl sm:text-2xl font-semibold mb-4">
+    <div>
+      <div className="min-h-full p-8">
+        <h2 className="sm:text-2xl text-base font-semibold mb-4">
           Pengaduan / {namaUser} / Tanggapan
         </h2>
 

@@ -37,11 +37,11 @@ export default async function Page() {
   }
 
   return (
-    <div className="flex h-full">
+    <div>
       {/* Main Content */}
-      <div className="flex-1 bg-gray-100 p-8">
+      <div className="min-h-full p-8">
         <header>
-          <h1 className="text-xl font-bold mb-3">Dashboard Informasi Desa</h1>
+          <h2 className="sm:text-2xl text-base font-semibold mb-4">Informasi Desa</h2>
         </header>
 
         <div className="grid grid-cols-2 sm:flex sm:justify-between sm:items-center gap-4 mb-6">
@@ -61,7 +61,7 @@ export default async function Page() {
         <div className="w-full overflow-x-auto">
           <table className="table-fixed w-full border border-black text-[9px] sm:text-sm md:text-base">
             <thead>
-              <tr className="bg-green-600 text-white">
+              <tr className="bg-[#27AE60] text-white">
                 <th className="border border-black p-2 w-[20%] whitespace-normal break-words">Nama Pengedit</th>
                 <th className="border border-black p-2 w-[20%] whitespace-normal break-words">Terakhir diedit</th>
                 <th className="border border-black p-2 w-[20%] whitespace-normal break-words">Kategori</th>

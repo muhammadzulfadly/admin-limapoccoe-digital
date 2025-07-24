@@ -81,9 +81,9 @@ export default function DetailPengaduanPage() {
   if (!pengaduan) return <p className="p-8">Data tidak ditemukan.</p>;
 
   return (
-    <div className="flex h-full">
-      <div className="flex-1 p-8 space-y-8 bg-[#EDF0F5]">
-        <h2 className="text-2xl font-semibold mb-4">
+    <div>
+      <div className="min-h-full p-8">
+        <h2 className="sm:text-2xl text-base font-semibold mb-4">
           Pengaduan / {pengaduan.user?.name} / {statusMap[pengaduan.status]}
         </h2>
 
@@ -117,11 +117,11 @@ export default function DetailPengaduanPage() {
 
           <div className="flex justify-end mt-8">
             {pengaduan.response && pengaduan.status !== "approved" ? (
-              <button onClick={handleSelesaikan} disabled={submitting} className="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-60">
+              <button onClick={handleSelesaikan} disabled={submitting} className="px-6 py-2 bg-[#27AE60] text-white rounded hover:bg-green-600 disabled:opacity-60">
                 {submitting ? "Menyimpan..." : "Selesaikan Pengaduan"}
               </button>
             ) : pengaduan.response === null ? (
-              <button onClick={() => router.push(`/admin/pengaduan/${pengaduan.id}/respon`)} className="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700">
+              <button onClick={() => router.push(`/admin/pengaduan/${pengaduan.id}/respon`)} className="px-6 py-2 bg-[#27AE60] text-white rounded hover:bg-green-600">
                 Selanjutnya
               </button>
             ) : null}

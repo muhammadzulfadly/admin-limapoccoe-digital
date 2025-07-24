@@ -8,9 +8,9 @@ function SuccessPopup({ onClose }) {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-8 text-center shadow-lg">
-        <h2 className="text-green-600 text-2xl font-bold mb-4">Import data berhasil!</h2>
+        <h2 className="text-[#27AE60] text-2xl font-bold mb-4">Import data berhasil!</h2>
         <p className="text-gray-700 mb-6">Proses impor data kependudukan telah berhasil. Data telah tersimpan dalam sistem.</p>
-        <button onClick={onClose} className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+        <button onClick={onClose} className="bg-[#27AE60] text-white px-4 py-2 rounded hover:bg-green-600">
           Tutup
         </button>
       </div>
@@ -86,10 +86,10 @@ export default function ImportPendudukPage() {
   };
 
   return (
-    <div className="flex h-full">
-      <div className="flex-1 bg-gray-100 p-8">
+    <div>
+      <div className="min-h-full p-8">
         <header>
-          <h1 className="text-xl font-bold mb-3">Dashboard Data Kependudukan / Import Data</h1>
+          <h2 className="sm:text-2xl text-base font-semibold mb-4">Data Kependudukan / Import Data</h2>
         </header>
 
         <form onSubmit={handleImport} className="bg-white rounded-lg p-6 mx-auto">
@@ -104,7 +104,7 @@ export default function ImportPendudukPage() {
           </label>
 
           <div className="flex justify-end">
-            <button type="submit" disabled={loading} className={`flex items-center gap-2 px-4 py-2 text-white text-sm rounded-md ${loading ? "bg-gray-400" : "bg-green-600 hover:bg-green-700"}`}>
+            <button type="submit" disabled={loading} className={`flex items-center gap-2 px-4 py-2 text-white text-sm rounded-md ${loading ? "bg-gray-400" : "bg-[#27AE60] hover:bg-green-600"}`}>
               <FileUp className="w-4 h-4" />
               {loading ? "Mengupload..." : "Import Sekarang"}
             </button>

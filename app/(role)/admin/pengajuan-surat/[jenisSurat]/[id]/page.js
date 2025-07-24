@@ -146,11 +146,11 @@ export default function DetailAjuanSuratPage() {
   const profile = user?.profile_masyarakat;
 
   return (
-    <div className="flex h-full bg-gray-100 min-h-screen p-8">
-      <div className="flex-1 max-w-4xl mx-auto">
-        <h1 className="text-xl font-semibold mb-4">
-          Detail Pengajuan Surat / {surat?.nama_surat} / {statusMap[ajuan?.status]}
-        </h1>
+    <div>
+      <div className="min-h-full p-8">
+        <h2 className="sm:text-2xl text-base font-semibold mb-4">
+          Pengajuan Surat / {surat?.nama_surat} / {statusMap[ajuan?.status]}
+        </h2>
         <div className="bg-white rounded-md shadow-sm p-8">
           <button type="button" onClick={() => router.push(`/admin/pengajuan-surat/${jenisSurat}`)} className="flex items-center text-base text-gray-500 mb-6">
             <ChevronLeft size={30} className="mr-1" />
@@ -205,7 +205,7 @@ export default function DetailAjuanSuratPage() {
                     <button onClick={() => setShowTolakModal(true)} className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
                       Tolak Surat
                     </button>
-                    <button onClick={() => setShowVerifikasiModal(true)} className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+                    <button onClick={() => setShowVerifikasiModal(true)} className="bg-[#27AE60] text-white px-4 py-2 rounded hover:bg-green-600">
                       Terima Surat
                     </button>
                   </>
@@ -217,7 +217,7 @@ export default function DetailAjuanSuratPage() {
                       </button>
                     )}
                     {ajuan?.status === "processed" && (
-                      <button onClick={() => setShowVerifikasiModal(true)} className={`bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 ${isEditing ? "opacity-50 cursor-not-allowed" : ""}`} disabled={isEditing}>
+                      <button onClick={() => setShowVerifikasiModal(true)} className={`bg-[#27AE60] text-white px-4 py-2 rounded hover:bg-green-600 ${isEditing ? "opacity-50 cursor-not-allowed" : ""}`} disabled={isEditing}>
                         Selanjutnya
                       </button>
                     )}
@@ -258,14 +258,14 @@ export default function DetailAjuanSuratPage() {
 
       {showVerifikasiModal && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
-          <div className="bg-white rounded-lg p-6 max-w-sm w-full border-2 border-green-500">
-            <h2 className="text-xl font-bold text-green-600 mb-2">Verifikasi Pengajuan!</h2>
+          <div className="bg-white rounded-lg p-6 max-w-sm w-full border-2 border-[#27AE60]">
+            <h2 className="text-xl font-bold text-[#27AE60] mb-2">Verifikasi Pengajuan!</h2>
             <p className="text-sm text-gray-700 mb-4">Apakah data pengajuan surat ini sudah benar dan lengkap?</p>
             <div className="mt-4 flex justify-end gap-2">
               <button onClick={() => setShowVerifikasiModal(false)} className="border border-gray-400 px-4 py-2 rounded">
                 Kembali
               </button>
-              <button onClick={handleTerima} className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+              <button onClick={handleTerima} className="bg-[#27AE60] text-white px-4 py-2 rounded hover:bg-green-600">
                 Proses Surat
               </button>
             </div>

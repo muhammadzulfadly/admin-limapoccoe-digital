@@ -151,9 +151,9 @@ export default function TambahDataKependudukan() {
     return (
       <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
         <div className="bg-white rounded-lg p-6 max-w-sm w-full text-center shadow-lg">
-          <h2 className="text-green-600 text-2xl font-bold mb-4">Data Berhasil Disimpan</h2>
+          <h2 className="text-[#27AE60] text-2xl font-bold mb-4">Data Berhasil Disimpan</h2>
           <p className="text-gray-700 mb-6">Data warga telah berhasil disimpan ke dalam sistem.</p>
-          <button onClick={onClose} className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+          <button onClick={onClose} className="bg-[#27AE60] text-white px-4 py-2 rounded hover:bg-green-600">
             Tutup
           </button>
         </div>
@@ -188,8 +188,8 @@ export default function TambahDataKependudukan() {
 
       {errorMessage && <ErrorPopup message={errorMessage} onClose={() => setErrorMessage("")} />}
 
-      <form onSubmit={handleSubmit} className="p-6 space-y-2 bg-[#EDF0F5] rounded shadow-md">
-        <h1 className="text-xl font-bold mb-3">Data Kependudukan / Tambah Data Penduduk</h1>
+      <form onSubmit={handleSubmit} className="min-h-full p-8">
+        <h2 className="sm:text-2xl text-base font-semibold mb-4">Data Kependudukan / Tambah Data Penduduk</h2>
 
         {/* Informasi Rumah */}
         <div className="bg-white rounded-lg p-6 mx-auto">
@@ -301,14 +301,14 @@ export default function TambahDataKependudukan() {
               setOpenForm([...openForm, true]);
               setErrors({ ...errors, anggota: [...errors.anggota, {}] });
             }}
-            className="bg-blue-600 text-white px-4 py-2 text-sm rounded hover:bg-blue-700"
+            className="bg-[#27AE60] text-white px-4 py-2 text-sm rounded hover:bg-green-600"
           >
             + Tambah Anggota
           </button>
         </div>
 
         <div className="flex justify-end">
-          <button type="submit" className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 text-sm">
+          <button type="submit" className="bg-[#27AE60] text-white px-6 py-2 rounded hover:bg-green-600 text-sm">
             Simpan
           </button>
         </div>

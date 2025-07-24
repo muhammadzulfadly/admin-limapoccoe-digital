@@ -46,7 +46,7 @@ export default function BerandaLayout({ children }) {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Header */}
-      <header className="bg-[#2DB567] fixed top-0 left-0 w-full z-50 flex items-center justify-between px-4 md:px-8 py-3 shadow">
+      <header className="bg-[#27AE60] fixed top-0 left-0 w-full z-50 flex items-center justify-between px-4 md:px-8 py-3 shadow">
         {/* Logo dan Nama */}
         <div className="flex items-center gap-3">
           <Image src="/logo.png" alt="Logo Desa Limmapocoe" width={45} height={45} priority />

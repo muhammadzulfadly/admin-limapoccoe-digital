@@ -12,8 +12,8 @@ const statusMap = {
 };
 
 const statusColor = {
-  Selesai: "text-green-600 font-semibold",
-  Diterima: "text-teal-800 font-semibold",
+  Selesai: "text-[#34C759] font-semibold",
+  Diterima: "text-[#016E84] font-semibold",
 };
 
 export default function PengaduanPage() {
@@ -67,9 +67,9 @@ export default function PengaduanPage() {
 
   return (
     <div className="flex h-full">
-      <div className="flex-1 p-8 space-y-8 bg-[#EDF0F5]">
+      <div className="flex-1 p-8 space-y-8">
         <section>
-          <h2 className="font-semibold text-2xl mb-4">Pengaduan</h2>
+          <h2 className="sm:text-2xl text-base font-semibold mb-4">Pengaduan</h2>
 
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
             {Object.values(statusMap).map((status) => {
@@ -100,7 +100,7 @@ export default function PengaduanPage() {
                 }}
               />
               <button onClick={() => setShowFilter(!showFilter)}>
-                <SlidersHorizontal className={`w-4 h-4 ml-2 ${showFilter ? "text-green-600" : ""}`} />
+                <SlidersHorizontal className={`w-4 h-4 ml-2 ${showFilter ? "text-[#27AE60]" : ""}`} />
               </button>
             </div>
           </div>
@@ -119,7 +119,7 @@ export default function PengaduanPage() {
           <div className="w-full overflow-x-auto">
             <table className="table-fixed w-full border border-black text-[9px] sm:text-sm md:text-base">
               <thead>
-                <tr className="bg-green-600 text-white">
+                <tr className="bg-[#27AE60] text-white">
                   <th className="border border-black p-2 w-[10%] whitespace-normal break-words hidden sm:table-cell">No.</th>
                   <th className="border border-black p-2 w-[15%] whitespace-normal break-words">Tanggal</th>
                   <th className="border border-black p-2 w-[20%] whitespace-normal break-words">Judul Pengaduan</th>
@@ -141,7 +141,7 @@ export default function PengaduanPage() {
                         <td className={`border border-black p-2 whitespace-normal break-words ${statusColor[readableStatus] || ""}`}>{readableStatus}</td>
                         <td className="border border-black p-2 whitespace-normal break-words">
                           <Link href={`/kepdes/pengaduan/${item.id}`} className="flex flex-col items-center justify-center text-center group text-[9px] sm:text-sm">
-                            <Search className="text-sky-500 w-4 h-4 sm:w-5 sm:h-5 group-hover:scale-105 transition-transform" />
+                            <Search className="text-[#00A8E8] w-4 h-4 sm:w-5 sm:h-5 group-hover:scale-105 transition-transform" />
                             <span className="text-black group-hover:underline">Buka</span>
                           </Link>
                         </td>
@@ -166,7 +166,7 @@ export default function PengaduanPage() {
                 <ChevronsLeft className="w-4 h-4" />
               </button>
               {[...Array(totalPages)].map((_, i) => (
-                <button key={i} onClick={() => setCurrentPage(i + 1)} className={`px-3 py-1 ${currentPage === i + 1 ? "bg-green-700 text-white" : "hover:bg-slate-100"}`}>
+                <button key={i} onClick={() => setCurrentPage(i + 1)} className={`px-3 py-1 ${currentPage === i + 1 ? "bg-[#27AE60] text-white" : "hover:bg-slate-100"}`}>
                   {i + 1}
                 </button>
               ))}

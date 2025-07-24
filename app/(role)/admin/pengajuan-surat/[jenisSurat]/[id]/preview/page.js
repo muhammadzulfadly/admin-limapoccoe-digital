@@ -112,10 +112,10 @@ export default function PreviewSuratPage() {
   }
 
   return (
-    <div className="flex h-full">
-      <div className="flex-1 p-8 space-y-8 bg-[#EDF0F5]">
-        <h2 className="text-2xl font-semibold">
-          {namaUser} / {namaSurat} / Pratinjau Surat
+    <div>
+      <div className="min-h-full p-8">
+        <h2 className="sm:text-2xl text-base font-semibold mb-4">
+          Pengajuan Surat / {namaSurat} / Pratinjau Surat
           <button type="button" onClick={() => router.back()} className="flex items-center text-base text-gray-500 mt-3">
             <ChevronLeft size={30} className="mr-1" />
             Kembali
@@ -132,7 +132,7 @@ export default function PreviewSuratPage() {
           <button
             onClick={() => setShowConfirmPopup(true)}
             disabled={processing || status === "confirmed"}
-            className={`bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 disabled:opacity-60 ${status === "confirmed" ? "hidden" : ""}`}
+            className={`bg-[#27AE60] text-white px-6 py-2 rounded hover:bg-green-600 disabled:opacity-60 ${status === "confirmed" ? "hidden" : ""}`}
           >
             {processing ? "Memproses..." : "Proses tanda tangan"}
           </button>
@@ -143,10 +143,10 @@ export default function PreviewSuratPage() {
       {showConfirmPopup && (
         <div className="fixed inset-0 bg-black bg-opacity-30 z-50 flex items-center justify-center">
           <div className="bg-white rounded-lg shadow-md px-6 py-8 text-center max-w-sm mx-auto border">
-            <h3 className="text-green-600 font-bold text-lg mb-3">Konfirmasi!</h3>
+            <h3 className="text-[#27AE60] font-bold text-lg mb-3">Konfirmasi!</h3>
             <p className="text-gray-700 text-sm mb-4">Apakah Anda sudah memastikan bahwa semua data dalam surat ini sudah benar? Periksa kembali sebelum melanjutkan.</p>
             <div className="flex flex-col">
-              <button onClick={handleProsesTandaTangan} className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm">
+              <button onClick={handleProsesTandaTangan} className="bg-[#27AE60] hover:bg-green-600 text-white px-4 py-2 rounded text-sm">
                 Ya, Sudah Benar
               </button>
               <button onClick={() => setShowConfirmPopup(false)} className="mt-4 text-sm text-gray-600 underline cursor-pointer">
@@ -161,7 +161,7 @@ export default function PreviewSuratPage() {
       {showSuccessPopup && (
         <div className="fixed inset-0 bg-black bg-opacity-30 z-50 flex items-center justify-center">
           <div className="bg-white rounded-lg shadow-md px-4 sm:px-6 py-6 text-center w-full max-w-sm mx-4">
-            <h3 className="text-green-600 font-bold text-lg mb-3">Menunggu Tanda Tangan Kepala Desa !</h3>
+            <h3 className="text-[#27AE60] font-bold text-lg mb-3">Menunggu Tanda Tangan Kepala Desa !</h3>
             <p className="text-gray-700 text-sm">Surat telah dikirim dan sedang menunggu tanda tangan dari Kepala Desa.</p>
           </div>
         </div>

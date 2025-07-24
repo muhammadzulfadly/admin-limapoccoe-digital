@@ -95,9 +95,9 @@ export default function LoginPage() {
       {showLoginError && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-lg px-7 py-12 w-[252px] text-center animate-fade-in">
-            <h3 className="text-[#EB5757] text-2xl font-bold mb-8">Gagal Melakukan Login</h3>
-            <p className="text-sm text-[#141414] leading-relaxed mb-10">Maaf, terjadi kesalahan saat masuk. Silakan coba lagi nanti atau periksa koneksi internet Anda.</p>
-            <button onClick={() => setShowLoginError(false)} className="bg-[#EB5757] hover:bg-[#c94444] text-white rounded px-6 py-2 text-sm">
+            <h3 className="text-[#E74C3C] text-2xl font-bold mb-8">Gagal Melakukan Login</h3>
+            <p className="text-sm text-black leading-relaxed mb-10">Maaf, terjadi kesalahan saat masuk. Silakan coba lagi nanti atau periksa koneksi internet Anda.</p>
+            <button onClick={() => setShowLoginError(false)} className="bg-[#E74C3C] hover:bg-red-600 text-white rounded px-6 py-2 text-sm">
               Kembali
             </button>
           </div>
