@@ -1,6 +1,6 @@
 "use client";
 import InputField from "./InputField";
-
+import PropTypes from "prop-types";
 export default function NomorTelepon({ label="Nomor Telepon", name="no_whatsapp", value, onChange, error, disabled = false }) {
   return (
     <InputField
@@ -21,3 +21,12 @@ export function validateNomorTelepon(value) {
   }
   return "";
 }
+
+NomorTelepon.propTypes = {
+  label: PropTypes.string,
+  name: PropTypes.string,
+  value: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+  error: PropTypes.string,
+  disabled: PropTypes.bool,
+};

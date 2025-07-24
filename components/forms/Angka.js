@@ -1,5 +1,6 @@
 "use client";
 import InputField from "./InputField";
+import PropTypes from "prop-types";
 
 export default function Angka({ label="Angka", name="angka", value, onChange, error, disabled = false}) {
   return (
@@ -21,3 +22,12 @@ export function validateAngka(value) {
   }
   return "";
 }
+
+Angka.propTypes = {
+  label: PropTypes.string,
+  name: PropTypes.string,
+  value: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+  error: PropTypes.string,
+  disabled: PropTypes.bool,
+};

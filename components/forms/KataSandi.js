@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
-
+import PropTypes from "prop-types";
 export default function KataSandi({
   label = "Kata Sandi",
   name = "password",
@@ -70,3 +70,12 @@ export function validateKataSandi(value) {
   }
   return "";
 }
+
+KataSandi.propTypes = {
+  label: PropTypes.string,
+  name: PropTypes.string,
+  value: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+  error: PropTypes.string,
+  disabled: PropTypes.bool,
+};

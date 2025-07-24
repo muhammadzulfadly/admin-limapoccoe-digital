@@ -1,5 +1,5 @@
 "use client";
-
+import PropTypes from "prop-types";
 export default function Tanggal({
   label = "Tanggal",
   name = "tanggal",
@@ -60,3 +60,12 @@ export function validateTanggal(value) {
   }
   return "";
 }
+
+Tanggal.propTypes = {
+  label: PropTypes.string,
+  name: PropTypes.string,
+  value: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+  error: PropTypes.string,
+  disabled: PropTypes.bool,
+};

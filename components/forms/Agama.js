@@ -1,25 +1,15 @@
 "use client";
 
 import { ChevronDown } from "lucide-react";
+import PropTypes from "prop-types";
 
 const pilihanDusun = ["Islam", "Kristen", "Katolik", "Hindu", "Buddha", "Konghucu", "Lainnya"];
 
-export default function Dusun({
-  label = "Agama",
-  name = "agama",
-  value,
-  onChange,
-  error,
-  disabled = false,
-}) {
+export default function Agama({ label = "Agama", name = "agama", value, onChange, error, disabled = false }) {
   return (
     <div>
       {/* Label */}
-      <label
-        className={`block mb-1 text-xs md:text-sm font-medium ${
-          error ? "text-red-500" : "text-gray-500"
-        }`}
-      >
+      <label className={`block mb-1 text-xs md:text-sm font-medium ${error ? "text-red-500" : "text-gray-500"}`}>
         {label}
         <span className="text-red-500 ml-0.5">*</span>
       </label>
@@ -56,10 +46,7 @@ export default function Dusun({
         </select>
 
         {/* Icon */}
-        <ChevronDown
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-black pointer-events-none"
-          size={16}
-        />
+        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-black pointer-events-none" size={16} />
       </div>
 
       {/* Error */}
@@ -72,3 +59,12 @@ export function validateAgama(value) {
   if (!value) return "Agama wajib dipilih.";
   return "";
 }
+
+Agama.propTypes = {
+  label: PropTypes.string,
+  name: PropTypes.string,
+  value: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+  error: PropTypes.string,
+  disabled: PropTypes.bool,
+};

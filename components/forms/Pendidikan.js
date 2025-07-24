@@ -1,7 +1,7 @@
 "use client";
 
 import { ChevronDown } from "lucide-react";
-
+import PropTypes from "prop-types";
 const pilihanDusun = [
   "Tidak/Belum Sekolah",
   "Belum Tamat SD/Sederajat",
@@ -15,7 +15,7 @@ const pilihanDusun = [
   "S-3",
 ];
 
-export default function Dusun({
+export default function Pendidikan({
   label = "Pendidikan Terakhir",
   name = "pendidikan",
   value,
@@ -84,3 +84,12 @@ export function validatePendidikan(value) {
   if (!value) return "Pendidikan wajib dipilih.";
   return "";
 }
+
+Pendidikan.propTypes = {
+  label: PropTypes.string,
+  name: PropTypes.string,
+  value: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+  error: PropTypes.string,
+  disabled: PropTypes.bool,
+};

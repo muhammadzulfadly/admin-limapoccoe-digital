@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import InputField from "./InputField";
-
+import PropTypes from "prop-types";
 export default function Nik({
   label = "NIK",
   name = "nik",
@@ -49,3 +49,12 @@ export function validateNIK(value) {
   }
   return "";
 }
+
+Nik.propTypes = {
+  label: PropTypes.string,
+  name: PropTypes.string,
+  value: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+  error: PropTypes.string,
+  disabled: PropTypes.bool,
+};

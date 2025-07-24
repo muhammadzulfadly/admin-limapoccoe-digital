@@ -1,7 +1,7 @@
 "use client";
 import InputField from "./InputField";
-
-export default function TanggalPengaduan({ value }) {
+import PropTypes from "prop-types";
+export default function Date({ value }) {
   const formattedValue = value
     ? new Date(value).toLocaleString("id-ID", {
         dateStyle: "full",
@@ -17,3 +17,7 @@ export default function TanggalPengaduan({ value }) {
     />
   );
 }
+
+Date.propTypes = {
+  value: PropTypes.string.isRequired,
+};

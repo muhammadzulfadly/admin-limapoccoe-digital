@@ -1,7 +1,7 @@
 "use client";
 
 import { ChevronDown } from "lucide-react";
-
+import PropTypes from "prop-types";
 export default function KategoriPengaduan({
   label = "Kategori Pengaduan",
   name = "category",
@@ -84,3 +84,12 @@ export function validateKategoriPengaduan(value) {
   if (!value) return "Pilih kategori pengaduan.";
   return "";
 }
+
+KategoriPengaduan.propTypes = {
+  label: PropTypes.string,
+  name: PropTypes.string,
+  value: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+  error: PropTypes.string,
+  disabled: PropTypes.bool,
+};

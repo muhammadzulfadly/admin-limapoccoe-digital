@@ -1,5 +1,6 @@
 "use client";
 import InputField from "./InputField";
+import PropTypes from "prop-types";
 
 export default function AngkaHuruf({ label="AngkaHuruf", name="angkahuruf", value, onChange, error, disabled = false }) {
   return (
@@ -20,3 +21,12 @@ export function validateAngkaHuruf(value) {
   }
   return "";
 }
+
+AngkaHuruf.propTypes = {
+  label: PropTypes.string,
+  name: PropTypes.string,
+  value: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+  error: PropTypes.string,
+  disabled: PropTypes.bool,
+};

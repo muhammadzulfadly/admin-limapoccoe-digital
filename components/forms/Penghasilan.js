@@ -1,7 +1,7 @@
 "use client";
 
 import { ChevronDown } from "lucide-react";
-
+import PropTypes from "prop-types";
 const pilihanDusun = [
   "< Rp1 Juta",
   "Rp1-5 juta",
@@ -10,7 +10,7 @@ const pilihanDusun = [
   "> Rp20 juta",
 ];
 
-export default function Dusun({
+export default function Penghasilan({
   label = "Penghasilan per bulan",
   name = "penghasilan",
   value,
@@ -79,3 +79,12 @@ export function validatePenghasilan(value) {
   if (!value) return "Penghasilan wajib dipilih.";
   return "";
 }
+
+Penghasilan.propTypes = {
+  label: PropTypes.string,
+  name: PropTypes.string,
+  value: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+  error: PropTypes.string,
+  disabled: PropTypes.bool,
+};

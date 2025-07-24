@@ -1,7 +1,7 @@
 "use client";
 
 import { ChevronDown } from "lucide-react";
-
+import PropTypes from "prop-types";
 export default function JenisKelamin({
   label = "Jenis Kelamin",
   name = "jenis_kelamin",
@@ -67,3 +67,12 @@ export function validateJenisKelamin(value) {
   if (!value) return "Jenis kelamin wajib dipilih.";
   return "";
 }
+
+JenisKelamin.propTypes = {
+  label: PropTypes.string,
+  name: PropTypes.string,
+  value: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+  error: PropTypes.string,
+  disabled: PropTypes.bool,
+};

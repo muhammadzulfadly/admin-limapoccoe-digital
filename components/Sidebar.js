@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Home, FileText, FileEdit, ChevronDown, LayoutDashboard, CalendarCheck, User, Users } from "lucide-react";
+import PropTypes from "prop-types";
 
 export default function SidebarAdmin({ isOpen, onClose }) {
   const pathname = usePathname();
@@ -100,11 +101,11 @@ export default function SidebarAdmin({ isOpen, onClose }) {
 
           <ul className="space-y-3 text-sm pl-1">
             <li>
-                <Link href={`/profil`} onClick={onClose} className={`${linkClass(`/profil`)} block md:hidden`}>
-                  <User size={18} />
-                  Profil
-                </Link>
-              </li>
+              <Link href={`/profil`} onClick={onClose} className={`${linkClass(`/profil`)} block md:hidden`}>
+                <User size={18} />
+                Profil
+              </Link>
+            </li>
             <li>
               <Link href={`${getPrefix()}/dashboard`} onClick={onClose} className={linkClass(`${getPrefix()}/dashboard`)}>
                 <LayoutDashboard size={18} />
@@ -195,3 +196,8 @@ export default function SidebarAdmin({ isOpen, onClose }) {
     </>
   );
 }
+
+SidebarAdmin.propTypes = {
+  isOpen: PropTypes.bool,
+  onClose: PropTypes.func,
+};

@@ -1,5 +1,5 @@
 "use client";
-
+import PropTypes from "prop-types";
 export default function InputField({
   label,
   name,
@@ -54,3 +54,13 @@ export default function InputField({
     </div>
   );
 }
+
+InputField.propTypes = {
+  label: PropTypes.string,
+  name: PropTypes.string,
+  value: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+  error: PropTypes.string,
+  disabled: PropTypes.bool,
+  required: PropTypes.bool,
+};

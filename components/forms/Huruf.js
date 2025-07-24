@@ -1,6 +1,6 @@
 "use client";
 import InputField from "./InputField";
-
+import PropTypes from "prop-types";
 export default function Huruf({ 
   label = "Huruf",
   name = "huruf", 
@@ -27,3 +27,12 @@ export function validateHuruf(value) {
   }
   return "";
 }
+
+Huruf.propTypes = {
+  label: PropTypes.string,
+  name: PropTypes.string,
+  value: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+  error: PropTypes.string,
+  disabled: PropTypes.bool,
+};

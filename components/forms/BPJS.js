@@ -1,6 +1,6 @@
 "use client";
-
-export default function Pekerjaan({
+import PropTypes from "prop-types";
+export default function BPJS({
   label = "No. BPJS (Tidak Wajib)",
   name = "bpjs",
   value,
@@ -58,3 +58,12 @@ export function validateBPJS(value) {
   }
   return "";
 }
+
+BPJS.propTypes = {
+  label: PropTypes.string,
+  name: PropTypes.string,
+  value: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+  error: PropTypes.string,
+  disabled: PropTypes.bool,
+};

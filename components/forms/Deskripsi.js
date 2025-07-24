@@ -1,5 +1,5 @@
 "use client";
-
+import PropTypes from "prop-types";
 export default function Deskripsi({ label = "Deskripsi", name = "description", value, onChange, error, disabled = false, hideLabel = false }) {
   return (
     <div>
@@ -47,3 +47,13 @@ export function validateDeskripsi(value) {
   }
   return "";
 }
+
+Deskripsi.propTypes = {
+  label: PropTypes.string,
+  name: PropTypes.string,
+  value: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+  error: PropTypes.string,
+  disabled: PropTypes.bool,
+  hideLabel: PropTypes.bool,
+};

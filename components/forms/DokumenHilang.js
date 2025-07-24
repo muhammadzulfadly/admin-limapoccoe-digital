@@ -1,10 +1,10 @@
 "use client";
 
 import { ChevronDown } from "lucide-react";
-
+import PropTypes from "prop-types";
 const pilihanDusun = ["KTP", "Kartu Keluarga", "Akte Kelahiran"];
 
-export default function Dusun({
+export default function DokumenHilang({
   label = "Dokumen Hilang",
   name = "dokumen_hilang",
   value,
@@ -73,3 +73,12 @@ export function validateDokumenHilang(value) {
   if (!value) return "Dokumen wajib dipilih.";
   return "";
 }
+
+DokumenHilang.propTypes = {
+  label: PropTypes.string,
+  name: PropTypes.string,
+  value: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+  error: PropTypes.string,
+  disabled: PropTypes.bool,
+};
