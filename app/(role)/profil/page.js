@@ -112,7 +112,7 @@ export default function ProfilePage() {
               {!isEditable && (
                 <button onClick={() => setShowLogoutConfirm(true)} className="bg-[#E74C3C] hover:bg-[#c0392b] text-white text-sm font-medium px-4 py-1.5 rounded flex items-center justify-center gap-2 w-full">
                   <LogOut size={16} />
-                  Logout
+                  Keluar
                 </button>
               )}
             </div>

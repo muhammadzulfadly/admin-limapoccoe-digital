@@ -189,7 +189,7 @@ export default function TambahDataKependudukan() {
 
       {errorMessage && <ErrorPopup message={errorMessage} onClose={() => setErrorMessage("")} />}
 
-      <form onSubmit={handleSubmit} className="min-h-full p-8">
+      <form onSubmit={handleSubmit} className="min-h-full p-8 space-y-2">
         <h2 className="sm:text-2xl text-base font-semibold mb-4">Data Kependudukan / Tambah Data Penduduk</h2>
 
         {/* Informasi Rumah */}
