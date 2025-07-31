@@ -2,11 +2,6 @@
 import "../globals.css";
 import PropTypes from "prop-types";
 
-export const metadata = {
-  title: "Desa Limmapocoe",
-  description: "Website Resmi Pemerintah Desa Limmapocoe",
-};
-
 export default function LoginLayout({ children }) {
   return (
     <div className="flex min-h-screen w-full">
