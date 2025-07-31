@@ -7,7 +7,7 @@ export default function Home() {
     <>
       <Head>
         <title>Admin Limapoccoe Digital</title>
-        <link rel="icon" type="image/png" href="/logo.png" />
+        <link rel="icon" type="image/png" href="https://limapoccoedigital.id/logo.png" />
       </Head>
       {/* Redirect ke halaman /auth */}
       {redirect("/auth")}
