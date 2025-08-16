@@ -1,6 +1,6 @@
 "use client";
 
-import { Search, SlidersHorizontal, FileDown, Plus, ChevronsLeft, ChevronsRight, MoreHorizontal } from "lucide-react";
+import { Search, FileDown, Plus, ChevronsLeft, ChevronsRight, MoreHorizontal } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -22,6 +22,18 @@ const statusStyle = {
   "Butuh Konfirmasi": "text-[#016E84] font-semibold",
   Ditolak: "text-[#E74C3C] font-semibold",
   "Sedang Proses": "text-[#666666] font-semibold",
+};
+
+// urutan dan label tombol
+const STATUS_TABS = ["Semua", "Sedang Proses", "Butuh Konfirmasi", "Ditolak", "Selesai"];
+
+// warna tombol aktif (on) mengikuti gambar
+const ACTIVE_TAB_CLASS = {
+  Semua: "bg-[#2B3A4A] text-white",
+  "Sedang Proses": "bg-[#8A8A8E] text-white",
+  "Butuh Konfirmasi": "bg-[#016E84] text-white",
+  Ditolak: "bg-[#E74C3C] text-white",
+  Selesai: "bg-[#34C759] text-white",
 };
 
 const iconStyle = {
@@ -48,6 +60,8 @@ export default function Page() {
   const butuhKonfirmasi = data.filter((d) => mapStatus(d.status) === "Butuh Konfirmasi");
   const ditolak = data.filter((d) => mapStatus(d.status) === "Ditolak");
   const selesai = data.filter((d) => mapStatus(d.status) === "Selesai");
+  const [colSpan, setColSpan] = useState(6);
+  const [activeTab, setActiveTab] = useState("Semua"); // selalu ada satu yang aktif
 
   const handleDownload = async (id, namaSurat, namaPemohon) => {
     try {
@@ -73,6 +87,24 @@ export default function Page() {
       setIsDownloading(false);
     }
   };
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 640) {
+        // breakpoint md: di Tailwind
+        setColSpan(5); // mobile
+      } else {
+        setColSpan(6); // desktop
+      }
+    };
+
+    // jalankan pertama kali
+    handleResize();
+
+    // pasang event listener
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     const fetchMetadata = async () => {
@@ -120,17 +152,19 @@ export default function Page() {
   const formatTanggal = (tgl) => new Date(tgl).toLocaleDateString("id-ID", { day: "2-digit", month: "2-digit", year: "2-digit" });
 
   const filteredData = data.filter((item) => {
+    const statusLabel = mapStatus((item.status || "").toLowerCase()); // normalisasi
     const tanggal = formatTanggal(item.created_at);
     const nama = item.user?.name || "";
-    const jenis = item.surat?.nama_surat || judul;
-    const status = mapStatus(item.status);
-    const matchGlobal = tanggal.includes(searchGlobal) || nama.toLowerCase().includes(searchGlobal.toLowerCase()) || jenis.toLowerCase().includes(searchGlobal.toLowerCase()) || status.toLowerCase().includes(searchGlobal.toLowerCase());
-    const matchFilter =
-      tanggal.includes(searchFilters.tanggal) &&
-      nama.toLowerCase().includes(searchFilters.nama.toLowerCase()) &&
-      jenis.toLowerCase().includes(searchFilters.jenis.toLowerCase()) &&
-      status.toLowerCase().includes(searchFilters.status.toLowerCase());
-    return matchGlobal && matchFilter;
+    const jenis = item.suratNama || "";
+
+    // pencarian global: tanggal, nama, status, jenis surat
+    const q = searchGlobal.toLowerCase();
+    const matchGlobal = tanggal.includes(searchGlobal) || nama.toLowerCase().includes(q) || jenis.toLowerCase().includes(q);
+
+    // filter status dari tab
+    const matchStatus = activeTab === "Semua" ? true : statusLabel === activeTab;
+
+    return matchGlobal && matchStatus;
   });
 
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
@@ -184,19 +218,32 @@ export default function Page() {
             <div className="flex items-center border border-gray-500 rounded-md px-4 py-2 bg-white text-gray-500 w-full sm:w-auto min-w-0">
               <Search className="w-5 h-5 mr-2" />
               <input type="text" placeholder="Cari" className="flex-1 outline-none text-sm bg-white placeholder-gray-500 min-w-0" value={searchGlobal} onChange={(e) => setSearchGlobal(e.target.value)} />
-              <button onClick={() => setShowFilter(!showFilter)}>
-                <SlidersHorizontal className={`w-4 h-4 ml-2 cursor-pointer transition-colors ${showFilter ? "text-[#27AE60]" : "text-gray-500"}`} />
-              </button>
             </div>
           </div>
 
-          {showFilter && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-              <input type="text" placeholder="Filter Tanggal" className="px-4 py-2 border border-gray-400 rounded-md text-sm" value={searchFilters.tanggal} onChange={(e) => setSearchFilters({ ...searchFilters, tanggal: e.target.value })} />
-              <input type="text" placeholder="Filter Nama" className="px-4 py-2 border border-gray-400 rounded-md text-sm" value={searchFilters.nama} onChange={(e) => setSearchFilters({ ...searchFilters, nama: e.target.value })} />
-              <input type="text" placeholder="Filter Status" className="px-4 py-2 border border-gray-400 rounded-md text-sm" value={searchFilters.status} onChange={(e) => setSearchFilters({ ...searchFilters, status: e.target.value })} />
-            </div>
-          )}
+          {/* Tombol status */}
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-1 sm:gap-2 mb-2">
+            {STATUS_TABS.map((tab) => {
+              const isActive = activeTab === tab;
+              return (
+                <button
+                  key={tab}
+                  onClick={() => {
+                    if (activeTab !== tab) {
+                      setActiveTab(tab);
+                      setCurrentPage(1);
+                    }
+                  }}
+                  className={`w-full px-2 py-1 sm:px-4 sm:py-2 rounded font-medium transition-colors 
+          truncate text-ellipsis whitespace-nowrap 
+          ${isActive ? ACTIVE_TAB_CLASS[tab] : "bg-gray-300 text-black hover:bg-gray-400"}`}
+                  style={{ fontSize: "clamp(10px, 3vw, 14px)" }}
+                >
+                  {tab}
+                </button>
+              );
+            })}
+          </div>
 
           <div className="w-full overflow-x-auto">
             <table className="table-fixed w-full border border-black text-[9px] sm:text-sm md:text-base">
@@ -219,8 +266,8 @@ export default function Page() {
                   </tr>
                 ) : paginatedData.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="bg-white text-center text-black py-4">
-                      Belum ada proses pengajuan surat
+                    <td colSpan={colSpan} className="bg-white text-center text-black py-4">
+                      {data.length === 0 ? `Belum Ada Pengajuan ${judul}` : "Hasil Pencarian Tidak Ada"}
                     </td>
                   </tr>
                 ) : (

@@ -1,6 +1,6 @@
 "use client";
 
-import { Search, SlidersHorizontal, ChevronsLeft, ChevronsRight } from "lucide-react";
+import { Search, ChevronsLeft, ChevronsRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import ButuhKonfirmasiCard from "@/components/card/ButuhKonfirmasi";
@@ -14,7 +14,8 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchGlobal, setSearchGlobal] = useState("");
-  const [showFilter, setShowFilter] = useState(false);
+  const [colSpan, setColSpan] = useState(6);
+  const [activeTab, setActiveTab] = useState("Semua"); // selalu ada satu yang aktif
   const [searchFilters, setSearchFilters] = useState({
     date: "",
     name: "",
@@ -35,6 +36,16 @@ export default function DashboardPage() {
     "Butuh Konfirmasi": "text-[#016E84] font-semibold",
   };
 
+  // urutan dan label tombol
+  const STATUS_TABS = ["Semua", "Butuh Konfirmasi", "Selesai"];
+
+  // warna tombol aktif (on) mengikuti gambar
+  const ACTIVE_TAB_CLASS = {
+    Semua: "bg-[#2B3A4A] text-white",
+    "Butuh Konfirmasi": "bg-[#016E84] text-white",
+    Selesai: "bg-[#34C759] text-white",
+  };
+
   const formatTanggal = (tgl) => {
     const d = new Date(tgl);
     return d.toLocaleDateString("id-ID", {
@@ -45,6 +56,24 @@ export default function DashboardPage() {
   };
 
   const mapStatus = (raw) => statusMap[raw] || raw;
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 640) {
+        // breakpoint md: di Tailwind
+        setColSpan(5); // mobile
+      } else {
+        setColSpan(6); // desktop
+      }
+    };
+
+    // jalankan pertama kali
+    handleResize();
+
+    // pasang event listener
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     const fetchAllPengajuan = async () => {
@@ -85,20 +114,19 @@ export default function DashboardPage() {
   }, []);
 
   const filteredData = pengajuan.filter((item) => {
-    const statusLabel = mapStatus(item.status);
+    const statusLabel = mapStatus((item.status || "").toLowerCase()); // normalisasi
     const tanggal = formatTanggal(item.created_at);
     const nama = item.user?.name || "";
     const jenis = item.suratNama || "";
 
-    const matchGlobal = tanggal.includes(searchGlobal) || nama.toLowerCase().includes(searchGlobal.toLowerCase()) || statusLabel.toLowerCase().includes(searchGlobal.toLowerCase()) || jenis.toLowerCase().includes(searchGlobal.toLowerCase());
+    // pencarian global: tanggal, nama, status, jenis surat
+    const q = searchGlobal.toLowerCase();
+    const matchGlobal = tanggal.includes(searchGlobal) || nama.toLowerCase().includes(q) || jenis.toLowerCase().includes(q);
 
-    const matchFilter =
-      tanggal.includes(searchFilters.date) &&
-      nama.toLowerCase().includes(searchFilters.name.toLowerCase()) &&
-      statusLabel.toLowerCase().includes(searchFilters.status.toLowerCase()) &&
-      jenis.toLowerCase().includes(searchFilters.jenis.toLowerCase());
+    // filter status dari tab
+    const matchStatus = activeTab === "Semua" ? true : statusLabel === activeTab;
 
-    return matchGlobal && matchFilter;
+    return matchGlobal && matchStatus;
   });
 
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
@@ -169,21 +197,33 @@ export default function DashboardPage() {
           <div className="flex flex-col sm:flex-row sm:justify-end sm:items-center gap-4 mb-6">
             <div className="flex items-center border border-gray-500 rounded-md px-4 py-2 bg-white text-gray-500 w-full sm:w-auto min-w-0">
               <Search className="w-5 h-5 mr-2" />
-              <input type="text" placeholder="Cari" className="flex-1 outline-none text-sm bg-white placeholder-gray-500" value={searchGlobal} onChange={(e) => setSearchGlobal(e.target.value)} />
-              <button onClick={() => setShowFilter(!showFilter)}>
-                <SlidersHorizontal className={`w-4 h-4 ml-2 cursor-pointer transition-colors ${showFilter ? "text-[#27AE60]" : "text-gray-500"}`} />
-              </button>
+              <input type="text" placeholder="Cari" className="flex-1 outline-none text-xs sm:text-sm bg-white placeholder-gray-500" value={searchGlobal} onChange={(e) => setSearchGlobal(e.target.value)} />
             </div>
           </div>
 
-          {showFilter && (
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-              <input type="text" placeholder="Filter Tanggal" className="px-4 py-2 border border-gray-400 rounded-md text-sm" value={searchFilters.date} onChange={(e) => setSearchFilters({ ...searchFilters, date: e.target.value })} />
-              <input type="text" placeholder="Filter Nama" className="px-4 py-2 border border-gray-400 rounded-md text-sm" value={searchFilters.name} onChange={(e) => setSearchFilters({ ...searchFilters, name: e.target.value })} />
-              <input type="text" placeholder="Filter Jenis Surat" className="px-4 py-2 border border-gray-400 rounded-md text-sm" value={searchFilters.jenis} onChange={(e) => setSearchFilters({ ...searchFilters, jenis: e.target.value })} />
-              <input type="text" placeholder="Filter Status" className="px-4 py-2 border border-gray-400 rounded-md text-sm" value={searchFilters.status} onChange={(e) => setSearchFilters({ ...searchFilters, status: e.target.value })} />
-            </div>
-          )}
+          {/* Tombol status */}
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-1 sm:gap-2 mb-2">
+            {STATUS_TABS.map((tab) => {
+              const isActive = activeTab === tab;
+              return (
+                <button
+                  key={tab}
+                  onClick={() => {
+                    if (activeTab !== tab) {
+                      setActiveTab(tab);
+                      setCurrentPage(1);
+                    }
+                  }}
+                  className={`w-full px-2 py-1 sm:px-4 sm:py-2 rounded font-medium transition-colors 
+          truncate text-ellipsis whitespace-nowrap 
+          ${isActive ? ACTIVE_TAB_CLASS[tab] : "bg-gray-300 text-black hover:bg-gray-400"}`}
+                  style={{ fontSize: "clamp(10px, 3vw, 14px)" }}
+                >
+                  {tab}
+                </button>
+              );
+            })}
+          </div>
 
           <div className="w-full overflow-x-auto">
             <table className="table-fixed w-full border border-black text-[9px] sm:text-sm md:text-base">
@@ -200,14 +240,14 @@ export default function DashboardPage() {
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan={6} className="bg-white text-center text-black py-4 italic">
+                    <td colSpan={colSpan} className="bg-white text-center text-black py-4 italic">
                       Memuat data...
                     </td>
                   </tr>
                 ) : paginatedData.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="bg-white text-center text-black py-4">
-                      Belum ada proses pengajuan surat
+                    <td colSpan={colSpan} className="bg-white text-center text-black py-4">
+                      {!loading && pengajuan.length === 0 ? "Belum Ada Pengajuan Surat" : "Hasil Pencarian Tidak Ada"}
                     </td>
                   </tr>
                 ) : (

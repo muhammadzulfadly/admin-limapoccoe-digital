@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Search, SlidersHorizontal } from "lucide-react";
+import { Search } from "lucide-react";
 import Link from "next/link";
 import MenungguCard from "@/components/card/Menunggu";
 import DiterimaCard from "@/components/card/DiTerima";
@@ -19,17 +19,23 @@ const statusColor = {
   Menunggu: "text-[#FF9500] font-semibold",
 };
 
+// urutan dan label tombol
+const STATUS_TABS = ["Semua", "Menunggu", "Diterima", "Selesai"];
+
+// warna tombol aktif (on) mengikuti gambar
+const ACTIVE_TAB_CLASS = {
+  Semua: "bg-[#2B3A4A] text-white",
+  Menunggu: "bg-[#FF9500] text-white",
+  Diterima: "bg-[#016E84] text-white",
+  Selesai: "bg-[#34C759] text-white",
+};
+
 export default function PengaduanPage() {
   const [data, setData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [showFilter, setShowFilter] = useState(false);
   const [searchGlobal, setSearchGlobal] = useState("");
-  const [searchFilters, setSearchFilters] = useState({
-    title: "",
-    category: "",
-    status: "",
-    date: "",
-  });
+  const [colSpan, setColSpan] = useState(6);
+  const [activeTab, setActiveTab] = useState("Semua"); // selalu ada satu yang aktif
 
   const itemsPerPage = 5;
 
@@ -49,23 +55,35 @@ export default function PengaduanPage() {
     fetchAduan();
   }, []);
 
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 640) {
+        // breakpoint md: di Tailwind
+        setColSpan(5); // mobile
+      } else {
+        setColSpan(6); // desktop
+      }
+    };
+
+    // jalankan pertama kali
+    handleResize();
+
+    // pasang event listener
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   const filteredData = data.filter((item) => {
-    const readableStatus = statusMap[item.status] || item.status;
     const formattedDate = new Date(item.created_at).toLocaleDateString("id-ID");
+    const readableStatus = statusMap[item.status] || item.status; // normalisasi status
 
-    const matchGlobal =
-      item.title.toLowerCase().includes(searchGlobal.toLowerCase()) ||
-      item.category.toLowerCase().includes(searchGlobal.toLowerCase()) ||
-      readableStatus.toLowerCase().includes(searchGlobal.toLowerCase()) ||
-      formattedDate.includes(searchGlobal);
+    // pencarian global: judul, kategori, tanggal
+    const matchGlobal = item.title.toLowerCase().includes(searchGlobal.toLowerCase()) || item.category.toLowerCase().includes(searchGlobal.toLowerCase()) || formattedDate.includes(searchGlobal);
 
-    const matchFilters =
-      item.title.toLowerCase().includes(searchFilters.title.toLowerCase()) &&
-      item.category.toLowerCase().includes(searchFilters.category.toLowerCase()) &&
-      readableStatus.toLowerCase().includes(searchFilters.status.toLowerCase()) &&
-      formattedDate.includes(searchFilters.date);
+    // filter status via tab
+    const matchStatus = activeTab === "Semua" ? true : readableStatus === activeTab;
 
-    return matchGlobal && matchFilters;
+    return matchGlobal && matchStatus;
   });
 
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
@@ -112,31 +130,32 @@ export default function PengaduanPage() {
             <div className="flex items-center border border-gray-500 rounded-md px-4 py-2 bg-white text-gray-500 w-full sm:w-auto min-w-0">
               <Search className="w-5 h-5 mr-2" />
               <input type="text" placeholder="Cari" className="flex-1 outline-none text-sm bg-white placeholder-gray-500" value={searchGlobal} onChange={(e) => setSearchGlobal(e.target.value)} />
-              <button onClick={() => setShowFilter(!showFilter)}>
-                <SlidersHorizontal className={`w-4 h-4 ml-2 cursor-pointer transition-colors ${showFilter ? "text-[#27AE60]" : "text-gray-500"}`} />
-              </button>
             </div>
           </div>
 
-          {showFilter && (
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-              <input type="text" placeholder="Filter Tanggal" className="px-4 py-2 border border-gray-400 rounded-md text-sm" value={searchFilters.date} onChange={(e) => setSearchFilters({ ...searchFilters, date: e.target.value })} />
-              <input type="text" placeholder="Filter Judul" className="px-4 py-2 border border-gray-400 rounded-md text-sm" value={searchFilters.title} onChange={(e) => setSearchFilters({ ...searchFilters, title: e.target.value })} />
-              <input
-                type="text"
-                placeholder="Filter Kategori"
-                className="px-4 py-2 border border-gray-400 rounded-md text-sm"
-                value={searchFilters.category}
-                onChange={(e) =>
-                  setSearchFilters({
-                    ...searchFilters,
-                    category: e.target.value,
-                  })
-                }
-              />
-              <input type="text" placeholder="Filter Status" className="px-4 py-2 border border-gray-400 rounded-md text-sm" value={searchFilters.status} onChange={(e) => setSearchFilters({ ...searchFilters, status: e.target.value })} />
-            </div>
-          )}
+          {/* Tombol status */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-1 sm:gap-2 mb-2">
+            {STATUS_TABS.map((tab) => {
+              const isActive = activeTab === tab;
+              return (
+                <button
+                  key={tab}
+                  onClick={() => {
+                    if (activeTab !== tab) {
+                      setActiveTab(tab);
+                      setCurrentPage(1);
+                    }
+                  }}
+                  className={`w-full px-2 py-1 sm:px-4 sm:py-2 rounded font-medium transition-colors 
+          truncate text-ellipsis whitespace-nowrap 
+          ${isActive ? ACTIVE_TAB_CLASS[tab] : "bg-gray-300 text-black hover:bg-gray-400"}`}
+                  style={{ fontSize: "clamp(10px, 3vw, 14px)" }}
+                >
+                  {tab}
+                </button>
+              );
+            })}
+          </div>
 
           <div className="w-full overflow-x-auto">
             <table className="table-fixed w-full border border-black text-[9px] sm:text-sm md:text-base">
@@ -171,8 +190,8 @@ export default function PengaduanPage() {
                 })}
                 {filteredData.length === 0 && (
                   <tr>
-                    <td colSpan={6} className="bg-white text-center text-black py-4">
-                      Belum ada proses pengaduan
+                    <td colSpan={colSpan} className="bg-white text-center text-black py-4">
+                      {data.length === 0 ? "Belum Ada Pengaduan Masyarakat" : "Hasil Pencarian Tidak Ada"}
                     </td>
                   </tr>
                 )}

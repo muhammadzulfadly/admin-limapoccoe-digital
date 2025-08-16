@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Search, SlidersHorizontal, ChevronsLeft, ChevronsRight } from "lucide-react";
+import { Search, ChevronsLeft, ChevronsRight } from "lucide-react";
 import Link from "next/link";
 import DiterimaCard from "@/components/card/DiTerima";
 import SelesaiCard from "@/components/card/Selesai";
@@ -16,6 +16,16 @@ const statusColor = {
   Diterima: "text-[#016E84] font-semibold",
 };
 
+// urutan dan label tombol
+const STATUS_TABS = ["Semua", "Diterima", "Selesai"];
+
+// warna tombol aktif (on) mengikuti gambar
+const ACTIVE_TAB_CLASS = {
+  Semua: "bg-[#2B3A4A] text-white",
+  Diterima: "bg-[#016E84] text-white",
+  Selesai: "bg-[#34C759] text-white",
+};
+
 export default function PengaduanPage() {
   const [data, setData] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -25,9 +35,28 @@ export default function PengaduanPage() {
     status: "",
     date: "",
   });
-  const [showFilter, setShowFilter] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
+  const [colSpan, setColSpan] = useState(6);
+  const [activeTab, setActiveTab] = useState("Semua");
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 640) {
+        // breakpoint md: di Tailwind
+        setColSpan(5); // mobile
+      } else {
+        setColSpan(6); // desktop
+      }
+    };
+
+    // jalankan pertama kali
+    handleResize();
+
+    // pasang event listener
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     const fetchAduan = async () => {
@@ -49,17 +78,17 @@ export default function PengaduanPage() {
   };
 
   const filteredData = data.filter((item) => {
-    const statusReadable = statusMap[item.status] || item.status;
+    const statusReadable = statusMap[item.status] || item.status; // "Diterima" / "Selesai"
     const dateFormatted = new Date(item.created_at).toLocaleDateString("id-ID");
-    const query = searchQuery.toLowerCase();
+    const q = searchQuery.toLowerCase();
 
-    return (
-      item.title.toLowerCase().includes(filters.title.toLowerCase()) &&
-      item.category.toLowerCase().includes(filters.category.toLowerCase()) &&
-      statusReadable.toLowerCase().includes(filters.status.toLowerCase()) &&
-      dateFormatted.includes(filters.date) &&
-      (item.title.toLowerCase().includes(query) || item.category.toLowerCase().includes(query) || statusReadable.toLowerCase().includes(query) || dateFormatted.includes(query))
-    );
+    // pencarian global: judul, kategori, status, tanggal
+    const matchGlobal = item.title.toLowerCase().includes(q) || item.category.toLowerCase().includes(q) || dateFormatted.includes(q);
+
+    // filter status dari tab
+    const matchStatus = activeTab === "Semua" ? true : statusReadable === activeTab;
+
+    return matchGlobal && matchStatus;
   });
 
   const paginatedData = filteredData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
@@ -92,28 +121,39 @@ export default function PengaduanPage() {
               <input
                 type="text"
                 placeholder="Cari"
-                className="flex-1 outline-none text-sm bg-white placeholder-gray-500"
+                className="flex-1 outline-none text-xs sm:text-sm bg-white placeholder-gray-500"
                 value={searchQuery}
                 onChange={(e) => {
                   setSearchQuery(e.target.value);
                   setCurrentPage(1);
                 }}
               />
-              <button onClick={() => setShowFilter(!showFilter)}>
-                <SlidersHorizontal className={`w-4 h-4 ml-2 ${showFilter ? "text-[#27AE60]" : ""}`} />
-              </button>
             </div>
           </div>
 
-          {/* Filter tambahan */}
-          {showFilter && (
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-              <input type="text" placeholder="Filter Tanggal" className="px-4 py-2 border border-gray-400 rounded-md text-sm" value={filters.date} onChange={(e) => handleFilterChange("date", e.target.value)} />
-              <input type="text" placeholder="Filter Judul" className="px-4 py-2 border border-gray-400 rounded-md text-sm" value={filters.title} onChange={(e) => handleFilterChange("title", e.target.value)} />
-              <input type="text" placeholder="Filter Kategori" className="px-4 py-2 border border-gray-400 rounded-md text-sm" value={filters.category} onChange={(e) => handleFilterChange("category", e.target.value)} />
-              <input type="text" placeholder="Filter Status" className="px-4 py-2 border border-gray-400 rounded-md text-sm" value={filters.status} onChange={(e) => handleFilterChange("status", e.target.value)} />
-            </div>
-          )}
+          {/* Tombol status */}
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-1 sm:gap-2 mb-2">
+            {STATUS_TABS.map((tab) => {
+              const isActive = activeTab === tab;
+              return (
+                <button
+                  key={tab}
+                  onClick={() => {
+                    if (activeTab !== tab) {
+                      setActiveTab(tab);
+                      setCurrentPage(1);
+                    }
+                  }}
+                  className={`w-full px-2 py-1 sm:px-4 sm:py-2 rounded font-medium transition-colors 
+          truncate text-ellipsis whitespace-nowrap 
+          ${isActive ? ACTIVE_TAB_CLASS[tab] : "bg-gray-300 text-black hover:bg-gray-400"}`}
+                  style={{ fontSize: "clamp(10px, 3vw, 14px)" }}
+                >
+                  {tab}
+                </button>
+              );
+            })}
+          </div>
 
           {/* Tabel */}
           <div className="w-full overflow-x-auto">
@@ -150,8 +190,8 @@ export default function PengaduanPage() {
                   })
                 ) : (
                   <tr>
-                    <td colSpan={6} className="bg-white text-center text-black py-4">
-                      Tidak ditemukan pengaduan yang sesuai
+                    <td colSpan={colSpan} className="bg-white text-center text-black py-4">
+                      {data.length === 0 ? "Belum Ada Pengaduan Masyarakat" : filteredData.length === 0 ? "Hasil Pencarian Tidak Ada" : ""}
                     </td>
                   </tr>
                 )}

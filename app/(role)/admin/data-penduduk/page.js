@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus, Search, SlidersHorizontal, Pencil, Trash2, Eye, EyeOff, FileUp } from "lucide-react";
+import { Plus, Search, Pencil, Trash2, Eye, EyeOff, FileUp } from "lucide-react";
 import Link from "next/link";
 import PropTypes from "prop-types";
 
@@ -33,7 +33,6 @@ export default function DashboardPendudukPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [deleteId, setDeleteId] = useState(null);
   const itemsPerPage = 10;
-  const [showFilter, setShowFilter] = useState(false);
   const [searchGlobal, setSearchGlobal] = useState("");
   const [searchFilters, setSearchFilters] = useState({
     nik: "",
@@ -179,26 +178,8 @@ export default function DashboardPendudukPage() {
           <div className="flex items-center border border-gray-500 rounded-md px-4 py-2 bg-white text-gray-500 w-full sm:w-auto min-w-0">
             <Search className="w-5 h-5 mr-2" />
             <input type="text" placeholder="Cari" className="flex-1 outline-none text-sm bg-white placeholder-gray-500" value={searchGlobal} onChange={(e) => setSearchGlobal(e.target.value)} />
-            <button onClick={() => setShowFilter(!showFilter)}>
-              <SlidersHorizontal className={`w-4 h-4 ml-2 cursor-pointer transition-colors ${showFilter ? "text-[#27AE60]" : "text-gray-500"}`} />
-            </button>
           </div>
         </div>
-
-        {showFilter && (
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            <input type="text" placeholder="Filter Nomor KK" className="px-4 py-2 border border-gray-400 rounded-md text-sm" value={searchFilters.nik} onChange={(e) => handleFilterChange("nik", e.target.value)} />
-            <input
-              type="text"
-              placeholder="Filter Nama Kepala Keluarga"
-              className="px-4 py-2 border border-gray-400 rounded-md text-sm"
-              value={searchFilters.kepalaKeluarga}
-              onChange={(e) => handleFilterChange("kepalaKeluarga", e.target.value)}
-            />
-            <input type="text" placeholder="Filter Dusun" className="px-4 py-2 border border-gray-400 rounded-md text-sm" value={searchFilters.dusun} onChange={(e) => handleFilterChange("dusun", e.target.value)} />
-            <input type="text" placeholder="Filter Jumlah Anggota" className="px-4 py-2 border border-gray-400 rounded-md text-sm" value={searchFilters.jumlah} onChange={(e) => handleFilterChange("jumlah", e.target.value)} />
-          </div>
-        )}
 
         <div className="w-full overflow-x-auto">
           <table className="table-fixed w-full border border-black text-[9px] sm:text-sm md:text-base">

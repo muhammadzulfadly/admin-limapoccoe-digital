@@ -1,6 +1,6 @@
 "use client";
 
-import { BadgeCheck, UserCheck, Search, SlidersHorizontal } from "lucide-react";
+import { BadgeCheck, UserCheck, Search } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -16,6 +16,16 @@ const statusStyle = {
   "Butuh Konfirmasi": "text-[#016E84] font-semibold",
 };
 
+  // urutan dan label tombol
+  const STATUS_TABS = ["Semua", "Butuh Konfirmasi", "Selesai"];
+
+  // warna tombol aktif (on) mengikuti gambar
+  const ACTIVE_TAB_CLASS = {
+    Semua: "bg-[#2B3A4A] text-white",
+    "Butuh Konfirmasi": "bg-[#016E84] text-white",
+    Selesai: "bg-[#34C759] text-white",
+  };
+
 const mapStatus = (raw) => statusMap[raw] || raw;
 
 export default function Page() {
@@ -25,16 +35,35 @@ export default function Page() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+    const [colSpan, setColSpan] = useState(6);
+  const [activeTab, setActiveTab] = useState("Semua"); // selalu ada satu yang aktif
   const [filters, setFilters] = useState({
     date: "",
     name: "",
     status: "",
     jenis: "",
   });
-  const [showFilter, setShowFilter] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
   const router = useRouter();
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 640) {
+        // breakpoint md: di Tailwind
+        setColSpan(5); // mobile
+      } else {
+        setColSpan(6); // desktop
+      }
+    };
+
+    // jalankan pertama kali
+    handleResize();
+
+    // pasang event listener
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     const fetchMetadata = async () => {
@@ -95,21 +124,27 @@ export default function Page() {
     });
   };
 
-  const filteredData = data.filter((item) => {
-    const tgl = formatTanggal(item.created_at);
-    const nama = item.user?.name?.toLowerCase() || "";
-    const status = mapStatus(item.status).toLowerCase();
-    const jenis = item.surat?.nama_surat?.toLowerCase() || judul.toLowerCase();
-    const query = searchQuery.toLowerCase();
+const filteredData = data.filter((item) => {
+  const tgl = formatTanggal(item.created_at);
+  const nama = item.user?.name?.toLowerCase() || "";
+  const jenis = item.surat?.nama_surat?.toLowerCase() || judul.toLowerCase();
 
-    return (
-      tgl.includes(filters.date) &&
-      nama.includes(filters.name.toLowerCase()) &&
-      status.includes(filters.status.toLowerCase()) &&
-      jenis.includes(filters.jenis.toLowerCase()) &&
-      (tgl.includes(query) || nama.includes(query) || status.includes(query) || jenis.includes(query))
-    );
-  });
+  // normalisasi & label status
+  const statusLabel = mapStatus((item.status || "").toLowerCase()); // "Butuh Konfirmasi" / "Selesai"
+
+  // keyword global
+  const query = searchQuery.toLowerCase();
+  const matchQuery =
+    tgl.includes(query) ||
+    nama.includes(query) ||
+    jenis.includes(query);
+
+  // filter status via tab
+  const matchStatus = activeTab === "Semua" ? true : statusLabel === activeTab;
+
+  return matchQuery && matchStatus;
+});
+
 
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
   const paginatedData = filteredData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
@@ -138,64 +173,39 @@ export default function Page() {
             <input
               type="text"
               placeholder="Cari"
-              className="outline-none text-sm w-28 bg-white placeholder-gray-500"
+              className="outline-none text-xs sm:text-sm w-28 bg-white placeholder-gray-500"
               value={searchQuery}
               onChange={(e) => {
                 setSearchQuery(e.target.value);
                 setCurrentPage(1);
               }}
             />
-            <button onClick={() => setShowFilter((prev) => !prev)}>
-              <SlidersHorizontal className="w-4 h-4 ml-2" />
-            </button>
           </div>
         </div>
 
-        {showFilter && (
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            <input
-              type="text"
-              placeholder="Filter Tanggal"
-              className="px-3 py-2 border border-gray-400 rounded-md text-sm"
-              value={filters.date}
-              onChange={(e) => {
-                setFilters((prev) => ({ ...prev, date: e.target.value }));
-                setCurrentPage(1);
-              }}
-            />
-            <input
-              type="text"
-              placeholder="Filter Nama"
-              className="px-3 py-2 border border-gray-400 rounded-md text-sm"
-              value={filters.name}
-              onChange={(e) => {
-                setFilters((prev) => ({ ...prev, name: e.target.value }));
-                setCurrentPage(1);
-              }}
-            />
-
-            <input
-              type="text"
-              placeholder="Filter Jenis Surat"
-              className="px-3 py-2 border border-gray-400 rounded-md text-sm"
-              value={filters.jenis}
-              onChange={(e) => {
-                setFilters((prev) => ({ ...prev, jenis: e.target.value }));
-                setCurrentPage(1);
-              }}
-            />
-            <input
-              type="text"
-              placeholder="Filter Status"
-              className="px-3 py-2 border border-gray-400 rounded-md text-sm"
-              value={filters.status}
-              onChange={(e) => {
-                setFilters((prev) => ({ ...prev, status: e.target.value }));
-                setCurrentPage(1);
-              }}
-            />
+        {/* Tombol status */}
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-1 sm:gap-2 mb-2">
+            {STATUS_TABS.map((tab) => {
+              const isActive = activeTab === tab;
+              return (
+                <button
+                  key={tab}
+                  onClick={() => {
+                    if (activeTab !== tab) {
+                      setActiveTab(tab);
+                      setCurrentPage(1);
+                    }
+                  }}
+                  className={`w-full px-2 py-1 sm:px-4 sm:py-2 rounded font-medium transition-colors 
+          truncate text-ellipsis whitespace-nowrap 
+          ${isActive ? ACTIVE_TAB_CLASS[tab] : "bg-gray-300 text-black hover:bg-gray-400"}`}
+                  style={{ fontSize: "clamp(10px, 3vw, 14px)" }}
+                >
+                  {tab}
+                </button>
+              );
+            })}
           </div>
-        )}
 
         <div className="w-full overflow-x-auto">
           <table className="table-fixed w-full border border-black text-[9px] sm:text-sm md:text-base">
@@ -212,16 +222,16 @@ export default function Page() {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={5} className="text-center py-4 italic bg-white text-black">
+                  <td colSpan={colSpan} className="text-center py-4 italic bg-white text-black">
                     Memuat data...
                   </td>
                 </tr>
               ) : paginatedData.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="text-center py-4 bg-white text-black">
-                    Data tidak ditemukan
-                  </td>
-                </tr>
+                    <td colSpan={colSpan} className="bg-white text-center text-black py-4">
+                      {!loading && data.length === 0 ? `Belum Ada Pengajuan Surat ${judul}` : "Hasil Pencarian Tidak Ada"}
+                    </td>
+                  </tr>
               ) : (
                 paginatedData.map((item, index) => {
                   const statusLabel = mapStatus(item.status);

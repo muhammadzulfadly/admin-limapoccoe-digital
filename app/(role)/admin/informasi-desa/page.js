@@ -1,4 +1,4 @@
-import { Plus, Search, SlidersHorizontal, Pencil, Trash2, Eye } from "lucide-react";
+import { Plus, Search, Pencil, Trash2, Eye } from "lucide-react";
 import Link from "next/link";
 
 export const metadata = {
@@ -54,7 +54,6 @@ export default async function Page() {
           <div className="flex items-center border border-gray-500 rounded-md px-4 py-2 bg-white text-gray-500 w-full sm:w-auto min-w-0">
             <Search className="w-5 h-5 mr-2" />
             <input type="text" placeholder="Cari" className="flex-1 outline-none text-sm bg-white placeholder-gray-500 min-w-0" />
-            <SlidersHorizontal className="w-4 h-4 ml-2" />
           </div>
         </div>
 
