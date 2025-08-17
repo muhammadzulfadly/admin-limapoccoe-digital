@@ -32,6 +32,7 @@ const ACTIVE_TAB_CLASS = {
 
 export default function PengaduanPage() {
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchGlobal, setSearchGlobal] = useState("");
   const [colSpan, setColSpan] = useState(6);
@@ -42,14 +43,19 @@ export default function PengaduanPage() {
   useEffect(() => {
     const fetchAduan = async () => {
       const token = localStorage.getItem("token");
-      const res = await fetch("/api/complaint", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const result = await res.json();
-      const sorted = (result.aduan || []).sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-      setData(sorted);
+      setLoading(true); // ⬅️ mulai loading
+      try {
+        const res = await fetch("/api/complaint", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const result = await res.json();
+        const sorted = (result.aduan || []).sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        setData(sorted);
+      } catch (e) {
+        console.error("Gagal memuat pengaduan:", e);
+      } finally {
+        setLoading(false); // ⬅️ selesai loading
+      }
     };
 
     fetchAduan();
@@ -170,30 +176,41 @@ export default function PengaduanPage() {
                 </tr>
               </thead>
               <tbody>
-                {filteredData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((item, index) => {
-                  const readableStatus = statusMap[item.status] || item.status;
-                  return (
-                    <tr key={item.id} className="bg-white text-center align-top">
-                      <td className="border border-black p-2 whitespace-normal break-words hidden sm:table-cell">{(currentPage - 1) * itemsPerPage + index + 1}</td>
-                      <td className="border border-black p-2 whitespace-normal break-words">{new Date(item.created_at).toLocaleDateString("id-ID")}</td>
-                      <td className="border border-black p-2 whitespace-normal break-words">{item.title}</td>
-                      <td className="border border-black p-2 whitespace-normal break-words">{item.category}</td>
-                      <td className={`border border-black p-2 whitespace-normal break-words ${statusColor[readableStatus] || ""}`}>{readableStatus}</td>
-                      <td className="border border-black p-2 whitespace-normal break-words">
-                        <Link href={`/admin/pengaduan/${item.id}`} className="flex flex-col items-center justify-center text-center group text-[9px] sm:text-sm">
-                          <Search className="text-[#00A8E8] w-4 h-4 sm:w-5 sm:h-5 group-hover:scale-105 transition-transform" />
-                          <span className="text-black group-hover:underline">Buka</span>
-                        </Link>
-                      </td>
-                    </tr>
-                  );
-                })}
-                {filteredData.length === 0 && (
+                {loading ? (
                   <tr>
-                    <td colSpan={colSpan} className="bg-white text-center text-black py-4">
-                      {data.length === 0 ? "Belum Ada Pengaduan Masyarakat" : "Hasil Pencarian Tidak Ada"}
+                    <td colSpan={colSpan} className="text-center py-4 italic bg-white">
+                      Memuat data...
                     </td>
                   </tr>
+                ) : (
+                  <>
+                    {filteredData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((item, index) => {
+                      const readableStatus = statusMap[item.status] || item.status;
+                      return (
+                        <tr key={item.id} className="bg-white text-center align-top">
+                          <td className="border border-black p-2 whitespace-normal break-words hidden sm:table-cell">{(currentPage - 1) * itemsPerPage + index + 1}</td>
+                          <td className="border border-black p-2 whitespace-normal break-words">{new Date(item.created_at).toLocaleDateString("id-ID")}</td>
+                          <td className="border border-black p-2 whitespace-normal break-words">{item.title}</td>
+                          <td className="border border-black p-2 whitespace-normal break-words">{item.category}</td>
+                          <td className={`border border-black p-2 whitespace-normal break-words ${statusColor[readableStatus] || ""}`}>{readableStatus}</td>
+                          <td className="border border-black p-2 whitespace-normal break-words">
+                            <Link href={`/admin/pengaduan/${item.id}`} className="flex flex-col items-center justify-center text-center group text-[9px] sm:text-sm">
+                              <Search className="text-[#00A8E8] w-4 h-4 sm:w-5 sm:h-5 group-hover:scale-105 transition-transform" />
+                              <span className="text-black group-hover:underline">Buka</span>
+                            </Link>
+                          </td>
+                        </tr>
+                      );
+                    })}
+
+                    {filteredData.length === 0 && (
+                      <tr>
+                        <td colSpan={colSpan} className="bg-white text-center text-black py-4">
+                          {data.length === 0 ? "Belum Ada Pengaduan Masyarakat" : "Hasil Pencarian Tidak Ada"}
+                        </td>
+                      </tr>
+                    )}
+                  </>
                 )}
               </tbody>
             </table>

@@ -28,6 +28,7 @@ const ACTIVE_TAB_CLASS = {
 
 export default function PengaduanPage() {
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [filters, setFilters] = useState({
     title: "",
@@ -61,21 +62,23 @@ export default function PengaduanPage() {
   useEffect(() => {
     const fetchAduan = async () => {
       const token = localStorage.getItem("token");
-      const res = await fetch("/api/complaint", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const result = await res.json();
-      const filteredData = (result.aduan || []).filter((item) => ["processed", "approved"].includes(item.status)).sort((a, b) => new Date(b.created_at) - new Date(a.created_at)); // ⬅️ urutkan dari terbaru ke terlama
-      setData(filteredData);
+      setLoading(true); // ⬅️ mulai loading
+      try {
+        const res = await fetch("/api/complaint", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const result = await res.json();
+        const filteredData = (result.aduan || []).filter((item) => ["processed", "approved"].includes(item.status)).sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        setData(filteredData);
+      } catch (err) {
+        console.error("Gagal memuat pengaduan:", err);
+      } finally {
+        setLoading(false); // ⬅️ selesai loading
+      }
     };
 
     fetchAduan();
   }, []);
-
-  const handleFilterChange = (key, value) => {
-    setFilters((prev) => ({ ...prev, [key]: value }));
-    setCurrentPage(1);
-  };
 
   const filteredData = data.filter((item) => {
     const statusReadable = statusMap[item.status] || item.status; // "Diterima" / "Selesai"
@@ -160,29 +163,50 @@ export default function PengaduanPage() {
             <table className="table-fixed w-full border border-black text-[9px] sm:text-sm md:text-base">
               <thead>
                 <tr className="bg-[#27AE60] text-white">
-                  <th className="border border-black p-2 w-[10%] whitespace-normal break-words hidden sm:table-cell">No.</th>
-                  <th className="border border-black p-2 w-[15%] whitespace-normal break-words">Tanggal</th>
-                  <th className="border border-black p-2 w-[20%] whitespace-normal break-words">Judul Pengaduan</th>
-                  <th className="border border-black p-2 w-[20%] whitespace-normal break-words">Kategori</th>
-                  <th className="border border-black p-2 w-[20%] whitespace-normal break-words">Status</th>
-                  <th className="border border-black p-2 w-[15%] whitespace-normal break-words">Aksi</th>
+                  <th className="border border-black p-2 hidden sm:table-cell w-[10%]">No.</th>
+                  <th className="border border-black p-2 w-[15%]">Tanggal</th>
+                  <th className="border border-black p-2 w-[20%]">Judul Pengaduan</th>
+                  <th className="border border-black p-2 w-[20%]">Kategori</th>
+                  <th className="border border-black p-2 w-[20%]">Status</th>
+                  <th className="border border-black p-2 w-[15%]">Aksi</th>
                 </tr>
               </thead>
               <tbody>
-                {paginatedData.length > 0 ? (
+                {loading ? (
+                  <tr>
+                    <td colSpan={colSpan} className="text-center py-4 italic bg-white">
+                      Memuat data...
+                    </td>
+                  </tr>
+                ) : paginatedData.length > 0 ? (
                   paginatedData.map((item, index) => {
                     const readableStatus = statusMap[item.status] || item.status;
                     return (
                       <tr key={item.id} className="bg-white text-center">
-                        <td className="border border-black p-2 whitespace-normal break-words hidden sm:table-cell">{(currentPage - 1) * itemsPerPage + index + 1}</td>
-                        <td className="border border-black p-2 whitespace-normal break-words">{new Date(item.created_at).toLocaleDateString("id-ID")}</td>
-                        <td className="border border-black p-2 whitespace-normal break-words">{item.title}</td>
-                        <td className="border border-black p-2 whitespace-normal break-words">{item.category}</td>
-                        <td className={`border border-black p-2 whitespace-normal break-words ${statusColor[readableStatus] || ""}`}>{readableStatus}</td>
-                        <td className="border border-black p-2 whitespace-normal break-words">
-                          <Link href={`/kepdes/pengaduan/${item.id}`} className="flex flex-col items-center justify-center text-center group text-[9px] sm:text-sm">
+                        <td className="border border-black p-2 hidden sm:table-cell">
+                          {(currentPage - 1) * itemsPerPage + index + 1}
+                        </td>
+                        <td className="border border-black p-2">
+                          {new Date(item.created_at).toLocaleDateString("id-ID")}
+                        </td>
+                        <td className="border border-black p-2">{item.title}</td>
+                        <td className="border border-black p-2">{item.category}</td>
+                        <td
+                          className={`border border-black p-2 ${
+                            statusColor[readableStatus] || ""
+                          }`}
+                        >
+                          {readableStatus}
+                        </td>
+                        <td className="border border-black p-2">
+                          <Link
+                            href={`/kepdes/pengaduan/${item.id}`}
+                            className="flex flex-col items-center justify-center text-center group text-[9px] sm:text-sm"
+                          >
                             <Search className="text-[#00A8E8] w-4 h-4 sm:w-5 sm:h-5 group-hover:scale-105 transition-transform" />
-                            <span className="text-black group-hover:underline">Buka</span>
+                            <span className="text-black group-hover:underline">
+                              Buka
+                            </span>
                           </Link>
                         </td>
                       </tr>
@@ -190,8 +214,10 @@ export default function PengaduanPage() {
                   })
                 ) : (
                   <tr>
-                    <td colSpan={colSpan} className="bg-white text-center text-black py-4">
-                      {data.length === 0 ? "Belum Ada Pengaduan Masyarakat" : filteredData.length === 0 ? "Hasil Pencarian Tidak Ada" : ""}
+                    <td colSpan={colSpan} className="text-center py-4">
+                      {data.length === 0
+                        ? "Belum Ada Pengaduan Masyarakat"
+                        : "Hasil Pencarian Tidak Ada"}
                     </td>
                   </tr>
                 )}

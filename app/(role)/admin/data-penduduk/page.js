@@ -29,10 +29,12 @@ function ConfirmDeletePopup({ onConfirm, onCancel }) {
 
 export default function DashboardPendudukPage() {
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [visible, setVisible] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
   const [deleteId, setDeleteId] = useState(null);
   const itemsPerPage = 10;
+  const [colSpan, setColSpan] = useState(6);
   const [searchGlobal, setSearchGlobal] = useState("");
   const [searchFilters, setSearchFilters] = useState({
     nik: "",
@@ -40,6 +42,24 @@ export default function DashboardPendudukPage() {
     dusun: "",
     jumlah: "",
   });
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 640) {
+        // breakpoint md: di Tailwind
+        setColSpan(5); // mobile
+      } else {
+        setColSpan(6); // desktop
+      }
+    };
+
+    // jalankan pertama kali
+    handleResize();
+
+    // pasang event listener
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const handleFilterChange = (key, value) => {
     setSearchFilters((prev) => ({
@@ -92,6 +112,7 @@ export default function DashboardPendudukPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setLoading(true); // ⬅️ mulai loading
         const token = localStorage.getItem("token");
         const res = await fetch("/api/population", {
           headers: {
@@ -103,6 +124,8 @@ export default function DashboardPendudukPage() {
         setData(sorted);
       } catch (err) {
         console.error("Gagal memuat data:", err);
+      } finally {
+        setLoading(false); // ⬅️ selesai loading
       }
     };
 
@@ -194,7 +217,13 @@ export default function DashboardPendudukPage() {
               </tr>
             </thead>
             <tbody className="bg-white text-center">
-              {paginatedData.length > 0 ? (
+              {loading ? (
+                <tr>
+                  <td colSpan={colSpan} className="py-4 italic bg-white">
+                    Memuat data...
+                  </td>
+                </tr>
+              ) : paginatedData.length > 0 ? (
                 paginatedData.map((item, index) => {
                   const kepalaKeluarga = item.anggota.find((a) => a.hubungan === "Kepala Keluarga");
                   return (
@@ -232,7 +261,7 @@ export default function DashboardPendudukPage() {
                 })
               ) : (
                 <tr>
-                  <td colSpan={6} className="py-4 text-black bg-white text-center">
+                  <td colSpan={colSpan} className="py-4 text-black bg-white text-center">
                     Tidak ada data penduduk.
                   </td>
                 </tr>
