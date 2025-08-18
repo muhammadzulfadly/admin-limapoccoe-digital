@@ -212,7 +212,7 @@ export default function DashboardPendudukPage() {
                 <th className="border border-black p-2 w-[25%] whitespace-normal break-words">No. KK</th>
                 <th className="border border-black p-2 w-[20%] whitespace-normal break-words">Nama Kepala Keluarga</th>
                 <th className="border border-black p-2 w-[15%] whitespace-normal break-words">Dusun</th>
-                <th className="border border-black p-2 w-[15%] whitespace-normal break-words">Jumlah</th>
+                <th className="border border-black p-2 w-[15%] whitespace-normal break-words">Anggota Keluarga</th>
                 <th className="border border-black p-2 w-[15%] whitespace-normal break-words">Aksi</th>
               </tr>
             </thead>
