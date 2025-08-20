@@ -31,6 +31,8 @@ export async function GET(request) {
     });
   }
 }
+
+
 // POST: tambah informasi (mendukung JSON & FormData)
 export async function POST(request) {
   const token = request.headers.get("authorization") || "";
