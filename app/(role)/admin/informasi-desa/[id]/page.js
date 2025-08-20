@@ -89,7 +89,7 @@ export default function DetailInformasiPage() {
         fd.append("gambar", gambarBaru);
 
         res = await fetch(`/api/information/${id}`, {
-          method: "PUT",
+          method: "POST", // selalu POST
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -98,7 +98,7 @@ export default function DetailInformasiPage() {
       } else {
         const payload = { judul, kategori, konten };
         res = await fetch(`/api/information/${id}`, {
-          method: "PUT",
+          method: "POST", // selalu POST
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
@@ -130,9 +130,7 @@ export default function DetailInformasiPage() {
 
   return (
     <div className="min-h-full p-8">
-      <h2 className="sm:text-2xl text-base font-semibold mb-4">
-        Informasi Desa / {isEditMode ? "Edit Informasi" : "Detail Informasi"}
-      </h2>
+      <h2 className="sm:text-2xl text-base font-semibold mb-4">Informasi Desa / {isEditMode ? "Edit Informasi" : "Detail Informasi"}</h2>
 
       <div className="bg-white rounded-lg p-6 mx-auto">
         <button type="button" onClick={() => router.back()} className="flex items-center text-base text-gray-500 mb-6">
@@ -148,20 +146,19 @@ export default function DetailInformasiPage() {
             <p className="text-sm font-semibold text-gray-500">
               Upload Foto <span className="text-red-500 ml-0.5">*</span>
             </p>
-            {!preview && data?.gambar && (
-              <img src={imgUrlFromBackendPath(data.gambar)} alt={judul} className="mt-2 max-w-full rounded border" />
-            )}
+            {!preview && data?.gambar && <img src={imgUrlFromBackendPath(data.gambar)} alt={judul} className="mt-2 max-w-full rounded border" />}
             {preview && <img src={preview} alt="Preview" className="mt-2 max-w-full rounded border" />}
             {isEditMode && (
-              <label htmlFor="file" className="min-h-[100px] mt-1 flex flex-col justify-center items-center text-center cursor-pointer border-dashed border-[#384EB7-30] bg-[#F0FFF6] w-full border rounded px-4 py-5 text-sm hover:bg-green-100">
+              <label
+                htmlFor="file"
+                className="min-h-[100px] mt-1 flex flex-col justify-center items-center text-center cursor-pointer border-dashed border-[#384EB7-30] bg-[#F0FFF6] w-full border rounded px-4 py-5 text-sm hover:bg-green-100"
+              >
                 <UploadCloud size={30} className="mb-2 text-[#27AE60]" />
                 <span className="text-[#27AE60] font-semibold">Upload Foto</span>
                 <p className="text-xs text-gray-500 mt-1">Format: JPG, JPEG, PNG. Maks 10MB</p>
               </label>
             )}
-            {isEditMode && (
-              <input type="file" id="file" name="file" onChange={handlePickFile} className="hidden" accept="image/*" />
-            )}
+            {isEditMode && <input type="file" id="file" name="file" onChange={handlePickFile} className="hidden" accept="image/*" />}
           </div>
 
           {isEditMode && (

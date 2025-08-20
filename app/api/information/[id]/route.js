@@ -36,7 +36,8 @@ export async function GET(request, { params }) {
   }
 }
 
-export async function PUT(request, { params }) {
+
+export async function POST(request, { params }) {
   const { id } = params;
   const token = request.headers.get("authorization") || "";
   const contentType = request.headers.get("content-type") || "";
@@ -47,8 +48,9 @@ export async function PUT(request, { params }) {
     if (contentType.includes("application/json")) {
       // ====== TANPA FOTO (JSON) ======
       const body = await request.json(); // { judul?, kategori?, konten? }
+
       response = await fetch(`${process.env.API_SECRET_URL}/api/informasi/admin/${id}`, {
-        method: "PUT",
+        method: "POST", // selalu POST
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
@@ -60,7 +62,7 @@ export async function PUT(request, { params }) {
       // ====== DENGAN FOTO (FormData) ======
       const form = await request.formData();
       const fd = new FormData();
-      // rebuild agar boundary rapi & kosong tidak terkirim
+
       const judul = form.get("judul");
       const kategori = form.get("kategori");
       const konten = form.get("konten");
@@ -72,20 +74,14 @@ export async function PUT(request, { params }) {
       if (gambar && typeof gambar === "object") fd.append("gambar", gambar);
 
       response = await fetch(`${process.env.API_SECRET_URL}/api/informasi/admin/${id}`, {
-        method: "POST", // ⚠️ jika backend update via PUT, ganti ke "PUT"
-        // Berdasarkan controller kamu: updateInformasi pakai route update (kemungkinan PUT)
-        // Jika route Laravel kamu pakai PUT/PATCH, ganti method ke "POST" + _method=PUT:
-        // fd.append('_method', 'PUT'); method: "POST"
+        method: "POST", // selalu POST
         headers: {
           Authorization: token,
           Accept: "application/json",
-          // penting: jangan set Content-Type, biar otomatis multipart
+          // jangan set Content-Type manual untuk multipart
         },
         body: fd,
       });
-      // Catatan:
-      // - Jika Laravel route update kamu menerima PUT multipart langsung: ubah method di atas ke "PUT"
-      // - Jika pakai teknik method spoofing: fd.append('_method','PUT') dan method fetch tetap "POST"
     }
 
     const result = await response.json();
@@ -111,6 +107,7 @@ export async function PUT(request, { params }) {
     });
   }
 }
+
 
 export async function DELETE(request, { params }) {
   const { id } = params;

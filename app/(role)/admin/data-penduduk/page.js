@@ -213,7 +213,7 @@ export default function DashboardPendudukPage() {
                 <th className="border border-black p-2 w-[20%] whitespace-normal break-words">Nama Kepala Keluarga</th>
                 <th className="border border-black p-2 w-[15%] whitespace-normal break-words">Dusun</th>
                 <th className="border border-black p-2 w-[15%] whitespace-normal break-words">Anggota Keluarga</th>
-                <th className="border border-black p-2 w-[15%] whitespace-normal break-words">Aksi</th>
+                <th className="border border-black p-2 whitespace-normal break-words sm:w-[160px]">Aksi</th>
               </tr>
             </thead>
             <tbody className="bg-white text-center">
@@ -240,8 +240,8 @@ export default function DashboardPendudukPage() {
                       <td className="border border-black p-2 whitespace-normal break-words">{kepalaKeluarga?.nama_lengkap || "-"}</td>
                       <td className="border border-black p-2 whitespace-normal break-words">{item.rumah?.dusun || "-"}</td>
                       <td className="border border-black p-2 whitespace-normal break-words">{item.jumlah_anggota} Orang</td>
-                      <td className="border border-black p-2 whitespace-normal break-words">
-                        <div className="flex flex-col sm:flex-row justify-center items-start gap-3 sm:gap-4 text-[9px] sm:text-sm md:text-xs">
+                      <td className="border border-black p-2 whitespace-normal break-words sm:w-[160px]">
+                        <div className="flex flex-col sm:flex-row justify-center sm:justify-between items-center gap-2 sm:gap-4 text-[9px]  sm:text-sm md:text-xs">
                           <Link href={`/admin/data-penduduk/${item.id}`} className="flex flex-row sm:flex-col items-center gap-1 text-blue-600 hover:underline" title="Lihat">
                             <Eye className="w-4 h-4" />
                             <span className="text-black whitespace-nowrap">Lihat</span>

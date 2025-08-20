@@ -194,13 +194,13 @@ export default function Page() {
                 <th className="border border-black p-2 w-[15%] whitespace-normal break-words">Tanggal</th>
                 <th className="border border-black p-2 w-[25%] whitespace-normal break-words">Kategori</th>
                 <th className="border border-black p-2 w-[35%] whitespace-normal break-words">Judul</th>
-                <th className="border border-black p-2 w-[15%] whitespace-normal break-words">Aksi</th>
+                <th className="border border-black p-2 whitespace-normal break-words sm:w-[160px]">Aksi</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={colSpan} className="py-4 text-center italic text-gray-500 bg-white">
+                  <td colSpan={colSpan} className="py-4 text-center italic bg-white">
                     Memuat data...
                   </td>
                 </tr>
@@ -217,8 +217,8 @@ export default function Page() {
                     <td className="border border-black p-2 whitespace-normal break-words">{formatTanggal(item.created_at)}</td>
                     <td className="border border-black p-2 whitespace-normal break-words capitalize">{item.kategori}</td>
                     <td className="border border-black p-2 whitespace-normal break-words">{item.judul}</td>
-                    <td className="border border-black p-2 whitespace-normal break-words">
-                      <div className="flex flex-col sm:flex-row justify-center items-start gap-3 sm:gap-4 text-[9px] sm:text-sm md:text-xs">
+                    <td className="border border-black p-2 whitespace-normal break-words sm:w-[160px]">
+                      <div className="flex flex-col sm:flex-row justify-center sm:justify-between items-center gap-2 sm:gap-4 text-[9px]  sm:text-sm md:text-xs">
                         <Link href={`/admin/informasi-desa/${item.id}`} className="flex flex-row sm:flex-col items-center gap-1 text-blue-600 hover:underline">
                           <Eye className="w-4 h-4" />
                           <span className="text-black whitespace-nowrap">Lihat</span>

@@ -46,8 +46,8 @@ export default function TambahInformasiDesa() {
       setErrors((prev) => ({ ...prev, file: "Format harus JPG, JPEG, atau PNG." }));
       return;
     }
-    if (file.size > 5 * 1024 * 1024) {
-      setErrors((prev) => ({ ...prev, file: "Ukuran maksimal 5MB." }));
+    if (file.size > 2 * 1024 * 1024) {
+      setErrors((prev) => ({ ...prev, file: "Ukuran maksimal 2MB." }));
       return;
     }
 
@@ -120,7 +120,7 @@ export default function TambahInformasiDesa() {
             <label htmlFor="file" className="min-h-[100px] mt-1 flex flex-col justify-center items-center text-center cursor-pointer border-dashed border-[#384EB7-30] bg-[#F0FFF6] w-full border rounded px-4 py-5 text-sm hover:bg-green-100">
               <UploadCloud size={30} className="mb-2 text-[#27AE60]" />
               <span className="text-[#27AE60] font-semibold">Upload Foto</span>
-              <p className="text-xs text-gray-500 mt-1">Format: JPG, JPEG, PNG. Maks 5MB</p>
+              <p className="text-xs text-gray-500 mt-1">Format: JPG, JPEG, PNG. Maks 2MB</p>
               {form.file && <p className="mt-2 text-sm text-gray-600">File: {form.file.name}</p>}
               {errors.file && <p className="text-sm text-red-500 mt-1">{errors.file}</p>}
             </label>
