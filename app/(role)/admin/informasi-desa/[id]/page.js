@@ -2,6 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useSearchParams, useRouter } from "next/navigation";
+import AngkaHuruf from "@/components/forms/AngkaHuruf";
+import KategoriInformasi from "@/components/forms/KategoriInformasi";
+import Deskripsi from "@/components/forms/Deskripsi";
+import { ChevronLeft, UploadCloud } from "lucide-react";
 
 export default function DetailInformasiPage() {
   const { id } = useParams();
@@ -13,13 +17,15 @@ export default function DetailInformasiPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // state form edit
   const [judul, setJudul] = useState("");
   const [kategori, setKategori] = useState("");
   const [konten, setKonten] = useState("");
-  const [gambarBaru, setGambarBaru] = useState(null); // file baru (opsional)
-  const [preview, setPreview] = useState(null); // preview client
+  const [gambarBaru, setGambarBaru] = useState(null);
+  const [preview, setPreview] = useState(null);
   const [saving, setSaving] = useState(false);
+
+  const [popupSuccess, setPopupSuccess] = useState(false);
+  const [popupError, setPopupError] = useState(null);
 
   useEffect(() => {
     if (!id) return;
@@ -36,7 +42,6 @@ export default function DetailInformasiPage() {
           setError(result.error || "Gagal mengambil detail informasi.");
         } else {
           setData(result.data);
-          // isi form saat edit
           setJudul(result.data?.judul || "");
           setKategori(result.data?.kategori || "");
           setKonten(result.data?.konten || "");
@@ -52,8 +57,6 @@ export default function DetailInformasiPage() {
   }, [id]);
 
   function imgUrlFromBackendPath(path) {
-    // path dari backend: "informasi/xxx.png"
-    // akses langsung via proxy Next: /api/information/photo/<filename>
     if (!path) return null;
     const filename = path.split("/").pop();
     return `/api/information/photo/${filename}`;
@@ -79,23 +82,20 @@ export default function DetailInformasiPage() {
       let res;
 
       if (gambarBaru) {
-        // === Kirim sebagai FormData (dengan foto) ===
         const fd = new FormData();
-        if (judul) fd.append("judul", judul);
-        if (kategori) fd.append("kategori", kategori);
-        if (konten) fd.append("konten", konten);
+        fd.append("judul", judul);
+        fd.append("kategori", kategori);
+        fd.append("konten", konten);
         fd.append("gambar", gambarBaru);
 
         res = await fetch(`/api/information/${id}`, {
           method: "PUT",
           headers: {
             Authorization: `Bearer ${token}`,
-            // penting: JANGAN set Content-Type saat kirim FormData
           },
           body: fd,
         });
       } else {
-        // === Kirim sebagai JSON (tanpa foto) ===
         const payload = { judul, kategori, konten };
         res = await fetch(`/api/information/${id}`, {
           method: "PUT",
@@ -109,116 +109,93 @@ export default function DetailInformasiPage() {
 
       const result = await res.json();
       if (!res.ok) {
-        alert(result.error || "Gagal menyimpan perubahan.");
+        setPopupError(result.error || "Gagal menyimpan perubahan.");
         return;
       }
 
-      alert("Berhasil update informasi!");
-      // update data di UI
-      setData(result.data || result.informasi || null);
-      setGambarBaru(null);
-      setPreview(null);
-      // kembali ke mode detail:
-      const url = new URL(window.location.href);
-      url.searchParams.delete("mode");
-      router.replace(url.toString());
+      setPopupSuccess(true);
+      setTimeout(() => {
+        router.push("/admin/informasi-desa");
+      }, 1800);
     } catch (err) {
-      alert("Terjadi kesalahan saat menyimpan.");
+      setPopupError("Terjadi kesalahan saat menyimpan.");
     } finally {
       setSaving(false);
     }
   }
 
-  if (loading) {
-    return <p className="p-6 italic text-gray-500">Memuat detail...</p>;
-  }
+  if (loading) return <p className="p-6 italic text-gray-500">Memuat detail...</p>;
+  if (error) return <p className="p-6 text-red-500 italic">{error}</p>;
+  if (!data) return <p className="p-6 italic text-gray-500">Detail tidak ditemukan.</p>;
 
-  if (error) {
-    return <p className="p-6 text-red-500 italic">{error}</p>;
-  }
-
-  if (!data) {
-    return <p className="p-6 italic text-gray-500">Detail tidak ditemukan.</p>;
-  }
-
-  // ========== MODE DETAIL ==========
-  if (!isEditMode) {
-    return (
-      <div className="p-8 max-w-3xl mx-auto bg-white rounded shadow">
-        <div className="flex items-start justify-between gap-4">
-          <h1 className="text-2xl font-bold mb-4">{data.judul}</h1>
-          <a href={`?mode=edit`} className="px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm">
-            Edit
-          </a>
-        </div>
-
-        <p className="text-sm text-gray-500 mb-2">
-          <span className="italic">Kategori:</span> {data.kategori || "-"}
-        </p>
-        <p className="text-sm text-gray-500 mb-6">
-          <span className="italic">Dibuat pada:</span> {new Date(data.created_at).toLocaleString("id-ID")}
-        </p>
-
-        {data?.gambar ? <img src={imgUrlFromBackendPath(data.gambar)} alt={data.judul} className="mt-2 max-w-full rounded border" /> : <div className="mt-1 p-2 border rounded bg-gray-100 text-sm text-gray-500 italic">Tidak ada foto</div>}
-
-        <div className="prose max-w-none mt-4">
-          <p>{data.konten}</p>
-        </div>
-      </div>
-    );
-  }
-
-  // ========== MODE EDIT ==========
   return (
-    <div className="p-8 max-w-3xl mx-auto bg-white rounded shadow">
-      <h1 className="text-2xl font-bold mb-6">Edit Informasi</h1>
+    <div className="min-h-full p-8">
+      <h2 className="sm:text-2xl text-base font-semibold mb-4">
+        Informasi Desa / {isEditMode ? "Edit Informasi" : "Detail Informasi"}
+      </h2>
 
-      <form onSubmit={handleSubmit} className="space-y-5">
-        <div>
-          <label className="block text-sm font-medium mb-1">Judul</label>
-          <input type="text" value={judul} onChange={(e) => setJudul(e.target.value)} className="w-full border rounded p-2" required />
+      <div className="bg-white rounded-lg p-6 mx-auto">
+        <button type="button" onClick={() => router.back()} className="flex items-center text-base text-gray-500 mb-6">
+          <ChevronLeft size={30} className="mr-1" /> Kembali
+        </button>
+
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <AngkaHuruf name="judul" value={judul} onChange={({ value }) => setJudul(value)} disabled={!isEditMode} label="Judul" />
+          <KategoriInformasi name="kategori" value={kategori} onChange={({ value }) => setKategori(value)} disabled={!isEditMode} />
+          <Deskripsi name="konten" value={konten} onChange={({ value }) => setKonten(value)} disabled={!isEditMode} label="Deskripsi Informasi" />
+
+          <div className="col-span-1">
+            <p className="text-sm font-semibold text-gray-500">
+              Upload Foto <span className="text-red-500 ml-0.5">*</span>
+            </p>
+            {!preview && data?.gambar && (
+              <img src={imgUrlFromBackendPath(data.gambar)} alt={judul} className="mt-2 max-w-full rounded border" />
+            )}
+            {preview && <img src={preview} alt="Preview" className="mt-2 max-w-full rounded border" />}
+            {isEditMode && (
+              <label htmlFor="file" className="min-h-[100px] mt-1 flex flex-col justify-center items-center text-center cursor-pointer border-dashed border-[#384EB7-30] bg-[#F0FFF6] w-full border rounded px-4 py-5 text-sm hover:bg-green-100">
+                <UploadCloud size={30} className="mb-2 text-[#27AE60]" />
+                <span className="text-[#27AE60] font-semibold">Upload Foto</span>
+                <p className="text-xs text-gray-500 mt-1">Format: JPG, JPEG, PNG. Maks 10MB</p>
+              </label>
+            )}
+            {isEditMode && (
+              <input type="file" id="file" name="file" onChange={handlePickFile} className="hidden" accept="image/*" />
+            )}
+          </div>
+
+          {isEditMode && (
+            <div className="md:col-span-2 flex justify-end">
+              <button type="submit" disabled={saving} className="bg-[#27AE60] hover:bg-green-700 text-white text-sm px-6 py-2 rounded">
+                {saving ? "Menyimpan..." : "Simpan Perubahan"}
+              </button>
+            </div>
+          )}
+        </form>
+      </div>
+
+      {/* Popup sukses */}
+      {popupSuccess && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-sm w-full text-center shadow-lg">
+            <h2 className="text-[#27AE60] text-2xl font-bold mb-4">Berhasil</h2>
+            <p className="text-gray-700">Perubahan telah berhasil disimpan ke dalam sistem.</p>
+          </div>
         </div>
+      )}
 
-        <div>
-          <label className="block text-sm font-medium mb-1">Kategori</label>
-          <input type="text" value={kategori} onChange={(e) => setKategori(e.target.value)} className="w-full border rounded p-2" required />
+      {/* Popup gagal */}
+      {popupError && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-sm w-full text-center shadow-lg">
+            <h2 className="text-red-600 text-2xl font-bold mb-4">Gagal Menyimpan</h2>
+            <p className="text-gray-700 mb-6">{popupError}</p>
+            <button onClick={() => setPopupError(null)} className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
+              Tutup
+            </button>
+          </div>
         </div>
-
-        <div>
-          <label className="block text-sm font-medium mb-1">Konten</label>
-          <textarea rows="5" value={konten} onChange={(e) => setKonten(e.target.value)} className="w-full border rounded p-2" required></textarea>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium mb-1">Gambar</label>
-          {/* Preview lama */}
-          {data?.gambar && !preview && <img src={imgUrlFromBackendPath(data.gambar)} alt={data.judul} className="mb-2 max-w-full rounded border" />}
-
-          {/* Preview baru jika user pilih file */}
-          {preview && <img src={preview} alt="Preview" className="mb-2 max-w-full rounded border" />}
-
-          <input type="file" accept="image/*" onChange={handlePickFile} className="w-full border rounded p-2" />
-          <p className="text-xs text-gray-500 italic mt-1">Kosongkan jika tidak ingin mengganti foto.</p>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <button type="submit" disabled={saving} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-            {saving ? "Menyimpan..." : "Simpan Perubahan"}
-          </button>
-
-          <button
-            type="button"
-            onClick={() => {
-              const url = new URL(window.location.href);
-              url.searchParams.delete("mode");
-              router.replace(url.toString());
-            }}
-            className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
-          >
-            Batal
-          </button>
-        </div>
-      </form>
+      )}
     </div>
   );
 }

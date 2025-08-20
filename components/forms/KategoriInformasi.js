@@ -2,6 +2,7 @@
 
 import { ChevronDown } from "lucide-react";
 import PropTypes from "prop-types";
+
 export default function KategoriInformasi({
   label = "Kategori Informasi",
   name = "category",
@@ -10,11 +11,12 @@ export default function KategoriInformasi({
   error,
   disabled = false,
 }) {
+  // Map value (backend) => label (UI)
   const options = [
-    "berita",
-    "Wisata Desa",
-    "Galeri Desa",
-    "Produk Desa",
+    { label: "Berita Desa", value: "berita" },
+    { label: "Wisata Desa", value: "wisata" },
+    { label: "Galeri Desa", value: "galeri" },
+    { label: "Produk Desa", value: "produk" },
   ];
 
   return (
@@ -55,8 +57,8 @@ export default function KategoriInformasi({
         >
           <option value="">Pilih kategori</option>
           {options.map((opt, idx) => (
-            <option key={idx} value={opt}>
-              {opt}
+            <option key={idx} value={opt.value}>
+              {opt.label}
             </option>
           ))}
         </select>
