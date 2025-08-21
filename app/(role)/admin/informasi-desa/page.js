@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus, Search, Pencil, Trash2, Eye } from "lucide-react";
+import { Plus, Search, Pencil, Trash2, Eye, Link2 } from "lucide-react";
 import Link from "next/link";
 
 export default function Page() {
@@ -57,7 +57,8 @@ export default function Page() {
       });
       const json = await res.json();
       if (res.ok) {
-        const sorted = (json.data || []).sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+        const filtered = (json.data || []).filter((item) => item.kategori?.toLowerCase() !== "pengumuman");
+        const sorted = filtered.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
         setData(sorted);
       } else {
         console.error("Gagal mengambil data:", json.message || "Unknown error");
@@ -137,14 +138,20 @@ export default function Page() {
   return (
     <div className="min-h-full p-8">
       <h2 className="sm:text-2xl text-base font-semibold mb-4">Informasi Desa</h2>
-
       <div className="grid grid-cols-2 sm:flex sm:justify-between sm:items-center gap-4 mb-6">
-        <Link href="/admin/informasi-desa/tambah">
-          <button className="flex items-center gap-1 px-4 py-2 bg-[#27AE60] text-white rounded-md text-sm hover:bg-green-600 transition w-full sm:w-auto">
-            <Plus className="w-5 h-5" strokeWidth={3} />
-            Tambah Baru
-          </button>
-        </Link>
+        <div className="grid grid-cols-2 flex-col sm:flex-row gap-2 sm:gap-6 w-full sm:w-auto">
+          <Link href="/admin/informasi-desa/tambah">
+            <button className="flex items-center gap-1 px-4 py-2 bg-[#27AE60] text-white rounded-md text-sm hover:bg-green-600 transition w-full sm:w-auto">
+              <Plus className="w-5 h-5" strokeWidth={3} />
+              Tambah Baru
+            </button>
+          </Link>
+          <Link href="/admin/informasi-desa/tautan">
+            <button className="flex items-center gap-1 px-4 py-2 bg-[#27AE60] text-white rounded-md text-sm hover:bg-green-600 transition w-full sm:w-auto">
+              <Link2 className="w-5 h-5" strokeWidth={3} />
+              Tautan</button>
+          </Link>
+        </div>
 
         <div className="flex items-center border border-gray-500 rounded-md px-4 py-2 bg-white text-gray-500 w-full sm:w-auto min-w-0">
           <Search className="w-5 h-5 mr-2" />

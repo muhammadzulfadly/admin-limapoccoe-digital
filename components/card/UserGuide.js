@@ -1,9 +1,36 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import { FileText } from "lucide-react";
 
 export default function UserGuideCard() {
+  const [linkPanduan, setLinkPanduan] = useState(null);
+
+  useEffect(() => {
+    const fetchPanduan = async () => {
+      try {
+        const res = await fetch("/api/information");
+        const json = await res.json();
+        const data = json.data || [];
+
+        const panduanItem = data.find(
+          (item) => item.kategori === "pengumuman" && item.judul === "Tautan Panduan Pengguna"
+        );
+
+        setLinkPanduan(panduanItem?.konten || null);
+      } catch (err) {
+        console.error("Gagal mengambil tautan panduan:", err);
+      }
+    };
+
+    fetchPanduan();
+  }, []);
+
+  if (!linkPanduan) return null;
+
   return (
     <a
-      href="https://drive.google.com/drive/folders/1tWxHdZ3Z3rOWQH8k5e8lyDj8uJh9Nmtr?usp=sharing"
+      href={linkPanduan}
       target="_blank"
       rel="noopener noreferrer"
       className="block"
@@ -14,7 +41,7 @@ export default function UserGuideCard() {
           <div className="text-xs md:text-sm text-[#00171F]">Lihat panduan</div>
         </div>
         <FileText
-          size={32} // Mobile size
+          size={32}
           className="text-[#00171F] md:w-[50px] md:h-[50px]"
         />
       </div>

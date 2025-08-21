@@ -155,7 +155,7 @@ export default function DetailInformasiPage() {
               >
                 <UploadCloud size={30} className="mb-2 text-[#27AE60]" />
                 <span className="text-[#27AE60] font-semibold">Upload Foto</span>
-                <p className="text-xs text-gray-500 mt-1">Format: JPG, JPEG, PNG. Maks 10MB</p>
+                <p className="text-xs text-gray-500 mt-1">Format: JPG, JPEG, PNG. Maks 2MB</p>
               </label>
             )}
             {isEditMode && <input type="file" id="file" name="file" onChange={handlePickFile} className="hidden" accept="image/*" />}
