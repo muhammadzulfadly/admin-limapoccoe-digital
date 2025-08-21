@@ -257,7 +257,7 @@ export default function DashboardPage() {
                       <tr key={item.id} className="bg-white text-center">
                         <td className="border border-black p-2 whitespace-normal break-words hidden sm:table-cell">{(currentPage - 1) * itemsPerPage + index + 1}</td>
                         <td className="border border-black p-2 whitespace-normal break-words">{formatTanggal(item.created_at)}</td>
-                        <td className="border border-black p-2 whitespace-normal break-words">{item.user?.name || "-"}</td>
+                        <td className="border border-black p-2 whitespace-normal break-words">{item.data_surat?.nama || item.data_surat?.nama_anak || item.user?.name || "-"}</td>
                         <td className="border border-black p-2 whitespace-normal break-words">{item.suratNama || "-"}</td>
                         <td className={`border border-black p-2 whitespace-normal break-words ${statusStyle[statusLabel] || ""}`}>{statusLabel}</td>
                         <td className="border border-black p-2 whitespace-normal break-words">

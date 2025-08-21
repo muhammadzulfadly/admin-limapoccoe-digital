@@ -11,12 +11,14 @@ export default function TambahInformasiDesa() {
 
   const [form, setForm] = useState({
     video: "",
-    panduan: "",
+    panduanMasyarakat: "",
+    panduanPemerintah: "",
   });
 
   const [dataIds, setDataIds] = useState({
     video: null,
-    panduan: null,
+    panduanMasyarakat: null,
+    panduanPemerintah: null,
   });
 
   const [errors, setErrors] = useState({});
@@ -24,7 +26,6 @@ export default function TambahInformasiDesa() {
   const [popupSuccess, setPopupSuccess] = useState(false);
   const [popupError, setPopupError] = useState({ show: false, message: "" });
 
-  // Ambil data dari server
   const fetchPengumuman = async () => {
     const token = localStorage.getItem("token");
     try {
@@ -37,16 +38,19 @@ export default function TambahInformasiDesa() {
         const pengumuman = result.data.filter((item) => item.kategori?.toLowerCase() === "pengumuman");
 
         const videoItem = pengumuman.find((item) => item.judul === "Tautan Video Profil Desa");
-        const panduanItem = pengumuman.find((item) => item.judul === "Tautan Panduan Pengguna");
+        const panduanMasyarakatItem = pengumuman.find((item) => item.judul === "Tautan Panduan Pengguna Masyarakat");
+        const panduanPemerintahItem = pengumuman.find((item) => item.judul === "Tautan Panduan Pengguna Pemerintah");
 
         setForm({
           video: videoItem?.konten || "",
-          panduan: panduanItem?.konten || "",
+          panduanMasyarakat: panduanMasyarakatItem?.konten || "",
+          panduanPemerintah: panduanPemerintahItem?.konten || "",
         });
 
         setDataIds({
           video: videoItem?.id || null,
-          panduan: panduanItem?.id || null,
+          panduanMasyarakat: panduanMasyarakatItem?.id || null,
+          panduanPemerintah: panduanPemerintahItem?.id || null,
         });
       } else {
         console.error(result.message || "Gagal mengambil data pengumuman.");
@@ -79,7 +83,8 @@ export default function TambahInformasiDesa() {
   const validate = () => {
     const newErrors = {
       video: validateAngkaHuruf(form.video),
-      panduan: validateAngkaHuruf(form.panduan),
+      panduanMasyarakat: validateAngkaHuruf(form.panduanMasyarakat),
+      panduanPemerintah: validateAngkaHuruf(form.panduanPemerintah),
     };
     setErrors(newErrors);
     return Object.values(newErrors).every((err) => !err);
@@ -95,11 +100,12 @@ export default function TambahInformasiDesa() {
     try {
       const labels = {
         video: "Tautan Video Profil Desa",
-        panduan: "Tautan Panduan Pengguna",
+        panduanMasyarakat: "Tautan Panduan Pengguna Masyarakat",
+        panduanPemerintah: "Tautan Panduan Pengguna Pemerintah",
       };
 
       for (const key of Object.keys(form)) {
-        const id = dataIds[key]; // apakah data lama ada
+        const id = dataIds[key];
         const payload = {
           judul: labels[key],
           kategori: "pengumuman",
@@ -108,7 +114,7 @@ export default function TambahInformasiDesa() {
 
         const url = id ? `/api/information/${id}` : `/api/information`;
         const res = await fetch(url, {
-          method: "POST", // selalu POST seperti backend Anda
+          method: "POST",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
@@ -145,7 +151,8 @@ export default function TambahInformasiDesa() {
 
         <form onSubmit={handleSubmit} className="gap-6 space-y-4">
           <AngkaHuruf name="video" value={form.video} onChange={handleChange} error={errors.video} label="Tautan Video Profil Desa (Youtube)" />
-          <AngkaHuruf name="panduan" value={form.panduan} onChange={handleChange} error={errors.panduan} label="Tautan Panduan Pengguna" />
+          <AngkaHuruf name="panduanMasyarakat" value={form.panduanMasyarakat} onChange={handleChange} error={errors.panduanMasyarakat} label="Tautan Panduan Pengguna (Masyarakat)" />
+          <AngkaHuruf name="panduanPemerintah" value={form.panduanPemerintah} onChange={handleChange} error={errors.panduanPemerintah} label="Tautan Panduan Pengguna (Pemerintah)" />
 
           <div className="md:col-span-2 flex justify-end">
             <button type="submit" disabled={loading} className="bg-[#27AE60] hover:bg-green-600 text-white text-sm px-6 py-2 rounded">
