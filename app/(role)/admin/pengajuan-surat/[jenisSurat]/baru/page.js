@@ -17,6 +17,7 @@ import RTRW, { validateRTRW } from "@/components/forms/RTRW";
 import StatusHubungan, { validateStatusHubungan } from "@/components/forms/StatusHubungan";
 import StatusPerkawinan, { validateStatusPerkawinan } from "@/components/forms/StatusPerkawinan";
 import Tanggal, { validateTanggal } from "@/components/forms/Tanggal";
+import Jam, { validateJam } from "@/components/forms/Jam";
 
 Agama.validate = validateAgama;
 Angka.validate = validateAngka;
@@ -31,6 +32,7 @@ RTRW.validate = validateRTRW;
 StatusHubungan.validate = validateStatusHubungan;
 StatusPerkawinan.validate = validateStatusPerkawinan;
 Tanggal.validate = validateTanggal;
+Jam.validate = validateJam;
 
 const formatTanggalToSubmit = (val) => {
   if (!val) return "";
@@ -249,7 +251,7 @@ const formSchemaBySuratKode = {
     },
     {
       name: "pukul",
-      Component: Angka,
+      Component: Jam,
       props: {
         label: "Pukul Kelahiran (WITA)",
       },
@@ -427,7 +429,19 @@ export default function BuatSuratBaru() {
   const validate = () => {
     const newErrors = {};
 
-    // Validasi Informasi Pribadi (manual)
+    // ✅ Definisi validator harus di sini
+    const validators = {
+      nik: NIK.validate,
+      nama: Huruf.validate,
+      tempat_lahir: Huruf.validate,
+      tanggal_lahir: Tanggal.validate,
+      jenis_kelamin: JenisKelamin.validate,
+      alamat: AngkaHuruf.validate,
+      pekerjaan: Huruf.validate,
+      dusun: Dusun.validate,
+      rt_rw: RTRW.validate,
+    };
+
     const personalFields = [
       { name: "nik", required: true },
       { name: "nama", required: true },
@@ -440,7 +454,7 @@ export default function BuatSuratBaru() {
     ];
 
     if (formKey !== "SKL") {
-      personalFields.forEach(({ name, required, validate }) => {
+      personalFields.forEach(({ name, required }) => {
         const value = formData[name];
 
         if (required && (!value || value.toString().trim() === "")) {
@@ -448,14 +462,14 @@ export default function BuatSuratBaru() {
           return;
         }
 
-        if (typeof validate === "function") {
-          const errorMsg = validate(value);
+        const validator = validators[name];
+        if (typeof validator === "function") {
+          const errorMsg = validator(value);
           if (errorMsg) newErrors[name] = errorMsg;
         }
       });
     }
 
-    // Validasi field tambahan (berdasarkan kode surat)
     dataFields.forEach(({ name, Component }) => {
       const value = formData[name];
       if (!value || value.toString().trim() === "") {
@@ -535,9 +549,7 @@ export default function BuatSuratBaru() {
   return (
     <div>
       <div className="min-h-full p-8">
-        <h2 className="sm:text-2xl text-base font-semibold mb-4">
-          Pengajuan Surat / {surat?.nama_surat} / Buat Surat Baru
-        </h2>
+        <h2 className="sm:text-2xl text-base font-semibold mb-4">Pengajuan Surat / {surat?.nama_surat} / Buat Surat Baru</h2>
 
         <div className="bg-white rounded-md shadow-sm p-8">
           <button type="button" onClick={() => router.back()} className="flex items-center text-base text-gray-500 mb-6">

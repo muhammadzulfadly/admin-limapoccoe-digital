@@ -17,6 +17,7 @@ export default function KategoriInformasi({
     { label: "Wisata Desa", value: "wisata" },
     { label: "Galeri Desa", value: "galeri" },
     { label: "Produk Desa", value: "produk" },
+    { label: "Banner", value: "banner" },
   ];
 
   return (

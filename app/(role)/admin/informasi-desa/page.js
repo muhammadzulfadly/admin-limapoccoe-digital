@@ -15,7 +15,7 @@ export default function Page() {
   const [popupDeleteId, setPopupDeleteId] = useState(null); // id item yang ingin dihapus
 
   // urutan dan label tombol
-  const STATUS_TABS = ["Semua", "Berita", "Wisata", "Galeri", "Produk"];
+  const STATUS_TABS = ["Semua", "Berita", "Wisata", "Galeri", "Produk", "Banner"];
 
   // warna tombol aktif (on) mengikuti gambar
   const ACTIVE_TAB_CLASS = {
@@ -24,6 +24,7 @@ export default function Page() {
     Wisata: "bg-[#2B3A4A] text-white",
     Galeri: "bg-[#2B3A4A] text-white",
     Produk: "bg-[#2B3A4A] text-white",
+    Banner: "bg-[#2B3A4A] text-white",
   };
 
   useEffect(() => {
@@ -169,7 +170,7 @@ export default function Page() {
       </div>
 
       {/* Tombol status */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-1 sm:gap-2 mb-2">
+      <div className="grid grid-cols-2 md:grid-cols-6 gap-1 sm:gap-2 mb-2">
         {STATUS_TABS.map((tab) => {
           const isActive = activeTab === tab;
           return (
