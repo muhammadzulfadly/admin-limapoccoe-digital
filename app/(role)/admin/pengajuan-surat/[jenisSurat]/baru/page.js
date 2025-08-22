@@ -18,6 +18,7 @@ import StatusHubungan, { validateStatusHubungan } from "@/components/forms/Statu
 import StatusPerkawinan, { validateStatusPerkawinan } from "@/components/forms/StatusPerkawinan";
 import Tanggal, { validateTanggal } from "@/components/forms/Tanggal";
 import Jam, { validateJam } from "@/components/forms/Jam";
+import Nama, { validateNama } from "@/components/forms/Nama";
 
 Agama.validate = validateAgama;
 Angka.validate = validateAngka;
@@ -33,6 +34,7 @@ StatusHubungan.validate = validateStatusHubungan;
 StatusPerkawinan.validate = validateStatusPerkawinan;
 Tanggal.validate = validateTanggal;
 Jam.validate = validateJam;
+Nama.validate = validateNama;
 
 const formatTanggalToSubmit = (val) => {
   if (!val) return "";
@@ -45,7 +47,7 @@ const formSchemaBySuratKode = {
     { type: "separator", label: "Informasi Orang Tua" },
     {
       name: "nama_ayah",
-      Component: Huruf,
+      Component: Nama,
       props: {
         label: "Nama Ayah",
       },
@@ -59,7 +61,7 @@ const formSchemaBySuratKode = {
     },
     {
       name: "nama_ibu",
-      Component: Huruf,
+      Component: Nama,
       props: {
         label: "Nama Ibu",
       },
@@ -140,7 +142,7 @@ const formSchemaBySuratKode = {
     { type: "separator", label: "Informasi Orang Tua" },
     {
       name: "nama_ayah",
-      Component: Huruf,
+      Component: Nama,
       props: {
         label: "Nama Ayah",
       },
@@ -168,7 +170,7 @@ const formSchemaBySuratKode = {
     },
     {
       name: "nama_ibu",
-      Component: Huruf,
+      Component: Nama,
       props: {
         label: "Nama Ibu",
       },
@@ -230,7 +232,7 @@ const formSchemaBySuratKode = {
     { type: "separator", label: "Informasi Anak" },
     {
       name: "nama_anak",
-      Component: Huruf,
+      Component: Nama,
       props: {
         label: "Nama Anak",
       },
@@ -287,7 +289,7 @@ const formSchemaBySuratKode = {
     { type: "separator", label: "Informasi Orang Tua" },
     {
       name: "nama_ayah",
-      Component: Huruf,
+      Component: Nama,
       props: {
         label: "Nama Ayah",
       },
@@ -301,7 +303,7 @@ const formSchemaBySuratKode = {
     },
     {
       name: "nama_ibu",
-      Component: Huruf,
+      Component: Nama,
       props: {
         label: "Nama Ibu",
       },
@@ -339,7 +341,7 @@ const formSchemaBySuratKode = {
     },
     {
       name: "nama_orang_tua",
-      Component: Huruf,
+      Component: Nama,
       props: {
         label: "Nama Orang Tua",
       },
@@ -408,7 +410,7 @@ export default function BuatSuratBaru() {
     // Coba cari di semua komponen yang ada validatornya
     const validators = {
       nik: NIK.validate,
-      nama: Huruf.validate,
+      nama: Nama.validate,
       tempat_lahir: Huruf.validate,
       tanggal_lahir: Tanggal.validate,
       jenis_kelamin: JenisKelamin.validate,
@@ -432,7 +434,7 @@ export default function BuatSuratBaru() {
     // ✅ Definisi validator harus di sini
     const validators = {
       nik: NIK.validate,
-      nama: Huruf.validate,
+      nama: Nama.validate,
       tempat_lahir: Huruf.validate,
       tanggal_lahir: Tanggal.validate,
       jenis_kelamin: JenisKelamin.validate,
@@ -567,7 +569,7 @@ export default function BuatSuratBaru() {
                   <legend className="text-xl text-start font-semibold text-gray-700">Informasi Pribadi</legend>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
                     <NIK value={formData.nik ?? ""} onChange={handleChange} name="nik" error={errors.nik} />
-                    <Huruf value={formData.nama ?? ""} onChange={handleChange} name="nama" error={errors.nama} label="Nama Lengkap" />
+                    <Nama value={formData.nama ?? ""} onChange={handleChange} name="nama" error={errors.nama} label="Nama Lengkap" />
                     <Huruf value={formData.tempat_lahir ?? ""} onChange={handleChange} name="tempat_lahir" error={errors.tempat_lahir} label="Tempat Lahir" />
                     <Tanggal value={formData.tanggal_lahir ?? ""} onChange={handleChange} name="tanggal_lahir" error={errors.tanggal_lahir} label="Tanggal Lahir" />
                     <JenisKelamin value={formData.jenis_kelamin ?? ""} onChange={handleChange} name="jenis_kelamin" error={errors.jenis_kelamin} label="Jenis Kelamin" />

@@ -17,6 +17,7 @@ import BPJS, { validateBPJS } from "@/components/forms/BPJS";
 import Angka, { validateAngka } from "@/components/forms/Angka";
 import RTRW, { validateRTRW } from "@/components/forms/RTRW";
 import Dusun, { validateDusun } from "@/components/forms/Dusun";
+import Nama, { validateNama } from "@/components/forms/Nama";
 
 function SuccessPopup({ title = "Berhasil", message, onClose }) {
   return (
@@ -367,7 +368,7 @@ export default function DetailKeluargaPage() {
               {openForm[index] && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <NIK value={item.nik ?? ""} onChange={(v) => updateAnggota(index, "nik", v)} disabled={!isEditMode} error={errors.anggota[index]?.nik} />
-                  <Huruf value={item.nama_lengkap ?? ""} onChange={(v) => updateAnggota(index, "nama_lengkap", v)} disabled={!isEditMode} label="Nama Lengkap" error={errors.anggota[index]?.nama_lengkap} />
+                  <Nama value={item.nama_lengkap ?? ""} onChange={(v) => updateAnggota(index, "nama_lengkap", v)} disabled={!isEditMode} label="Nama Lengkap" error={errors.anggota[index]?.nama_lengkap} />
                   <StatusHubungan value={item.hubungan ?? ""} onChange={(v) => updateAnggota(index, "hubungan", v)} disabled={!isEditMode} error={errors.anggota[index]?.hubungan} />
                   <Huruf value={item.tempat_lahir ?? ""} onChange={(v) => updateAnggota(index, "tempat_lahir", v)} disabled={!isEditMode} label="Tempat Lahir" error={errors.anggota[index]?.tempat_lahir} />
                   <Tanggal value={item.tgl_lahir} onChange={(v) => updateAnggota(index, "tgl_lahir", v)} disabled={!isEditMode} label="Tanggal Lahir" error={errors.anggota[index]?.tgl_lahir} />

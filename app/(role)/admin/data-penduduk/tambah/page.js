@@ -17,6 +17,7 @@ import BPJS, { validateBPJS } from "@/components/forms/BPJS";
 import Angka, { validateAngka } from "@/components/forms/Angka";
 import RTRW, { validateRTRW } from "@/components/forms/RTRW";
 import Dusun, { validateDusun } from "@/components/forms/Dusun";
+import Nama, { validateNama } from "@/components/forms/Nama";
 
 function SuccessPopup({ onClose }) {
   return (
@@ -258,7 +259,7 @@ export default function TambahDataKependudukan() {
               {openForm[index] && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <NIK value={item.nik} onChange={(v) => updateAnggota(index, "nik", v)} error={errors.anggota[index]?.nik} />
-                  <Huruf value={item.nama_lengkap} onChange={(v) => updateAnggota(index, "nama_lengkap", v)} error={errors.anggota[index]?.nama_lengkap} label="Nama Lengkap" />
+                  <Nama value={item.nama_lengkap} onChange={(v) => updateAnggota(index, "nama_lengkap", v)} error={errors.anggota[index]?.nama_lengkap} label="Nama Lengkap" />
                   <StatusHubungan value={item.hubungan} onChange={(v) => updateAnggota(index, "hubungan", v)} error={errors.anggota[index]?.hubungan} />
                   <Huruf value={item.tempat_lahir} onChange={(v) => updateAnggota(index, "tempat_lahir", v)} error={errors.anggota[index]?.tempat_lahir} label="Tempat Lahir" />
                   <Tanggal value={item.tgl_lahir} onChange={(v) => updateAnggota(index, "tgl_lahir", v)} error={errors.anggota[index]?.tgl_lahir} label="Tanggal Lahir" />
