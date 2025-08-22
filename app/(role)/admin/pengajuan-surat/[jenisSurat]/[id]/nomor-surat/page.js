@@ -73,6 +73,11 @@ export default function InputNomorSuratPage() {
 
   const handleConfirm = (e) => {
     e.preventDefault();
+    const minValue = parseInt(nomorSuratTerakhir || 0) + 1;
+    if (parseInt(nomorSurat) < minValue) {
+      setErrorMsg(`Nomor surat minimal harus ${minValue}`);
+      return;
+    }
     setShowConfirmPopup(true);
   };
 
@@ -132,9 +137,7 @@ export default function InputNomorSuratPage() {
   return (
     <div>
       <div className="min-h-full p-8">
-        <h2 className="sm:text-2xl text-base font-semibold mb-4">
-          Pengajuan Surat / {namaSurat} / Nomor surat
-        </h2>
+        <h2 className="sm:text-2xl text-base font-semibold mb-4">Pengajuan Surat / {namaSurat} / Nomor surat</h2>
         <div className="bg-white rounded-lg shadow-md p-4 sm:p-8 mx-auto w-full">
           <button type="button" onClick={() => router.push(`/admin/pengajuan-surat/${jenisSurat}/${id}`)} className="flex items-center text-base text-gray-500 mb-6">
             <ChevronLeft size={30} className="mr-1" />
@@ -147,19 +150,35 @@ export default function InputNomorSuratPage() {
               <input
                 type="number"
                 value={nomorSurat}
-                onChange={(e) => setNomorSurat(e.target.value)}
+                min={parseInt(nomorSuratTerakhir || 0) + 1}
+                onChange={(e) => {
+                  const value = parseInt(e.target.value);
+                  const minValue = parseInt(nomorSuratTerakhir || 0) + 1;
+                  if (value >= minValue) {
+                    setNomorSurat(value);
+                    setErrorMsg(""); // reset error jika valid
+                  } else {
+                    setNomorSurat(value); // tetap simpan agar terlihat
+                    setErrorMsg(`Nomor surat minimal harus ${minValue}`);
+                  }
+                }}
                 onWheel={(e) => e.target.blur()}
                 className="w-24 sm:w-20 px-2 py-2 border rounded text-center focus:outline-none focus:ring-2 focus:ring-green-600"
                 required
               />
               <span className="text-sm sm:text-lg text-gray-700 text-wrap text-center">/{kodeSurat}/10.2003/VII/2025</span>
             </div>
-            <p className="text-center text-sm text-gray-500 mb-4">Nomor Surat Terakhir : {nomorSuratTerakhir} </p>
+
+            <p className="text-center text-sm text-gray-500 mb-4">Nomor Surat Terakhir : {nomorSuratTerakhir}</p>
 
             {errorMsg && <p className="text-red-600 text-sm text-center mb-2">{errorMsg}</p>}
 
             <div className="flex justify-center mt-2">
-              <button type="submit" className="bg-[#27AE60] text-white px-4 sm:px-6 py-2 w-full sm:w-auto text-sm sm:text-base rounded hover:bg-green-600 transition">
+              <button
+                type="submit"
+                disabled={!!errorMsg}
+                className={`px-4 sm:px-6 py-2 w-full sm:w-auto text-sm sm:text-base rounded transition ${errorMsg ? "bg-gray-300 text-white cursor-not-allowed" : "bg-[#27AE60] text-white hover:bg-green-600"}`}
+              >
                 Submit
               </button>
             </div>
