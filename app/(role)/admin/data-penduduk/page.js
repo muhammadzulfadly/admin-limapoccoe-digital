@@ -35,6 +35,7 @@ export default function DashboardPendudukPage() {
   const [deleteId, setDeleteId] = useState(null);
   const itemsPerPage = 10;
   const [colSpan, setColSpan] = useState(6);
+  const [popupSuccess, setPopupSuccess] = useState(false);
   const [searchGlobal, setSearchGlobal] = useState("");
   const [searchFilters, setSearchFilters] = useState({
     nik: "",
@@ -171,8 +172,18 @@ export default function DashboardPendudukPage() {
       console.error("Gagal menghapus data:", err.message);
     } finally {
       setDeleteId(null);
+      setPopupSuccess(true);
     }
   };
+
+  useEffect(() => {
+    if (popupSuccess) {
+      const timeout = setTimeout(() => {
+        setPopupSuccess(false);
+      }, 1800);
+      return () => clearTimeout(timeout);
+    }
+  }, [popupSuccess]);
 
   return (
     <div>
@@ -288,6 +299,15 @@ export default function DashboardPendudukPage() {
       </div>
 
       {deleteId && <ConfirmDeletePopup onConfirm={handleConfirmedDelete} onCancel={cancelDelete} />}
+
+      {popupSuccess && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-sm w-full text-center shadow-lg">
+            <h2 className="text-[#27AE60] text-2xl font-bold mb-4">Berhasil</h2>
+            <p className="text-gray-700 mb-6">Data berhasil dihapus dari sistem.</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

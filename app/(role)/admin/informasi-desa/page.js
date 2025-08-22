@@ -5,6 +5,17 @@ import { Plus, Search, Pencil, Trash2, Eye, Link2 } from "lucide-react";
 import Link from "next/link";
 
 export default function Page() {
+  function SuccessDeletePopup() {
+    return (
+      <div className="fixed inset-0 z-50 bg-black bg-opacity-40 flex items-center justify-center">
+        <div className="bg-white p-6 rounded-lg text-center shadow-md max-w-sm w-full">
+          <h2 className="text-[#27AE60] text-xl font-bold mb-2">Data Berhasil Dihapus</h2>
+          <p className="text-gray-700">Informasi telah dihapus dari sistem.</p>
+        </div>
+      </div>
+    );
+  }
+
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -13,6 +24,7 @@ export default function Page() {
   const [colSpan, setColSpan] = useState(5);
   const [activeTab, setActiveTab] = useState("Semua"); // selalu ada satu yang aktif
   const [popupDeleteId, setPopupDeleteId] = useState(null); // id item yang ingin dihapus
+  const [showDeleteSuccess, setShowDeleteSuccess] = useState(false);
 
   // urutan dan label tombol
   const STATUS_TABS = ["Semua", "Berita", "Wisata", "Galeri", "Produk", "Banner"];
@@ -82,7 +94,13 @@ export default function Page() {
       });
       const json = await res.json();
       if (res.ok) {
-        fetchData();
+        setPopupDeleteId(null); // tutup popup konfirmasi
+        setShowDeleteSuccess(true); // tampilkan popup berhasil
+        fetchData(); // refresh data
+
+        setTimeout(() => {
+          setShowDeleteSuccess(false); // sembunyikan popup otomatis
+        }, 1800);
       } else {
         alert(json.error || "Gagal menghapus data");
       }
@@ -150,7 +168,8 @@ export default function Page() {
           <Link href="/admin/informasi-desa/tautan">
             <button className="flex items-center gap-1 px-4 py-2 bg-[#27AE60] text-white rounded-md text-sm hover:bg-green-600 transition w-full sm:w-auto">
               <Link2 className="w-5 h-5" strokeWidth={3} />
-              Tautan</button>
+              Tautan
+            </button>
           </Link>
         </div>
 
@@ -290,6 +309,7 @@ export default function Page() {
           </div>
         </div>
       )}
+      {showDeleteSuccess && <SuccessDeletePopup />}
     </div>
   );
 }

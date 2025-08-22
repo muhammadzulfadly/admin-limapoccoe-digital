@@ -189,12 +189,24 @@ export default function DetailKeluargaPage() {
       setForm({ ...form, anggota: newAnggota });
       setOpenForm(newOpenForm);
       setConfirmIndex(null);
-      setSuccessMsg("Anggota berhasil dihapus.");
+
+      // 👇 tampilkan popup sukses
+      setSuccessMsg("Data berhasil dihapus.");
+      setShowSuccess(true);
     } catch (err) {
       setConfirmIndex(null);
       setErrorMessage(err.message || "Terjadi kesalahan saat menghapus anggota.");
     }
   };
+
+  useEffect(() => {
+    if (showSuccess && successMsg === "Data berhasil dihapus.") {
+      const timer = setTimeout(() => {
+        setShowSuccess(false);
+      }, 1800);
+      return () => clearTimeout(timer);
+    }
+  }, [showSuccess, successMsg]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
