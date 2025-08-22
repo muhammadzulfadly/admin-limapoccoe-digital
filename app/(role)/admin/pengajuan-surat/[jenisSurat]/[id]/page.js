@@ -12,6 +12,7 @@ import NIK from "@/components/forms/NIK";
 import RTRW from "@/components/forms/RTRW";
 import Tanggal from "@/components/forms/Tanggal";
 import Date from "@/components/forms/Date";
+import Nama from "@/components/forms/Nama";
 
 export default function DetailAjuanSuratPage() {
   const { jenisSurat, id } = useParams();
@@ -174,7 +175,7 @@ export default function DetailAjuanSuratPage() {
                   <legend className="pt-4 text-xl font-semibold text-gray-700">Informasi Pribadi</legend>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 mb-6">
                     <NIK value={user?.nik || ""} disabled label="NIK" />
-                    <Huruf value={user?.name || ""} disabled label="Nama Lengkap" />
+                    <Nama value={user?.name || ""} disabled label="Nama Lengkap" />
                     <Huruf value={profile?.tempat_lahir || ""} disabled label="Tempat Lahir" />
                     <Tanggal value={profile?.tanggal_lahir || ""} disabled label="Tanggal Lahir" />
                     <JenisKelamin value={profile?.jenis_kelamin || ""} disabled label="Jenis Kelamin" />

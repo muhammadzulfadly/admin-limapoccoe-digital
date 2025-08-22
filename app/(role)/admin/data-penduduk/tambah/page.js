@@ -109,7 +109,7 @@ export default function TambahDataKependudukan() {
 
       anggotaErrors.nik = validateNIK(anggota.nik);
       anggotaErrors.hubungan = validateStatusHubungan(anggota.hubungan);
-      anggotaErrors.nama_lengkap = validateHuruf(anggota.nama_lengkap);
+      anggotaErrors.nama_lengkap = validateNama(anggota.nama_lengkap);
       anggotaErrors.tempat_lahir = validateHuruf(anggota.tempat_lahir);
       anggotaErrors.tgl_lahir = validateTanggal(anggota.tgl_lahir);
       anggotaErrors.jenis_kelamin = validateJenisKelamin(anggota.jenis_kelamin);
