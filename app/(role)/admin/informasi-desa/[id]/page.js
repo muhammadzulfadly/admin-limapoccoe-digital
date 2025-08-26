@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useSearchParams, useRouter } from "next/navigation";
 import AngkaHuruf from "@/components/forms/AngkaHuruf";
 import KategoriInformasi from "@/components/forms/KategoriInformasi";
-import Deskripsi from "@/components/forms/Deskripsi";
+import DeskripsiEditor, { validateDeskripsi } from "@/components/forms/DeskripsiEditor";
 import { ChevronLeft, UploadCloud } from "lucide-react";
 
 export default function DetailInformasiPage() {
@@ -140,7 +140,14 @@ export default function DetailInformasiPage() {
         <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <AngkaHuruf name="judul" value={judul} onChange={({ value }) => setJudul(value)} disabled={!isEditMode} label="Judul" />
           <KategoriInformasi name="kategori" value={kategori} onChange={({ value }) => setKategori(value)} disabled={!isEditMode} />
-          <Deskripsi name="konten" value={konten} onChange={({ value }) => setKonten(value)} disabled={!isEditMode} label="Deskripsi Informasi" />
+          {isEditMode ? (
+            <DeskripsiEditor name="konten" value={konten} onChange={({ value }) => setKonten(value)} error={null} label="Deskripsi Informasi" />
+          ) : (
+            <div>
+              <p className="block mb-1 text-sm font-medium text-gray-500">Deskripsi Informasi</p>
+              <div className="border rounded-md p-4 bg-gray-50 text-sm leading-relaxed" dangerouslySetInnerHTML={{ __html: konten }} />
+            </div>
+          )}
 
           <div className="col-span-1">
             <p className="text-sm font-semibold text-gray-500">

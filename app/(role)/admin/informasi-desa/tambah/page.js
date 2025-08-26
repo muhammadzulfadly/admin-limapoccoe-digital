@@ -6,7 +6,7 @@ import { ChevronLeft, UploadCloud } from "lucide-react";
 
 import AngkaHuruf, { validateAngkaHuruf } from "@/components/forms/AngkaHuruf";
 import KategoriInformasi, { validateKategoriInformasi } from "@/components/forms/KategoriInformasi";
-import Deskripsi, { validateDeskripsi } from "@/components/forms/Deskripsi";
+import DeskripsiEditor, { validateDeskripsiEditor } from "@/components/forms/DeskripsiEditor";
 
 export default function TambahInformasiDesa() {
   const router = useRouter();
@@ -59,7 +59,7 @@ export default function TambahInformasiDesa() {
     const newErrors = {
       title: validateAngkaHuruf(form.title),
       category: validateKategoriInformasi(form.category),
-      description: validateDeskripsi(form.description),
+      description: validateDeskripsiEditor(form.description),
       file: !form.file ? "Upload foto wajib." : "",
     };
 
@@ -111,7 +111,7 @@ export default function TambahInformasiDesa() {
         <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <AngkaHuruf name="title" value={form.title} onChange={handleChange} error={errors.title} label="Judul" />
           <KategoriInformasi name="category" value={form.category} onChange={handleChange} error={errors.category} />
-          <Deskripsi name="description" value={form.description} onChange={handleChange} error={errors.description} label="Deskripsi Informasi" />
+          <DeskripsiEditor name="description" value={form.description} onChange={handleChange} error={errors.description} label="Deskripsi Informasi" />
 
           <div className="col-span-1">
             <p className="text-sm font-semibold text-gray-500">
