@@ -8,8 +8,6 @@ export default function InputNomorSuratPage() {
   const { jenisSurat, id } = useParams();
   const router = useRouter();
 
-  const [bulanSaatIni, setBulanSaatIni] = useState("");
-  const [tahunSaatIni, setTahunSaatIni] = useState("");
   const [nomorSurat, setNomorSurat] = useState("");
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState("");
@@ -48,12 +46,6 @@ export default function InputNomorSuratPage() {
   }, [jenisSurat]);
 
   useEffect(() => {
-    const now = new Date();
-    setBulanSaatIni(getRomanMonth(now.getMonth())); // bulan romawi
-    setTahunSaatIni(now.getFullYear()); // tahun
-  }, []);
-
-  useEffect(() => {
     const fetchDetail = async () => {
       if (!slug || !id) return;
 
@@ -78,14 +70,6 @@ export default function InputNomorSuratPage() {
 
     fetchDetail();
   }, [slug, id]);
-
-  const getRomanMonth = (month) => {
-    const roman = [
-      "I", "II", "III", "IV", "V", "VI",
-      "VII", "VIII", "IX", "X", "XI", "XII"
-    ];
-    return roman[month];
-  };
 
   const handleConfirm = (e) => {
     e.preventDefault();
@@ -182,7 +166,7 @@ export default function InputNomorSuratPage() {
                 className="w-24 sm:w-20 px-2 py-2 border rounded text-center focus:outline-none focus:ring-2 focus:ring-green-600"
                 required
               />
-              <span className="text-sm sm:text-lg text-gray-700 text-wrap text-center">/{kodeSurat}/10.2003/{bulanSaatIni}/{tahunSaatIni}</span>
+              <span className="text-sm sm:text-lg text-gray-700 text-wrap text-center">/{kodeSurat}/10.2003/I/2026</span>
             </div>
 
             <p className="text-center text-sm text-gray-500 mb-4">Nomor Surat Terakhir : {nomorSuratTerakhir}</p>
