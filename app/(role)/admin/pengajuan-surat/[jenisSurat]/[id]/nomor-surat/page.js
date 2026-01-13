@@ -9,8 +9,6 @@ export default function InputNomorSuratPage() {
   const router = useRouter();
 
   const now = new Date();
-  const bulan = now.getMonth() + 1; // 1–12
-  const tahun = now.getFullYear();
   const [nomorSurat, setNomorSurat] = useState("");
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState("");
@@ -169,7 +167,7 @@ export default function InputNomorSuratPage() {
                 className="w-24 sm:w-20 px-2 py-2 border rounded text-center focus:outline-none focus:ring-2 focus:ring-green-600"
                 required
               />
-              <span className="text-sm sm:text-lg text-gray-700 text-wrap text-center">/{kodeSurat}/10.2003/{bulan}/{tahun}</span>
+              <span className="text-sm sm:text-lg text-gray-700 text-wrap text-center">/{kodeSurat}/10.2003/II/2026</span>
             </div>
 
             <p className="text-center text-sm text-gray-500 mb-4">Nomor Surat Terakhir : {nomorSuratTerakhir}</p>
