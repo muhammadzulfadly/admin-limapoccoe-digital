@@ -5,19 +5,12 @@ import { useEffect, useState } from "react";
 import { ChevronLeft } from "lucide-react";
 
 export default function InputNomorSuratPage() {
-const params = useParams();
-const router = useRouter();
+  const { jenisSurat, id } = useParams();
+  const router = useRouter();
 
-const jenisSurat = Array.isArray(params.jenisSurat)
-  ? params.jenisSurat[0]
-  : params.jenisSurat;
-
-const id = Array.isArray(params.id)
-  ? params.id[0]
-  : params.id;
-
-  const [bulanSaatIni, setBulanSaatIni] = useState("");
-  const [tahunSaatIni, setTahunSaatIni] = useState("");
+  const now = new Date();
+  const bulan = now.getMonth() + 1; // 1–12
+  const tahun = now.getFullYear();
   const [nomorSurat, setNomorSurat] = useState("");
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState("");
@@ -54,18 +47,6 @@ const id = Array.isArray(params.id)
 
     fetchSlug();
   }, [jenisSurat]);
-  
-  useEffect(() => {
-    const now = new Date();
-  
-    const romanMonth = [
-      "I", "II", "III", "IV", "V", "VI",
-      "VII", "VIII", "IX", "X", "XI", "XII"
-    ];
-  
-    setBulanSaatIni(romanMonth[now.getMonth()]);
-    setTahunSaatIni(now.getFullYear());
-  }, []);
 
   useEffect(() => {
     const fetchDetail = async () => {
@@ -188,7 +169,7 @@ const id = Array.isArray(params.id)
                 className="w-24 sm:w-20 px-2 py-2 border rounded text-center focus:outline-none focus:ring-2 focus:ring-green-600"
                 required
               />
-              <span className="text-sm sm:text-lg text-gray-700 text-wrap text-center">/{kodeSurat}/10.2003/{bulanSaatIni}/{tahunSaatIni}</span>
+              <span className="text-sm sm:text-lg text-gray-700 text-wrap text-center">/{kodeSurat}/10.2003/{bulan}/{tahun}</span>
             </div>
 
             <p className="text-center text-sm text-gray-500 mb-4">Nomor Surat Terakhir : {nomorSuratTerakhir}</p>
