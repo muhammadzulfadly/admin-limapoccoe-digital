@@ -5,8 +5,16 @@ import { useEffect, useState } from "react";
 import { ChevronLeft } from "lucide-react";
 
 export default function InputNomorSuratPage() {
-  const { jenisSurat, id } = useParams();
-  const router = useRouter();
+const params = useParams();
+const router = useRouter();
+
+const jenisSurat = Array.isArray(params.jenisSurat)
+  ? params.jenisSurat[0]
+  : params.jenisSurat;
+
+const id = Array.isArray(params.id)
+  ? params.id[0]
+  : params.id;
 
   const [bulanSaatIni, setBulanSaatIni] = useState("");
   const [tahunSaatIni, setTahunSaatIni] = useState("");
@@ -46,11 +54,17 @@ export default function InputNomorSuratPage() {
 
     fetchSlug();
   }, [jenisSurat]);
-
+  
   useEffect(() => {
     const now = new Date();
-    setBulanSaatIni(getRomanMonth(now.getMonth())); // bulan romawi
-    setTahunSaatIni(now.getFullYear()); // tahun
+  
+    const romanMonth = [
+      "I", "II", "III", "IV", "V", "VI",
+      "VII", "VIII", "IX", "X", "XI", "XII"
+    ];
+  
+    setBulanSaatIni(romanMonth[now.getMonth()]);
+    setTahunSaatIni(now.getFullYear());
   }, []);
 
   useEffect(() => {
@@ -78,14 +92,6 @@ export default function InputNomorSuratPage() {
 
     fetchDetail();
   }, [slug, id]);
-
-  const getRomanMonth = (month) => {
-    const roman = [
-      "I", "II", "III", "IV", "V", "VI",
-      "VII", "VIII", "IX", "X", "XI", "XII"
-    ];
-    return roman[month];
-  };
 
   const handleConfirm = (e) => {
     e.preventDefault();
