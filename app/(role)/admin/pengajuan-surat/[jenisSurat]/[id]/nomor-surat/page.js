@@ -88,13 +88,18 @@ export default function InputNomorSuratPage() {
     try {
       const token = localStorage.getItem("token");
 
+      const nomorLengkap = `${nomorSurat}/${kodeSurat}/10.2003/${bulanSaatIni}/${tahunSaatIni}`;
+      
       const res = await fetch(`/api/letter/${slug}/${id}/number`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ nomor_surat: nomorSurat }),
+
+        body: JSON.stringify({
+          nomor_surat: nomorLengkap,
+        }),
       });
 
       if (res.status === 422) {
@@ -132,6 +137,26 @@ export default function InputNomorSuratPage() {
     fetchNomorSurat();
   }, []);
 
+  const now = new Date();
+
+  const bulanRomawi = [
+    "I",
+    "II",
+    "III",
+    "IV",
+    "V",
+    "VI",
+    "VII",
+    "VIII",
+    "IX",
+    "X",
+    "XI",
+    "XII",
+  ];
+  
+  const bulanSaatIni = bulanRomawi[now.getMonth()];
+  const tahunSaatIni = now.getFullYear();
+
   if (loading) return <p className="p-6">Memuat data...</p>;
 
   return (
@@ -166,7 +191,9 @@ export default function InputNomorSuratPage() {
                 className="w-24 sm:w-20 px-2 py-2 border rounded text-center focus:outline-none focus:ring-2 focus:ring-green-600"
                 required
               />
-              <span className="text-sm sm:text-lg text-gray-700 text-wrap text-center">/{kodeSurat}/10.2003/I/2026</span>
+              <span className="text-sm sm:text-lg text-gray-700 text-wrap text-center">
+                /{kodeSurat}/10.2003/{bulanSaatIni}/{tahunSaatIni}
+              </span>
             </div>
 
             <p className="text-center text-sm text-gray-500 mb-4">Nomor Surat Terakhir : {nomorSuratTerakhir}</p>
